@@ -1,65 +1,95 @@
-import Image from "next/image";
+import Link from "next/link";
+import { QrCode, ShoppingBag, Bell, Smartphone, ArrowRight, Zap } from "lucide-react";
+
+const features = [
+  { icon: QrCode, title: "QR-код для столика", desc: "Гость сканирует — сразу видит ваше меню. Без приложений и загрузок." },
+  { icon: ShoppingBag, title: "Заказ в 2 клика", desc: "Корзина, выбор варианта, комментарий — и заказ уже у вас." },
+  { icon: Bell, title: "Уведомления в реалтайме", desc: "Новый заказ появляется мгновенно со звуковым сигналом." },
+  { icon: Smartphone, title: "Работает везде", desc: "Мобильный дизайн. Гостю не нужно ничего устанавливать." },
+];
 
 export default function Home() {
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
+    <div className="flex flex-1 flex-col bg-white">
+      {/* Hero */}
+      <section className="relative overflow-hidden bg-gradient-to-b from-[#eef2ff] via-white to-white">
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[700px] h-[700px] rounded-full bg-blue-500/[0.05] blur-[120px]" />
+
+        <div className="relative mx-auto max-w-3xl px-6 pt-24 pb-28 sm:pt-32 sm:pb-36 text-center">
+          <div className="inline-flex items-center gap-2.5 rounded-full bg-blue-500/10 px-6 py-2.5 text-base font-extrabold text-[#2563eb] mb-10">
+            <Zap className="h-5 w-5" />
+            Бесплатно для одного заведения
+          </div>
+
+          <h1 className="text-5xl sm:text-7xl font-black tracking-tight leading-[1.05]">
+            Цифровое меню
+            <br />
+            <span className="text-[#2563eb]">для вашего заведения</span>
           </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
+
+          <p className="mt-8 text-xl sm:text-2xl text-gray-400 max-w-xl mx-auto leading-relaxed font-semibold">
+            Создайте меню за 10 минут, распечатайте QR-код — и принимайте заказы
+            прямо на ваш экран.
+          </p>
+
+          <div className="mt-12 flex flex-col sm:flex-row gap-4 justify-center">
+            <Link
+              href="/register"
+              className="inline-flex h-16 items-center justify-center rounded-2xl bg-[#2563eb] px-12 text-xl font-extrabold text-white shadow-xl shadow-blue-500/25 transition-all hover:shadow-2xl hover:shadow-blue-500/35 hover:-translate-y-1 active:translate-y-0 active:scale-[0.98]"
             >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
+              Начать бесплатно
+              <ArrowRight className="ml-3 h-6 w-6" />
+            </Link>
+            <Link
+              href="/login"
+              className="inline-flex h-16 items-center justify-center rounded-2xl bg-white border-2 border-gray-200 px-12 text-xl font-extrabold text-gray-700 shadow-sm transition-all hover:border-blue-200 hover:text-[#2563eb] hover:-translate-y-1 active:translate-y-0"
             >
-              Learning
-            </a>{" "}
-            center.
+              Войти
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* Features */}
+      <section className="mx-auto max-w-4xl px-6 py-24">
+        <div className="text-center mb-16">
+          <h2 className="text-4xl sm:text-5xl font-black">Всё что нужно для общепита</h2>
+          <p className="mt-5 text-gray-400 text-xl font-semibold max-w-md mx-auto">
+            Зарегистрируйтесь, добавьте меню — гости уже могут заказывать.
           </p>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+        <div className="grid gap-5 sm:grid-cols-2">
+          {features.map((f) => (
+            <div
+              key={f.title}
+              className="group rounded-3xl bg-[#f0f2f8] p-8 transition-all hover:bg-white hover:shadow-[0_8px_40px_rgba(37,99,235,0.08)] hover:-translate-y-1"
+            >
+              <div className="mb-5 inline-flex rounded-2xl bg-blue-500/10 p-4 text-[#2563eb] group-hover:bg-[#2563eb] group-hover:text-white transition-all">
+                <f.icon className="h-7 w-7" />
+              </div>
+              <h3 className="text-xl font-black mb-2">{f.title}</h3>
+              <p className="text-base text-gray-400 leading-relaxed font-semibold">{f.desc}</p>
+            </div>
+          ))}
         </div>
-      </main>
+      </section>
+
+      {/* CTA */}
+      <section className="mx-auto max-w-3xl px-6 pb-24">
+        <div className="rounded-3xl bg-[#2563eb] p-12 sm:p-20 text-center text-white shadow-2xl shadow-blue-500/25">
+          <h2 className="text-4xl sm:text-5xl font-black">Готовы попробовать?</h2>
+          <p className="mt-5 text-blue-100 text-xl font-semibold max-w-sm mx-auto">
+            Регистрация за 30 секунд. Начните принимать заказы уже сегодня.
+          </p>
+          <Link
+            href="/register"
+            className="mt-12 inline-flex h-16 items-center justify-center rounded-2xl bg-white px-12 text-xl font-extrabold text-[#2563eb] shadow-lg transition-all hover:shadow-xl hover:-translate-y-1 active:scale-[0.98]"
+          >
+            Создать меню
+            <ArrowRight className="ml-3 h-6 w-6" />
+          </Link>
+        </div>
+      </section>
     </div>
   );
 }

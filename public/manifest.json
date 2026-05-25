@@ -1,0 +1,38 @@
+{
+  "name": "QRMenu — Цифровое меню",
+  "short_name": "QRMenu",
+  "description": "Управление заведением и приём заказов",
+  "start_url": "/admin",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#f0f2f8",
+  "theme_color": "#2563eb",
+  "orientation": "portrait",
+  "categories": ["food", "business"],
+  "icons": [
+    {
+      "src": "/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    },
+    {
+      "src": "/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Заказы",
+      "short_name": "Заказы",
+      "url": "/admin",
+      "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192" }]
+    }
+  ]
+}

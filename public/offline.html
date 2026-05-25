@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>QRMenu — Нет сети</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: system-ui, sans-serif;
+      background: #f0f2f8;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 2rem;
+    }
+    .card {
+      background: white;
+      border-radius: 1.5rem;
+      padding: 3rem;
+      text-align: center;
+      max-width: 400px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+    }
+    .icon { font-size: 4rem; margin-bottom: 1.5rem; }
+    h1 { font-size: 1.5rem; font-weight: 900; margin-bottom: 0.5rem; }
+    p { color: #6b7280; font-size: 1rem; margin-bottom: 2rem; }
+    button {
+      background: #2563eb;
+      color: white;
+      border: none;
+      padding: 0.875rem 2rem;
+      border-radius: 1rem;
+      font-size: 1rem;
+      font-weight: 800;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(37,99,235,0.25);
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="icon">📡</div>
+    <h1>Нет подключения</h1>
+    <p>Проверьте интернет-соединение и попробуйте снова</p>
+    <button onclick="location.reload()">Обновить</button>
+  </div>
+</body>
+</html>
