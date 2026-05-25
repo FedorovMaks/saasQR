@@ -42,7 +42,8 @@ export async function POST(req: Request) {
       { user: { id: user.id, email: user.email, name: user.name } },
       { status: 201 }
     );
-  } catch {
+  } catch (error) {
+    console.error("Register error:", error);
     return NextResponse.json(
       { error: "Внутренняя ошибка сервера" },
       { status: 500 }
