@@ -9,8 +9,9 @@ export async function POST(req: Request) {
     const result = registerSchema.safeParse(body);
 
     if (!result.success) {
+      const firstIssue = result.error?.issues?.[0]?.message || "Некорректные данные";
       return NextResponse.json(
-        { error: result.error.issues[0].message },
+        { error: firstIssue },
         { status: 400 }
       );
     }
@@ -42,10 +43,11 @@ export async function POST(req: Request) {
       { user: { id: user.id, email: user.email, name: user.name } },
       { status: 201 }
     );
-  } catch (error) {
+  } catch (error: unknown) {
     console.error("Register error:", error);
+    const message = error instanceof Error ? error.message : "Unknown error";
     return NextResponse.json(
-      { error: "Внутренняя ошибка сервера" },
+      { error: `Ошибка сервера: ${message}` },
       { status: 500 }
     );
   }
