@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { Plan } from "@/generated/prisma/client";
+import { Plan } from "@/generated/prisma";
 import { z } from "zod";
 
 const schema = z.object({

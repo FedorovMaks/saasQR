@@ -1,7 +1,7 @@
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { getUserPlanUsage, PLANS, TRIAL_CONFIG, formatRubles } from "@/lib/plans";
-import { Plan } from "@/generated/prisma/client";
+import { Plan } from "@/generated/prisma";
 import { redirect } from "next/navigation";
 import { PlanSwitchButton } from "@/components/admin/plan-switch-button";
 import {

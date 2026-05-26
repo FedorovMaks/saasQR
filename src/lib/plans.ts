@@ -1,4 +1,4 @@
-import { Plan } from "@/generated/prisma/client";
+import { Plan } from "@/generated/prisma";
 import { prisma } from "./prisma";
 
 export type PlanConfig = {
