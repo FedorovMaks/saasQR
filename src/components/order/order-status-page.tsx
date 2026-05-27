@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { formatPrice } from "@/lib/utils";
 import {
@@ -55,6 +55,20 @@ const STATUS_MAP: Record<
     color: "text-green-500",
     bgColor: "bg-green-50",
   },
+  PREPARING: {
+    label: "Готовится",
+    description: "Ваш заказ готовится",
+    icon: <Clock className="h-8 w-8" />,
+    color: "text-orange-500",
+    bgColor: "bg-orange-50",
+  },
+  READY: {
+    label: "Готов!",
+    description: "Ваш заказ готов — ожидайте официанта",
+    icon: <CheckCircle2 className="h-8 w-8" />,
+    color: "text-emerald-500",
+    bgColor: "bg-emerald-50",
+  },
   DELIVERED: {
     label: "Заказ отдан",
     description: "Приятного аппетита!",
@@ -103,36 +117,33 @@ export function OrderStatusPage({
   const [paymentStatus, setPaymentStatus] = useState(initialOrder.paymentStatus);
   const [showAccepted, setShowAccepted] = useState(false);
 
-  // SSE subscription for real-time status updates
+  // Poll for status updates every 5 seconds
+  const pollStatus = useCallback(async () => {
+    try {
+      const res = await fetch(`/api/orders/${initialOrder.id}`);
+      if (!res.ok) return;
+      const data = await res.json();
+      if (data.status && data.status !== status) {
+        setStatus(data.status);
+        if (data.status === "ACCEPTED") {
+          setShowAccepted(true);
+        }
+      }
+      if (data.paymentStatus && data.paymentStatus !== paymentStatus) {
+        setPaymentStatus(data.paymentStatus);
+      }
+    } catch {
+      // ignore poll errors
+    }
+  }, [initialOrder.id, status, paymentStatus]);
+
   useEffect(() => {
-    // Don't subscribe for terminal statuses
+    // Don't poll for terminal statuses
     if (status === "DELIVERED" || status === "CANCELLED") return;
 
-    const eventSource = new EventSource(`/api/orders/${initialOrder.id}/stream`);
-
-    eventSource.onmessage = (event) => {
-      try {
-        const data = JSON.parse(event.data);
-        if (data.type === "heartbeat" || data.type === "connected") return;
-
-        if (data.status) {
-          setStatus(data.status);
-          if (data.status === "ACCEPTED") {
-            setShowAccepted(true);
-          }
-        }
-        if (data.paymentStatus) {
-          setPaymentStatus(data.paymentStatus);
-        }
-      } catch {
-        // ignore parse errors
-      }
-    };
-
-    return () => {
-      eventSource.close();
-    };
-  }, [initialOrder.id, status]);
+    const interval = setInterval(pollStatus, 5000);
+    return () => clearInterval(interval);
+  }, [status, pollStatus]);
 
   const statusInfo = STATUS_MAP[status] || STATUS_MAP.NEW;
   const paymentInfo = PAYMENT_MAP[paymentStatus] || PAYMENT_MAP.UNPAID;
@@ -177,20 +188,24 @@ export function OrderStatusPage({
           </div>
 
           {/* Pulsing indicator for active orders */}
-          {(status === "NEW" || status === "ACCEPTED") && (
+          {(status === "NEW" || status === "ACCEPTED" || status === "PREPARING" || status === "READY") && (
             <div className={`rounded-2xl ${statusInfo.bgColor} px-4 py-3 flex items-center gap-3`}>
               <span className="relative flex h-3 w-3">
                 <span className={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 ${
-                  status === "NEW" ? "bg-blue-400" : "bg-green-400"
+                  status === "NEW" ? "bg-blue-400" : status === "ACCEPTED" ? "bg-green-400" : status === "PREPARING" ? "bg-orange-400" : "bg-emerald-400"
                 }`} />
                 <span className={`relative inline-flex rounded-full h-3 w-3 ${
-                  status === "NEW" ? "bg-blue-500" : "bg-green-500"
+                  status === "NEW" ? "bg-blue-500" : status === "ACCEPTED" ? "bg-green-500" : status === "PREPARING" ? "bg-orange-500" : "bg-emerald-500"
                 }`} />
               </span>
               <span className={`text-sm font-bold ${statusInfo.color}`}>
                 {status === "NEW"
                   ? "Ожидаем подтверждения..."
-                  : "Заказ в работе"}
+                  : status === "ACCEPTED"
+                  ? "Заказ принят, готовим..."
+                  : status === "PREPARING"
+                  ? "Готовим ваш заказ..."
+                  : "Заказ готов, несём!"}
               </span>
             </div>
           )}

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useCallback, useState } from "react";
+import { useEffect, useRef, useCallback } from "react";
 
 type OrderEvent = {
   type: "new_order" | "status_change" | "waiter_call";
@@ -10,45 +10,90 @@ type OrderEvent = {
   timestamp?: string;
 };
 
+type OrderFromAPI = {
+  id: string;
+  orderNumber: number;
+  tableNumber: string | null;
+  status: string;
+  paymentStatus: string;
+  totalAmount: number;
+  comment: string | null;
+  createdAt: string;
+  items: {
+    id: string;
+    itemName: string;
+    variantLabel: string | null;
+    quantity: number;
+    priceAtOrder: number;
+  }[];
+};
+
+// Polling-based order stream (replaces SSE for Vercel compatibility)
 export function useOrderStream(
   venueId: string,
   onEvent: (event: OrderEvent) => void
 ) {
   const onEventRef = useRef(onEvent);
   onEventRef.current = onEvent;
+  const knownOrdersRef = useRef<Map<string, string>>(new Map());
+  const initializedRef = useRef(false);
 
   useEffect(() => {
-    const eventSource = new EventSource(
-      `/api/orders/stream?venueId=${venueId}`
-    );
+    let active = true;
 
-    eventSource.onmessage = (e) => {
+    async function poll() {
+      if (!active) return;
       try {
-        const event: OrderEvent = JSON.parse(e.data);
-        onEventRef.current(event);
-      } catch {
-        // ignore parse errors
-      }
-    };
+        const res = await fetch(`/api/venues/${venueId}/orders`);
+        if (!res.ok) return;
+        const orders: OrderFromAPI[] = await res.json();
 
-    eventSource.onerror = () => {
-      // EventSource auto-reconnects
-    };
+        if (!initializedRef.current) {
+          // First poll — just populate the known orders map
+          for (const order of orders) {
+            knownOrdersRef.current.set(order.id, order.status);
+          }
+          initializedRef.current = true;
+          return;
+        }
+
+        for (const order of orders) {
+          const knownStatus = knownOrdersRef.current.get(order.id);
+
+          if (knownStatus === undefined) {
+            // New order
+            knownOrdersRef.current.set(order.id, order.status);
+            onEventRef.current({
+              type: "new_order",
+              venueId,
+              order: order as unknown as Record<string, unknown>,
+            });
+          } else if (knownStatus !== order.status) {
+            // Status changed
+            knownOrdersRef.current.set(order.id, order.status);
+            onEventRef.current({
+              type: "status_change",
+              venueId,
+              order: order as unknown as Record<string, unknown>,
+            });
+          }
+        }
+      } catch {
+        // ignore poll errors
+      }
+    }
+
+    poll();
+    const interval = setInterval(poll, 4000);
 
     return () => {
-      eventSource.close();
+      active = false;
+      clearInterval(interval);
     };
   }, [venueId]);
 }
 
 export function useSound() {
-  const audioRef = useRef<HTMLAudioElement | null>(null);
-
-  useEffect(() => {
-    // Create a simple beep using Web Audio API
-    audioRef.current = null; // Will use Web Audio API instead
-  }, []);
-
   const playSound = useCallback(() => {
     try {
       const ctx = new AudioContext();

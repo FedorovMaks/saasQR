@@ -8,19 +8,12 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { slugify } from "@/lib/utils";
 import { toast } from "sonner";
-import { Check, X, Loader2 } from "lucide-react";
+import { Check, X, Loader2, Lock } from "lucide-react";
 import { ImageUpload } from "@/components/admin/image-upload";
 
-const ACCENT_COLORS = [
-  { value: "#2563eb", label: "Синий" },
-  { value: "#dc2626", label: "Красный" },
-  { value: "#16a34a", label: "Зелёный" },
-  { value: "#7c3aed", label: "Фиолетовый" },
-  { value: "#ea580c", label: "Оранжевый" },
-  { value: "#db2777", label: "Розовый" },
-  { value: "#0d9488", label: "Бирюзовый" },
-  { value: "#d97706", label: "Янтарный" },
-  { value: "#1e1e1e", label: "Чёрный" },
+const PRESET_COLORS = [
+  "#2563eb", "#dc2626", "#16a34a", "#7c3aed", "#ea580c",
+  "#db2777", "#0d9488", "#d97706", "#1e1e1e",
 ];
 
 interface VenueFormProps {
@@ -35,9 +28,10 @@ interface VenueFormProps {
     yookassaShopId: string | null;
     yookassaSecretKey: string | null;
   };
+  userPlan?: string;
 }
 
-export function VenueForm({ venue }: VenueFormProps) {
+export function VenueForm({ venue, userPlan = "BASIC" }: VenueFormProps) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [name, setName] = useState(venue?.name || "");
@@ -46,12 +40,15 @@ export function VenueForm({ venue }: VenueFormProps) {
   const [address, setAddress] = useState(venue?.address || "");
   const [logoUrl, setLogoUrl] = useState(venue?.logoUrl || "");
   const [accentColor, setAccentColor] = useState(venue?.accentColor || "#2563eb");
+  const [hexInput, setHexInput] = useState(venue?.accentColor || "#2563eb");
   const [yookassaShopId, setYookassaShopId] = useState(venue?.yookassaShopId || "");
   const [yookassaSecretKey, setYookassaSecretKey] = useState(venue?.yookassaSecretKey || "");
   const [slugManuallyEdited, setSlugManuallyEdited] = useState(!!venue);
   const [slugStatus, setSlugStatus] = useState<
     "idle" | "checking" | "available" | "taken"
   >("idle");
+
+  const canCustomizeDesign = userPlan !== "BASIC";
 
   const checkSlug = useCallback(
     async (slugToCheck: string) => {
@@ -97,6 +94,20 @@ export function VenueForm({ venue }: VenueFormProps) {
     );
   }
 
+  function handleColorChange(color: string) {
+    setAccentColor(color);
+    setHexInput(color);
+  }
+
+  function handleHexInputChange(value: string) {
+    setHexInput(value);
+    // Auto-add # if missing
+    const hex = value.startsWith("#") ? value : `#${value}`;
+    if (/^#[0-9a-fA-F]{6}$/.test(hex)) {
+      setAccentColor(hex);
+    }
+  }
+
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (slugStatus === "taken") {
@@ -115,7 +126,7 @@ export function VenueForm({ venue }: VenueFormProps) {
         body: JSON.stringify({
           name, slug, description, address,
           logoUrl: logoUrl || undefined,
-          accentColor,
+          accentColor: canCustomizeDesign ? accentColor : undefined,
           yookassaShopId: yookassaShopId || undefined,
           yookassaSecretKey: yookassaSecretKey || undefined,
         }),
@@ -230,27 +241,75 @@ export function VenueForm({ venue }: VenueFormProps) {
             />
           </div>
 
+          {/* Color picker — gated by plan */}
           <div className="space-y-2">
-            <Label>Цвет меню</Label>
-            <div className="flex items-center gap-2 flex-wrap">
-              {ACCENT_COLORS.map((c) => (
-                <button
-                  key={c.value}
-                  type="button"
-                  onClick={() => setAccentColor(c.value)}
-                  className="relative h-10 w-10 rounded-xl transition-all hover:scale-110 active:scale-95"
-                  style={{ backgroundColor: c.value }}
-                  title={c.label}
+            <Label className="flex items-center gap-2">
+              Цвет меню
+              {!canCustomizeDesign && (
+                <span className="inline-flex items-center gap-1 rounded-lg bg-amber-50 px-2 py-0.5 text-xs font-bold text-amber-600 border border-amber-200">
+                  <Lock className="h-3 w-3" />
+                  Бизнес
+                </span>
+              )}
+            </Label>
+            {canCustomizeDesign ? (
+              <div className="space-y-3">
+                <div className="flex items-center gap-3">
+                  {/* Native color picker */}
+                  <input
+                    type="color"
+                    value={accentColor}
+                    onChange={(e) => handleColorChange(e.target.value)}
+                    className="h-12 w-12 rounded-xl border-2 border-gray-200 cursor-pointer p-0.5"
+                  />
+                  {/* Hex input */}
+                  <Input
+                    value={hexInput}
+                    onChange={(e) => handleHexInputChange(e.target.value)}
+                    placeholder="#2563eb"
+                    className="w-32 font-mono"
+                    maxLength={7}
+                  />
+                  {/* Preview */}
+                  <div
+                    className="h-10 flex-1 rounded-xl"
+                    style={{ backgroundColor: accentColor }}
+                  />
+                </div>
+                {/* Preset colors */}
+                <div className="flex items-center gap-1.5 flex-wrap">
+                  {PRESET_COLORS.map((c) => (
+                    <button
+                      key={c}
+                      type="button"
+                      onClick={() => handleColorChange(c)}
+                      className="relative h-8 w-8 rounded-lg transition-all hover:scale-110 active:scale-95 ring-offset-2"
+                      style={{
+                        backgroundColor: c,
+                        ...(accentColor === c ? { outline: "2px solid", outlineColor: c, outlineOffset: "2px" } : {}),
+                      }}
+                    >
+                      {accentColor === c && (
+                        <Check className="h-3.5 w-3.5 text-white absolute inset-0 m-auto drop-shadow-md" />
+                      )}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            ) : (
+              <div className="rounded-xl bg-gray-50 border border-dashed border-gray-200 p-4 text-center">
+                <Lock className="h-5 w-5 text-gray-400 mx-auto mb-2" />
+                <p className="text-sm text-gray-500 font-medium">
+                  Кастомизация дизайна доступна на тарифе Бизнес и выше
+                </p>
+                <a
+                  href="/admin/billing"
+                  className="text-sm font-bold text-[#2563eb] hover:underline mt-1 inline-block"
                 >
-                  {accentColor === c.value && (
-                    <Check className="h-4 w-4 text-white absolute inset-0 m-auto drop-shadow-md" />
-                  )}
-                </button>
-              ))}
-            </div>
-            <p className="text-xs text-muted-foreground">
-              Акцентный цвет кнопок и элементов в меню гостя
-            </p>
+                  Перейти к тарифам
+                </a>
+              </div>
+            )}
           </div>
 
           {/* YooKassa payment settings — only for existing venues */}

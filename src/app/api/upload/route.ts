@@ -2,8 +2,6 @@ import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import sharp from "sharp";
-import { writeFile, mkdir } from "fs/promises";
-import path from "path";
 import crypto from "crypto";
 
 const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp"];
@@ -49,16 +47,29 @@ export async function POST(req: Request) {
       .webp({ quality: 80 })
       .toBuffer();
 
-    const filename = `${crypto.randomUUID()}.webp`;
-    const uploadDir = path.join(process.cwd(), "public", "uploads", folder);
+    const filename = `${folder}/${crypto.randomUUID()}.webp`;
 
-    await mkdir(uploadDir, { recursive: true });
-    await writeFile(path.join(uploadDir, filename), processed);
-
-    const url = `/uploads/${folder}/${filename}`;
-
-    return NextResponse.json({ url });
-  } catch {
+    // Use Vercel Blob in production, local filesystem in development
+    if (process.env.BLOB_READ_WRITE_TOKEN) {
+      const { put } = await import("@vercel/blob");
+      const blob = await put(filename, processed, {
+        access: "public",
+        contentType: "image/webp",
+      });
+      return NextResponse.json({ url: blob.url });
+    } else {
+      // Local development — save to public/uploads
+      const { writeFile, mkdir } = await import("fs/promises");
+      const path = await import("path");
+      const uploadDir = path.join(process.cwd(), "public", "uploads", folder);
+      const localFilename = `${crypto.randomUUID()}.webp`;
+      await mkdir(uploadDir, { recursive: true });
+      await writeFile(path.join(uploadDir, localFilename), processed);
+      const url = `/uploads/${folder}/${localFilename}`;
+      return NextResponse.json({ url });
+    }
+  } catch (error) {
+    console.error("Upload error:", error);
     return NextResponse.json(
       { error: "Ошибка загрузки файла" },
       { status: 500 }

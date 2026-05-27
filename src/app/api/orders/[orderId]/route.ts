@@ -4,6 +4,25 @@ import { getApiUser, unauthorized } from "@/lib/auth-guard";
 import { emitOrderEvent } from "@/lib/order-events";
 import { z } from "zod";
 
+// Public GET — guest polls for order status (no auth required)
+export async function GET(
+  _req: Request,
+  { params }: { params: Promise<{ orderId: string }> }
+) {
+  const { orderId } = await params;
+
+  const order = await prisma.order.findUnique({
+    where: { id: orderId },
+    select: { status: true, paymentStatus: true },
+  });
+
+  if (!order) {
+    return NextResponse.json({ error: "Заказ не найден" }, { status: 404 });
+  }
+
+  return NextResponse.json(order);
+}
+
 const updateOrderSchema = z.object({
   status: z.enum([
     "NEW",

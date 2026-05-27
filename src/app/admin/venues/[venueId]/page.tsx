@@ -15,9 +15,13 @@ export default async function EditVenuePage({
 
   const { venueId } = await params;
 
-  const venue = await prisma.venue.findUnique({
-    where: { id: venueId },
-  });
+  const [venue, user] = await Promise.all([
+    prisma.venue.findUnique({ where: { id: venueId } }),
+    prisma.user.findUnique({
+      where: { id: session.user.id },
+      select: { plan: true },
+    }),
+  ]);
 
   if (!venue || !venue.isActive) notFound();
   if (venue.ownerId !== session.user.id) notFound();
@@ -25,7 +29,7 @@ export default async function EditVenuePage({
   return (
     <div className="max-w-2xl space-y-6">
       <VenueQR venueId={venue.id} slug={venue.slug} venueName={venue.name} />
-      <VenueForm venue={venue} />
+      <VenueForm venue={venue} userPlan={user?.plan || "BASIC"} />
     </div>
   );
 }

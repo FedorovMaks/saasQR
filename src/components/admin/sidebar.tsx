@@ -14,6 +14,8 @@ import {
   X,
   CreditCard,
   ClipboardList,
+  Download,
+  Bell,
 } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
 
@@ -63,6 +65,74 @@ function NavLinks({ onNavigate }: { onNavigate?: () => void }) {
         );
       })}
     </nav>
+  );
+}
+
+interface BeforeInstallPromptEvent extends Event {
+  prompt: () => Promise<void>;
+  userChoice: Promise<{ outcome: "accepted" | "dismissed" }>;
+}
+
+function InstallAppButton() {
+  const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
+
+  useEffect(() => {
+    const handler = (e: Event) => {
+      e.preventDefault();
+      setDeferredPrompt(e as BeforeInstallPromptEvent);
+    };
+    window.addEventListener("beforeinstallprompt", handler);
+    return () => window.removeEventListener("beforeinstallprompt", handler);
+  }, []);
+
+  if (!deferredPrompt) return null;
+
+  async function handleInstall() {
+    if (!deferredPrompt) return;
+    await deferredPrompt.prompt();
+    const { outcome } = await deferredPrompt.userChoice;
+    if (outcome === "accepted") setDeferredPrompt(null);
+  }
+
+  return (
+    <button
+      onClick={handleInstall}
+      className="w-full flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-bold text-[#2563eb] bg-[#2563eb]/5 hover:bg-[#2563eb]/10 transition-all"
+    >
+      <Download className="h-5 w-5" />
+      Установить приложение
+    </button>
+  );
+}
+
+function EnablePushButton() {
+  const [supported, setSupported] = useState(false);
+  const [subscribed, setSubscribed] = useState(false);
+
+  useEffect(() => {
+    if ("Notification" in window && "serviceWorker" in navigator) {
+      setSupported(true);
+      setSubscribed(Notification.permission === "granted");
+    }
+  }, []);
+
+  if (!supported || subscribed) return null;
+
+  async function handleEnable() {
+    const permission = await Notification.requestPermission();
+    if (permission === "granted") {
+      setSubscribed(true);
+    }
+  }
+
+  return (
+    <button
+      onClick={handleEnable}
+      className="w-full flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-bold text-amber-600 bg-amber-50 hover:bg-amber-100 transition-all"
+    >
+      <Bell className="h-5 w-5" />
+      Включить уведомления
+    </button>
   );
 }
 
@@ -171,7 +241,9 @@ export function Sidebar() {
             <div className="flex-1 px-4 py-5">
               <NavLinks onNavigate={() => setMobileOpen(false)} />
             </div>
-            <div className="border-t border-gray-100 p-4">
+            <div className="border-t border-gray-100 p-4 space-y-2">
+              <InstallAppButton />
+              <EnablePushButton />
               <UserMenu />
             </div>
           </div>
@@ -186,7 +258,9 @@ export function Sidebar() {
         <div className="flex-1 px-4 py-5">
           <NavLinks />
         </div>
-        <div className="border-t border-gray-100 p-4">
+        <div className="border-t border-gray-100 p-4 space-y-2">
+          <InstallAppButton />
+          <EnablePushButton />
           <UserMenu />
         </div>
       </aside>
