@@ -16,6 +16,18 @@ const PRESET_COLORS = [
   "#db2777", "#0d9488", "#d97706", "#1e1e1e",
 ];
 
+function hslToHex(h: number, s: number, l: number): string {
+  s /= 100;
+  l /= 100;
+  const a = s * Math.min(l, 1 - l);
+  const f = (n: number) => {
+    const k = (n + h / 30) % 12;
+    const color = l - a * Math.max(Math.min(k - 3, 9 - k, 1), -1);
+    return Math.round(255 * color).toString(16).padStart(2, "0");
+  };
+  return `#${f(0)}${f(8)}${f(4)}`;
+}
+
 interface VenueFormProps {
   venue?: {
     id: string;
@@ -41,6 +53,7 @@ export function VenueForm({ venue, userPlan = "BASIC" }: VenueFormProps) {
   const [logoUrl, setLogoUrl] = useState(venue?.logoUrl || "");
   const [accentColor, setAccentColor] = useState(venue?.accentColor || "#2563eb");
   const [hexInput, setHexInput] = useState(venue?.accentColor || "#2563eb");
+  const [hue, setHue] = useState(220); // default blue
   const [yookassaShopId, setYookassaShopId] = useState(venue?.yookassaShopId || "");
   const [yookassaSecretKey, setYookassaSecretKey] = useState(venue?.yookassaSecretKey || "");
   const [slugManuallyEdited, setSlugManuallyEdited] = useState(!!venue);
@@ -254,13 +267,30 @@ export function VenueForm({ venue, userPlan = "BASIC" }: VenueFormProps) {
             </Label>
             {canCustomizeDesign ? (
               <div className="space-y-3">
-                <div className="flex items-center gap-3">
-                  {/* Native color picker */}
+                {/* Horizontal rainbow slider */}
+                <div className="space-y-2">
                   <input
-                    type="color"
-                    value={accentColor}
-                    onChange={(e) => handleColorChange(e.target.value)}
-                    className="h-12 w-12 rounded-xl border-2 border-gray-200 cursor-pointer p-0.5"
+                    type="range"
+                    min="0"
+                    max="360"
+                    value={hue}
+                    onChange={(e) => {
+                      const h = parseInt(e.target.value);
+                      setHue(h);
+                      const hex = hslToHex(h, 80, 50);
+                      handleColorChange(hex);
+                    }}
+                    className="w-full h-8 rounded-xl appearance-none cursor-pointer"
+                    style={{
+                      background: "linear-gradient(to right, #ff0000, #ffff00, #00ff00, #00ffff, #0000ff, #ff00ff, #ff0000)",
+                    }}
+                  />
+                </div>
+                <div className="flex items-center gap-3">
+                  {/* Color preview */}
+                  <div
+                    className="h-10 w-10 rounded-xl shrink-0 border border-gray-200"
+                    style={{ backgroundColor: accentColor }}
                   />
                   {/* Hex input */}
                   <Input
@@ -270,11 +300,6 @@ export function VenueForm({ venue, userPlan = "BASIC" }: VenueFormProps) {
                     className="w-32 font-mono"
                     maxLength={7}
                   />
-                  {/* Preview */}
-                  <div
-                    className="h-10 flex-1 rounded-xl"
-                    style={{ backgroundColor: accentColor }}
-                  />
                 </div>
                 {/* Preset colors */}
                 <div className="flex items-center gap-1.5 flex-wrap">
@@ -283,7 +308,7 @@ export function VenueForm({ venue, userPlan = "BASIC" }: VenueFormProps) {
                       key={c}
                       type="button"
                       onClick={() => handleColorChange(c)}
-                      className="relative h-8 w-8 rounded-lg transition-all hover:scale-110 active:scale-95 ring-offset-2"
+                      className="relative h-8 w-8 rounded-lg transition-all hover:scale-110 active:scale-95"
                       style={{
                         backgroundColor: c,
                         ...(accentColor === c ? { outline: "2px solid", outlineColor: c, outlineOffset: "2px" } : {}),
