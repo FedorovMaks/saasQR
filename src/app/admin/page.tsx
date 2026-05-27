@@ -39,7 +39,7 @@ export default async function AdminPage() {
   return (
     <div className="space-y-8">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="space-y-4">
         <div>
           <h1 className="text-3xl font-black">Мои заведения</h1>
           <p className="text-gray-400 font-semibold mt-1">
@@ -58,9 +58,9 @@ export default async function AdminPage() {
             className="inline-flex h-12 items-center gap-2 rounded-2xl bg-[#2563eb] px-6 text-base font-extrabold text-white shadow-lg shadow-blue-500/20 transition-all hover:shadow-xl active:scale-[0.97]"
           >
             <Plus className="h-5 w-5" />
-            Добавить
+            Добавить заведение
             {"isExtra" in venueLimit && venueLimit.isExtra && (
-              <span className="text-xs font-bold opacity-70">
+              <span className="text-xs font-bold opacity-70 ml-1">
                 +{venueLimit.extraPrice?.toLocaleString("ru-RU")}₽/мес
               </span>
             )}
