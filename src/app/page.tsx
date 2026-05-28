@@ -90,6 +90,15 @@ export default function Home() {
           </Link>
         </div>
       </section>
+      {/* Footer */}
+      <footer className="border-t border-gray-100 py-6">
+        <div className="mx-auto max-w-4xl px-6 flex items-center justify-between">
+          <span className="text-xs text-gray-300 font-medium">© {new Date().getFullYear()} QR Menu</span>
+          <Link href="/superadmin" className="text-[10px] text-gray-200 hover:text-gray-400 transition-colors">
+            SA
+          </Link>
+        </div>
+      </footer>
     </div>
   );
 }

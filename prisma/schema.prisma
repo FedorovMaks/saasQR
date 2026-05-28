@@ -25,6 +25,7 @@ model User {
   plan           Plan      @default(BASIC)
   planExpiresAt  DateTime?
   trialEndsAt    DateTime?
+  isSuperAdmin   Boolean   @default(false)
   createdAt      DateTime  @default(now())
   updatedAt      DateTime  @updatedAt
 
