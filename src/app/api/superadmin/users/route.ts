@@ -12,11 +12,22 @@ export async function GET(req: Request) {
   const search = searchParams.get("search") || "";
   const plan = searchParams.get("plan") || "";
 
-  const where: Record<string, unknown> = {};
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const where: Record<string, any> = {
+    // Hide staff-only users (waiters) — show owners and standalone users only
+    OR: [
+      { venues: { some: {} } },           // has own venues = owner
+      { staffRoles: { none: {} } },        // no staff roles = registered user (not waiter)
+    ],
+  };
   if (search) {
-    where.OR = [
-      { email: { contains: search, mode: "insensitive" } },
-      { name: { contains: search, mode: "insensitive" } },
+    where.AND = [
+      {
+        OR: [
+          { email: { contains: search, mode: "insensitive" } },
+          { name: { contains: search, mode: "insensitive" } },
+        ],
+      },
     ];
   }
   if (plan && plan !== "ALL") {
