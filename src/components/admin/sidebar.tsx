@@ -116,20 +116,71 @@ function InstallAppButton() {
 function EnablePushButton() {
   const [supported, setSupported] = useState(false);
   const [subscribed, setSubscribed] = useState(false);
+  const [denied, setDenied] = useState(false);
 
   useEffect(() => {
-    if ("Notification" in window && "serviceWorker" in navigator) {
+    if ("Notification" in window && "serviceWorker" in navigator && "PushManager" in window) {
       setSupported(true);
-      setSubscribed(Notification.permission === "granted");
+      if (Notification.permission === "granted") {
+        setSubscribed(true);
+      } else if (Notification.permission === "denied") {
+        setDenied(true);
+      }
     }
   }, []);
 
-  if (!supported || subscribed) return null;
+  // Already subscribed — show status
+  if (subscribed) {
+    return (
+      <div className="w-full flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-bold text-green-600 bg-green-50">
+        <Bell className="h-5 w-5" />
+        Уведомления включены
+      </div>
+    );
+  }
+
+  if (denied) {
+    return (
+      <div className="w-full flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-bold text-red-500 bg-red-50">
+        <Bell className="h-5 w-5" />
+        Уведомления заблокированы
+      </div>
+    );
+  }
+
+  if (!supported) {
+    return (
+      <div className="w-full flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-bold text-amber-600 bg-amber-50">
+        <Bell className="h-5 w-5" />
+        Установите приложение для уведомлений
+      </div>
+    );
+  }
 
   async function handleEnable() {
     const permission = await Notification.requestPermission();
     if (permission === "granted") {
       setSubscribed(true);
+      // Also register push subscription
+      try {
+        const reg = await navigator.serviceWorker.register("/sw.js");
+        const vapidKey = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY;
+        if (vapidKey) {
+          const sub = await reg.pushManager.subscribe({
+            userVisibleOnly: true,
+            applicationServerKey: vapidKey,
+          });
+          await fetch("/api/push/subscribe", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(sub.toJSON()),
+          });
+        }
+      } catch (err) {
+        console.error("Push subscribe error:", err);
+      }
+    } else if (permission === "denied") {
+      setDenied(true);
     }
   }
 
