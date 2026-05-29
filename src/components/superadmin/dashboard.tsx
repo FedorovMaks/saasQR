@@ -17,6 +17,13 @@ import {
   MailCheck,
   MailX,
   Sparkles,
+  Settings,
+  CreditCard,
+  Eye,
+  EyeOff,
+  DollarSign,
+  TrendingUp,
+  Save,
 } from "lucide-react";
 
 type Stats = {
@@ -58,6 +65,22 @@ type UserDetail = {
   };
 };
 
+type RevenueData = {
+  totalAmount: number;
+  totalCount: number;
+  monthlyAmount: number;
+  monthlyCount: number;
+  recentPayments: {
+    id: string;
+    amount: number;
+    type: string;
+    plan: string;
+    status: string;
+    createdAt: string;
+    user: { email: string; name: string | null };
+  }[];
+};
+
 const PLAN_COLORS: Record<string, string> = {
   BASIC: "bg-gray-700 text-gray-300",
   BUSINESS: "bg-blue-900 text-blue-300",
@@ -86,6 +109,7 @@ function StatCard({ icon: Icon, label, value, sub }: { icon: typeof Users; label
 }
 
 export function SuperAdminDashboard({ stats }: { stats: Stats }) {
+  const [activeTab, setActiveTab] = useState<"users" | "settings">("users");
   const [users, setUsers] = useState<UserRow[]>([]);
   const [search, setSearch] = useState("");
   const [planFilter, setPlanFilter] = useState("ALL");
@@ -446,11 +470,40 @@ export function SuperAdminDashboard({ stats }: { stats: Stats }) {
   // Main list view
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-black">Панель управления</h1>
-        <p className="text-gray-500 font-medium mt-1">Все пользователи и статистика платформы</p>
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-black">Панель управления</h1>
+          <p className="text-gray-500 font-medium mt-1">Управление платформой</p>
+        </div>
+        <div className="flex gap-1.5">
+          <button
+            onClick={() => setActiveTab("users")}
+            className={`px-4 py-2 rounded-xl text-sm font-bold transition-all flex items-center gap-2 ${
+              activeTab === "users"
+                ? "bg-blue-600 text-white"
+                : "bg-gray-900 text-gray-400 border border-gray-800 hover:border-gray-600"
+            }`}
+          >
+            <Users className="h-4 w-4" />
+            Пользователи
+          </button>
+          <button
+            onClick={() => setActiveTab("settings")}
+            className={`px-4 py-2 rounded-xl text-sm font-bold transition-all flex items-center gap-2 ${
+              activeTab === "settings"
+                ? "bg-blue-600 text-white"
+                : "bg-gray-900 text-gray-400 border border-gray-800 hover:border-gray-600"
+            }`}
+          >
+            <Settings className="h-4 w-4" />
+            Настройки
+          </button>
+        </div>
       </div>
 
+      {activeTab === "settings" && <PlatformSettings />}
+
+      {activeTab === "users" && <>
       {/* Stats */}
       <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
         <StatCard icon={Users} label="Пользователи" value={stats.totalUsers} />
@@ -555,6 +608,204 @@ export function SuperAdminDashboard({ stats }: { stats: Stats }) {
       {detailLoading && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
           <Loader2 className="h-8 w-8 animate-spin text-white" />
+        </div>
+      )}
+      </>}
+    </div>
+  );
+}
+
+// ═══════════════════════════════════════
+// Platform Settings Component
+// ═══════════════════════════════════════
+
+function PlatformSettings() {
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [shopId, setShopId] = useState("");
+  const [secretKey, setSecretKey] = useState("");
+  const [showSecret, setShowSecret] = useState(false);
+  const [revenue, setRevenue] = useState<RevenueData | null>(null);
+
+  useEffect(() => {
+    fetch("/api/superadmin/settings")
+      .then((res) => res.json())
+      .then((data) => {
+        setShopId(data.settings?.yookassaShopId || "");
+        setSecretKey(data.settings?.yookassaSecretKey || "");
+        setRevenue(data.revenue);
+      })
+      .catch(() => {})
+      .finally(() => setLoading(false));
+  }, []);
+
+  async function handleSave() {
+    setSaving(true);
+    try {
+      const res = await fetch("/api/superadmin/settings", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ yookassaShopId: shopId, yookassaSecretKey: secretKey }),
+      });
+      if (res.ok) {
+        alert("Настройки сохранены");
+      } else {
+        alert("Ошибка сохранения");
+      }
+    } catch {
+      alert("Ошибка соединения");
+    }
+    setSaving(false);
+  }
+
+  function formatRubles(kopecks: number) {
+    return (kopecks / 100).toLocaleString("ru-RU", { minimumFractionDigits: 0 }) + " ₽";
+  }
+
+  function formatDate(d: string) {
+    return new Date(d).toLocaleDateString("ru-RU", {
+      day: "numeric", month: "short", year: "numeric",
+    });
+  }
+
+  if (loading) {
+    return (
+      <div className="flex justify-center py-12">
+        <Loader2 className="h-6 w-6 animate-spin text-gray-500" />
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-6">
+      {/* Revenue stats */}
+      <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+        <StatCard
+          icon={DollarSign}
+          label="Всего заработано"
+          value={revenue ? formatRubles(revenue.totalAmount) : "0 ₽"}
+          sub={revenue ? `${revenue.totalCount} платежей` : undefined}
+        />
+        <StatCard
+          icon={TrendingUp}
+          label="За этот месяц"
+          value={revenue ? formatRubles(revenue.monthlyAmount) : "0 ₽"}
+          sub={revenue ? `${revenue.monthlyCount} платежей` : undefined}
+        />
+        <StatCard
+          icon={CreditCard}
+          label="Средний чек"
+          value={revenue && revenue.totalCount > 0
+            ? formatRubles(Math.round(revenue.totalAmount / revenue.totalCount))
+            : "—"}
+        />
+      </div>
+
+      {/* YooKassa credentials */}
+      <div className="rounded-2xl bg-gray-900 border border-gray-800 p-5">
+        <div className="flex items-center gap-3 mb-5">
+          <div className="h-10 w-10 rounded-xl bg-gray-800 flex items-center justify-center">
+            <CreditCard className="h-5 w-5 text-gray-400" />
+          </div>
+          <div>
+            <h3 className="text-sm font-bold text-white">Реквизиты ЮKassa</h3>
+            <p className="text-xs text-gray-500">Для приёма оплаты подписок</p>
+          </div>
+        </div>
+
+        <div className="space-y-4">
+          <div>
+            <label className="text-xs font-bold text-gray-500 mb-1.5 block">
+              Shop ID
+            </label>
+            <input
+              value={shopId}
+              onChange={(e) => setShopId(e.target.value)}
+              placeholder="Введите Shop ID"
+              className="w-full h-10 rounded-xl bg-gray-800 border border-gray-700 px-4 text-sm font-medium text-white placeholder:text-gray-600 focus:outline-none focus:border-gray-500"
+            />
+          </div>
+
+          <div>
+            <label className="text-xs font-bold text-gray-500 mb-1.5 block">
+              Секретный ключ
+            </label>
+            <div className="relative">
+              <input
+                type={showSecret ? "text" : "password"}
+                value={secretKey}
+                onChange={(e) => setSecretKey(e.target.value)}
+                placeholder="Введите секретный ключ"
+                className="w-full h-10 rounded-xl bg-gray-800 border border-gray-700 px-4 pr-12 text-sm font-medium text-white placeholder:text-gray-600 focus:outline-none focus:border-gray-500"
+              />
+              <button
+                type="button"
+                onClick={() => setShowSecret(!showSecret)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-300"
+              >
+                {showSecret ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+              </button>
+            </div>
+          </div>
+
+          <button
+            onClick={handleSave}
+            disabled={saving}
+            className="px-5 py-2.5 rounded-xl text-sm font-bold bg-blue-600 text-white hover:bg-blue-700 transition-all disabled:opacity-50 flex items-center gap-2"
+          >
+            {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
+            Сохранить
+          </button>
+        </div>
+
+        <div className="mt-4 pt-4 border-t border-gray-800">
+          <p className="text-xs text-gray-600">
+            Получите Shop ID и секретный ключ в{" "}
+            <a
+              href="https://yookassa.ru/my/shop-settings"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-blue-400 hover:underline"
+            >
+              личном кабинете ЮKassa
+            </a>
+            . Webhook URL:{" "}
+            <code className="text-gray-400 bg-gray-800 px-1.5 py-0.5 rounded text-xs">
+              /api/payments/webhook
+            </code>
+          </p>
+        </div>
+      </div>
+
+      {/* Recent payments */}
+      {revenue && revenue.recentPayments.length > 0 && (
+        <div className="rounded-2xl bg-gray-900 border border-gray-800 p-5">
+          <h3 className="text-sm font-bold text-gray-400 mb-3">Последние платежи</h3>
+          <div className="space-y-2">
+            {revenue.recentPayments.map((p) => (
+              <div key={p.id} className="flex items-center justify-between rounded-xl bg-gray-800/50 px-4 py-3">
+                <div>
+                  <p className="font-bold text-sm">{p.user.name || p.user.email}</p>
+                  <p className="text-xs text-gray-500">
+                    {p.type === "TRIAL" ? "Триал" : p.type === "RENEWAL" ? "Продление" : "Подписка"} · {PLAN_LABELS[p.plan] || p.plan} · {formatDate(p.createdAt)}
+                  </p>
+                </div>
+                <span className="text-sm font-bold text-green-400">
+                  +{formatRubles(p.amount)}
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {revenue && revenue.totalCount === 0 && (
+        <div className="rounded-2xl bg-gray-900 border border-gray-800 p-12 text-center">
+          <DollarSign className="h-10 w-10 text-gray-700 mx-auto mb-3" />
+          <p className="text-gray-500 font-medium">Платежей пока нет</p>
+          <p className="text-xs text-gray-600 mt-1">
+            Платежи появятся после подключения ЮKassa и первой оплаты
+          </p>
         </div>
       )}
     </div>
