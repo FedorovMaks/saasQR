@@ -232,35 +232,46 @@ export function OrdersDashboard({
   return (
     <div className="space-y-5">
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <Link
-            href="/admin"
-            className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-[#f0f2f8] text-gray-500 hover:bg-[#e4e8f2] transition-colors"
-          >
-            <ArrowLeft className="h-4 w-4" />
-          </Link>
-          <div>
-            <h1 className="text-xl font-bold flex items-center gap-2">
-              Заказы — {venue.name}
-              {newCount > 0 && (
-                <Badge className="bg-primary/10 text-primary border-primary/20 animate-pulse rounded-lg">
-                  {newCount} новых
-                </Badge>
-              )}
-            </h1>
-            <p className="text-sm text-muted-foreground">
-              Сегодня: {orders.length} заказов ·{" "}
-              {formatPrice(orders.reduce((s, o) => s + o.totalAmount, 0))}
-            </p>
+      <div className="space-y-3">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3 min-w-0">
+            <Link
+              href="/admin"
+              className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#f0f2f8] text-gray-500 hover:bg-[#e4e8f2] transition-colors"
+            >
+              <ArrowLeft className="h-4 w-4" />
+            </Link>
+            <div className="min-w-0">
+              <h1 className="text-xl font-bold flex items-center gap-2">
+                <span className="truncate">Заказы — {venue.name}</span>
+                {newCount > 0 && (
+                  <Badge className="bg-primary/10 text-primary border-primary/20 animate-pulse rounded-lg shrink-0">
+                    {newCount} новых
+                  </Badge>
+                )}
+              </h1>
+              <p className="text-sm text-muted-foreground">
+                Сегодня: {orders.length} заказов ·{" "}
+                {formatPrice(orders.reduce((s, o) => s + o.totalAmount, 0))}
+              </p>
+            </div>
           </div>
+          <Link
+            href={`/${venue.slug}`}
+            target="_blank"
+            className="hidden sm:inline-flex h-10 items-center gap-2 rounded-xl bg-[#f0f2f8] px-4 text-sm font-extrabold text-gray-600 hover:bg-[#e4e8f2] transition-colors shrink-0"
+          >
+            <ExternalLink className="h-3.5 w-3.5" />
+            Меню
+          </Link>
         </div>
+        {/* Push toggle — always visible, full width on mobile */}
         <div className="flex items-center gap-2">
           <PushToggle />
           <Link
             href={`/${venue.slug}`}
             target="_blank"
-            className="inline-flex h-10 items-center gap-2 rounded-xl bg-[#f0f2f8] px-4 text-sm font-extrabold text-gray-600 hover:bg-[#e4e8f2] transition-colors"
+            className="sm:hidden inline-flex h-11 items-center gap-2 rounded-2xl bg-[#f0f2f8] px-5 text-sm font-extrabold text-gray-600 hover:bg-[#e4e8f2] transition-colors"
           >
             <ExternalLink className="h-3.5 w-3.5" />
             Меню
