@@ -25,6 +25,7 @@ export async function GET(
       planExpiresAt: true,
       trialEndsAt: true,
       isSuperAdmin: true,
+      emailVerified: true,
       createdAt: true,
       updatedAt: true,
       venues: {
@@ -66,6 +67,7 @@ export async function GET(
 const updateSchema = z.object({
   plan: z.enum(["BASIC", "BUSINESS", "PRO"]).optional(),
   isSuperAdmin: z.boolean().optional(),
+  emailVerified: z.boolean().optional(),
 });
 
 export async function PATCH(
@@ -96,6 +98,9 @@ export async function PATCH(
   }
   if (result.data.isSuperAdmin !== undefined) {
     data.isSuperAdmin = result.data.isSuperAdmin;
+  }
+  if (result.data.emailVerified !== undefined) {
+    data.emailVerified = result.data.emailVerified;
   }
 
   const updated = await prisma.user.update({

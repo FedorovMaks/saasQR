@@ -14,6 +14,8 @@ import {
   Ban,
   Trash2,
   AlertTriangle,
+  MailCheck,
+  MailX,
 } from "lucide-react";
 
 type Stats = {
@@ -30,6 +32,7 @@ type UserRow = {
   planExpiresAt: string | null;
   trialEndsAt: string | null;
   isSuperAdmin: boolean;
+  emailVerified: boolean;
   createdAt: string;
   _count: { venues: number; staffRoles: number };
 };
@@ -125,6 +128,27 @@ export function SuperAdminDashboard({ stats }: { stats: Stats }) {
     setDetailLoading(false);
   }
 
+  async function verifyUserEmail(userId: string) {
+    setUpdatingPlan(true);
+    try {
+      const res = await fetch(`/api/superadmin/users/${userId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ emailVerified: true }),
+      });
+      if (res.ok) {
+        await openUserDetail(userId);
+        fetchUsers();
+      } else {
+        const data = await res.json();
+        alert(data.error || "Ошибка");
+      }
+    } catch {
+      alert("Ошибка соединения");
+    }
+    setUpdatingPlan(false);
+  }
+
   async function deleteUser(userId: string) {
     setDeleting(true);
     try {
@@ -207,6 +231,32 @@ export function SuperAdminDashboard({ stats }: { stats: Stats }) {
                 <p className="text-xs text-gray-500 mt-1">
                   до {formatDate(u.planExpiresAt)}
                 </p>
+              )}
+            </div>
+          </div>
+
+          {/* Email verification status */}
+          <div className="mt-4 pt-4 border-t border-gray-800">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                {u.emailVerified ? (
+                  <MailCheck className="h-4 w-4 text-green-400" />
+                ) : (
+                  <MailX className="h-4 w-4 text-amber-400" />
+                )}
+                <span className={`text-sm font-bold ${u.emailVerified ? "text-green-400" : "text-amber-400"}`}>
+                  {u.emailVerified ? "Email подтверждён" : "Email не подтверждён"}
+                </span>
+              </div>
+              {!u.emailVerified && !u.isSuperAdmin && (
+                <button
+                  onClick={() => verifyUserEmail(u.id)}
+                  disabled={updatingPlan}
+                  className="px-4 py-2 rounded-xl text-sm font-bold bg-green-900/40 text-green-400 hover:bg-green-900/70 transition-all disabled:opacity-50 flex items-center gap-2"
+                >
+                  <MailCheck className="h-3.5 w-3.5" />
+                  Подтвердить
+                </button>
               )}
             </div>
           </div>
@@ -438,6 +488,9 @@ export function SuperAdminDashboard({ stats }: { stats: Stats }) {
                   <p className="font-bold text-sm truncate">{u.name || "Без имени"}</p>
                   {u.isSuperAdmin && (
                     <Shield className="h-3 w-3 text-red-400 shrink-0" />
+                  )}
+                  {!u.emailVerified && !u.isSuperAdmin && (
+                    <MailX className="h-3 w-3 text-amber-400 shrink-0" />
                   )}
                 </div>
                 <p className="text-xs text-gray-500 truncate">{u.email}</p>

@@ -45,6 +45,7 @@ export async function GET(req: Request) {
         planExpiresAt: true,
         trialEndsAt: true,
         isSuperAdmin: true,
+        emailVerified: true,
         createdAt: true,
         _count: {
           select: {
