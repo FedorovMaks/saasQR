@@ -1,4 +1,4 @@
-const CACHE_NAME = "qrmenu-v2";
+const CACHE_NAME = "qrmenu-v3";
 const OFFLINE_URL = "/offline.html";
 
 // Static assets to pre-cache
@@ -31,12 +31,20 @@ self.addEventListener("fetch", (event) => {
   const { request } = event;
   const url = new URL(request.url);
 
-  // Skip non-GET, API calls, SSE streams
+  // Skip non-GET requests entirely
   if (request.method !== "GET") return;
+
+  // NEVER cache API calls — let them pass through to network
   if (url.pathname.startsWith("/api/")) return;
+
+  // Skip SSE streams
   if (request.headers.get("accept")?.includes("text/event-stream")) return;
 
-  // Navigation requests — network first, offline fallback
+  // Skip requests with no-cache/no-store headers (polling)
+  if (request.headers.get("cache-control")?.includes("no-cache") ||
+      request.headers.get("cache-control")?.includes("no-store")) return;
+
+  // Navigation requests — always network first, offline fallback
   if (request.mode === "navigate") {
     event.respondWith(
       fetch(request).catch(() => caches.match(OFFLINE_URL))

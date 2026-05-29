@@ -11,7 +11,7 @@ export async function GET(
 
   const { venueId } = await params;
 
-  // Verify ownership
+  // Verify ownership or staff access
   const venue = await prisma.venue.findUnique({
     where: { id: venueId },
     select: { ownerId: true },
@@ -21,7 +21,13 @@ export async function GET(
     return NextResponse.json({ error: "Заведение не найдено" }, { status: 404 });
   }
 
-  if (venue.ownerId !== user.id) return forbidden();
+  if (venue.ownerId !== user.id) {
+    // Check if user is active staff for this venue
+    const staffRecord = await prisma.staff.findUnique({
+      where: { venueId_userId: { venueId, userId: user.id } },
+    });
+    if (!staffRecord?.isActive) return forbidden();
+  }
 
   const { searchParams } = new URL(req.url);
   const status = searchParams.get("status");

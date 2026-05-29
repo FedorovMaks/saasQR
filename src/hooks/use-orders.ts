@@ -40,12 +40,23 @@ export function useOrderStream(
 
   useEffect(() => {
     let active = true;
+    let pollTimer: ReturnType<typeof setTimeout> | null = null;
 
     async function poll() {
       if (!active) return;
       try {
-        const res = await fetch(`/api/venues/${venueId}/orders`);
-        if (!res.ok) return;
+        const res = await fetch(`/api/venues/${venueId}/orders`, {
+          cache: "no-store",
+          headers: { "Cache-Control": "no-cache" },
+        });
+        if (!res.ok) {
+          // If 401 — session expired, reload page to redirect to login
+          if (res.status === 401) {
+            window.location.reload();
+            return;
+          }
+          return;
+        }
         const orders: OrderFromAPI[] = await res.json();
 
         if (!initializedRef.current) {
@@ -81,14 +92,43 @@ export function useOrderStream(
       } catch {
         // ignore poll errors
       }
+
+      // Schedule next poll
+      if (active) {
+        pollTimer = setTimeout(poll, 4000);
+      }
     }
 
+    // Start polling
     poll();
-    const interval = setInterval(poll, 4000);
+
+    // Resume polling when app returns from background (PWA / tab switch)
+    function handleVisibility() {
+      if (document.visibilityState === "visible" && active) {
+        // Cancel pending poll and poll immediately
+        if (pollTimer) clearTimeout(pollTimer);
+        poll();
+      }
+    }
+
+    // Also poll on focus (catches iOS PWA resume)
+    function handleFocus() {
+      if (active) {
+        if (pollTimer) clearTimeout(pollTimer);
+        poll();
+      }
+    }
+
+    document.addEventListener("visibilitychange", handleVisibility);
+    window.addEventListener("focus", handleFocus);
+    window.addEventListener("pageshow", handleFocus);
 
     return () => {
       active = false;
-      clearInterval(interval);
+      if (pollTimer) clearTimeout(pollTimer);
+      document.removeEventListener("visibilitychange", handleVisibility);
+      window.removeEventListener("focus", handleFocus);
+      window.removeEventListener("pageshow", handleFocus);
     };
   }, [venueId]);
 }
