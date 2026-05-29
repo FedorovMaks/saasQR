@@ -68,6 +68,7 @@ const updateSchema = z.object({
   plan: z.enum(["BASIC", "BUSINESS", "PRO"]).optional(),
   isSuperAdmin: z.boolean().optional(),
   emailVerified: z.boolean().optional(),
+  activateTrial: z.boolean().optional(),
 });
 
 export async function PATCH(
@@ -101,6 +102,11 @@ export async function PATCH(
   }
   if (result.data.emailVerified !== undefined) {
     data.emailVerified = result.data.emailVerified;
+  }
+  if (result.data.activateTrial) {
+    data.plan = "PRO";
+    data.trialEndsAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
+    data.planExpiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
   }
 
   const updated = await prisma.user.update({

@@ -3,7 +3,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { venueSchema } from "@/lib/validators";
-import { checkVenueLimit } from "@/lib/plans";
+import { checkVenueLimit, hasActiveSubscription } from "@/lib/plans";
 
 export async function GET() {
   const session = await getServerSession(authOptions);
@@ -37,6 +37,15 @@ export async function POST(req: Request) {
     }
 
     const { name, slug, description, address, logoUrl } = result.data;
+
+    // Check active subscription
+    const subscription = await hasActiveSubscription(session.user.id);
+    if (!subscription.active) {
+      return NextResponse.json(
+        { error: "Для создания заведения нужна активная подписка" },
+        { status: 403 }
+      );
+    }
 
     // Check venue limit for user's plan
     const limitCheck = await checkVenueLimit(session.user.id);

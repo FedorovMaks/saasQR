@@ -16,6 +16,7 @@ import {
   AlertTriangle,
   MailCheck,
   MailX,
+  Sparkles,
 } from "lucide-react";
 
 type Stats = {
@@ -135,6 +136,27 @@ export function SuperAdminDashboard({ stats }: { stats: Stats }) {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ emailVerified: true }),
+      });
+      if (res.ok) {
+        await openUserDetail(userId);
+        fetchUsers();
+      } else {
+        const data = await res.json();
+        alert(data.error || "Ошибка");
+      }
+    } catch {
+      alert("Ошибка соединения");
+    }
+    setUpdatingPlan(false);
+  }
+
+  async function activateTrial(userId: string) {
+    setUpdatingPlan(true);
+    try {
+      const res = await fetch(`/api/superadmin/users/${userId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ activateTrial: true }),
       });
       if (res.ok) {
         await openUserDetail(userId);
@@ -288,6 +310,22 @@ export function SuperAdminDashboard({ stats }: { stats: Stats }) {
                   <Ban className="h-3.5 w-3.5" />
                   Отменить подписку
                 </button>
+              )}
+              {/* Activate trial — show if no active plan */}
+              {u.plan === "BASIC" && !u.trialEndsAt && !u.isSuperAdmin && (
+                <button
+                  onClick={() => activateTrial(u.id)}
+                  disabled={updatingPlan}
+                  className="px-4 py-2 rounded-xl text-sm font-bold bg-purple-900/50 text-purple-400 hover:bg-purple-900 transition-all disabled:opacity-50 flex items-center gap-2"
+                >
+                  <Sparkles className="h-3.5 w-3.5" />
+                  Активировать триал (7 дней PRO)
+                </button>
+              )}
+              {u.trialEndsAt && (
+                <span className="px-3 py-2 text-xs font-bold text-purple-400">
+                  Триал до {formatDate(u.trialEndsAt)}
+                </span>
               )}
             </div>
           </div>

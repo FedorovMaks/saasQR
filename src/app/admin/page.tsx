@@ -1,7 +1,7 @@
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { checkVenueLimit, checkFeatureAccess } from "@/lib/plans";
+import { checkVenueLimit, checkFeatureAccess, hasActiveSubscription, TRIAL_CONFIG } from "@/lib/plans";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import {
@@ -15,6 +15,9 @@ import {
   BarChart3,
   UserPlus,
   Lock,
+  Sparkles,
+  ArrowRight,
+  Check,
 } from "lucide-react";
 import { DeleteVenueButton } from "@/components/admin/delete-venue-button";
 
@@ -26,6 +29,8 @@ export default async function AdminPage() {
     redirect(`/admin/venues/${session.user.staffVenueIds[0]}/orders`);
   }
 
+  const subscription = await hasActiveSubscription(session!.user.id);
+
   const venues = await prisma.venue.findMany({
     where: { ownerId: session!.user.id, isActive: true },
     orderBy: { createdAt: "desc" },
@@ -35,6 +40,96 @@ export default async function AdminPage() {
   const canAddVenue = venueLimit.allowed;
 
   const analyticsAccess = await checkFeatureAccess(session!.user.id, "analytics");
+
+  // No active subscription — show trial offer
+  if (!subscription.active) {
+    return (
+      <div className="space-y-8">
+        <div>
+          <h1 className="text-3xl font-black">Добро пожаловать в QRMenu!</h1>
+          <p className="text-gray-400 font-semibold mt-1">
+            Начните с пробного периода — все функции бесплатно
+          </p>
+        </div>
+
+        {/* Trial offer card */}
+        <div className="rounded-3xl bg-gradient-to-br from-[#2563eb] to-[#7c3aed] p-8 text-white shadow-xl">
+          <div className="flex items-center gap-3 mb-6">
+            <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-white/20">
+              <Sparkles className="h-7 w-7" />
+            </div>
+            <div>
+              <h2 className="text-2xl font-black">Попробуйте «Про» за {TRIAL_CONFIG.price}₽</h2>
+              <p className="text-white/80 font-semibold">
+                {TRIAL_CONFIG.durationDays} дней полного доступа ко всем функциям
+              </p>
+            </div>
+          </div>
+
+          <div className="grid sm:grid-cols-2 gap-4 mb-8">
+            {[
+              "До 5 заведений",
+              "Неограниченное меню",
+              "Онлайн-заказы с push-уведомлениями",
+              "Безлимитные столики",
+              "Аналитика и отчёты",
+              "Без watermark",
+              "Персонал и роли",
+              "QR-коды для столиков",
+            ].map((feature) => (
+              <div key={feature} className="flex items-center gap-2.5">
+                <div className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-white/20">
+                  <Check className="h-3 w-3" />
+                </div>
+                <span className="text-sm font-semibold text-white/90">{feature}</span>
+              </div>
+            ))}
+          </div>
+
+          <button
+            disabled
+            className="inline-flex h-14 items-center gap-3 rounded-2xl bg-white px-8 text-lg font-extrabold text-[#2563eb] shadow-lg transition-all hover:shadow-xl active:scale-[0.97] disabled:opacity-70"
+          >
+            Начать за {TRIAL_CONFIG.price}₽
+            <ArrowRight className="h-5 w-5" />
+          </button>
+          <p className="text-white/50 text-xs font-semibold mt-3">
+            Оплата будет доступна после подключения платёжной системы
+          </p>
+        </div>
+
+        {/* What happens next */}
+        <div className="rounded-3xl bg-white p-6 shadow-[0_2px_12px_rgba(0,0,0,0.06)]">
+          <h3 className="text-lg font-black mb-4">Как это работает</h3>
+          <div className="space-y-4">
+            {[
+              { step: "1", text: "Оплатите пробный период — всего 1₽" },
+              { step: "2", text: "Создайте заведение и настройте меню" },
+              { step: "3", text: "Сгенерируйте QR-коды для столиков" },
+              { step: "4", text: "Гости сканируют QR и делают заказы" },
+            ].map(({ step, text }) => (
+              <div key={step} className="flex items-center gap-4">
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-[#2563eb]/10 text-[#2563eb] font-black text-sm">
+                  {step}
+                </div>
+                <p className="text-sm font-semibold text-gray-600">{text}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Pricing link */}
+        <div className="text-center">
+          <Link
+            href="/admin/billing"
+            className="text-sm font-bold text-gray-400 hover:text-[#2563eb] transition-colors"
+          >
+            Посмотреть все тарифы →
+          </Link>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-8">

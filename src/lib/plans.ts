@@ -107,15 +107,61 @@ export function getPlanConfig(plan: Plan): PlanConfig {
 }
 
 /**
+ * Check if user has an active subscription (paid plan or trial).
+ * Users with BASIC and no planExpiresAt/trialEndsAt have never paid.
+ */
+export async function hasActiveSubscription(userId: string) {
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    select: { plan: true, planExpiresAt: true, trialEndsAt: true, isSuperAdmin: true },
+  });
+
+  if (!user) return { active: false, reason: "Пользователь не найден" };
+
+  // Superadmin always has access
+  if (user.isSuperAdmin) return { active: true };
+
+  // Active trial
+  if (user.trialEndsAt && user.trialEndsAt > new Date()) {
+    return { active: true, isTrial: true, trialEndsAt: user.trialEndsAt };
+  }
+
+  // Paid plan that hasn't expired
+  if (user.plan !== "BASIC" && user.planExpiresAt && user.planExpiresAt > new Date()) {
+    return { active: true };
+  }
+
+  // BASIC with active expiry (user paid for BASIC)
+  if (user.plan === "BASIC" && user.planExpiresAt && user.planExpiresAt > new Date()) {
+    return { active: true };
+  }
+
+  return { active: false, reason: "Нет активной подписки" };
+}
+
+/**
  * Check if user can create a new venue.
  */
 export async function checkVenueLimit(userId: string) {
   const user = await prisma.user.findUnique({
     where: { id: userId },
-    select: { plan: true, planExpiresAt: true },
+    select: { plan: true, planExpiresAt: true, trialEndsAt: true, isSuperAdmin: true },
   });
 
   if (!user) return { allowed: false, reason: "Пользователь не найден" };
+
+  // Check active subscription first
+  const subscription = await hasActiveSubscription(userId);
+  if (!subscription.active) {
+    return {
+      allowed: false,
+      reason: "Для создания заведения нужна активная подписка",
+      noSubscription: true,
+      currentCount: 0,
+      limit: 0,
+      plan: "BASIC" as Plan,
+    };
+  }
 
   const effectivePlan = getEffectivePlan(user);
   const config = PLANS[effectivePlan];
