@@ -106,3 +106,38 @@ export async function PATCH(
 
   return NextResponse.json(updated);
 }
+
+// DELETE — delete user and all related data
+export async function DELETE(
+  _req: Request,
+  { params }: { params: Promise<{ userId: string }> }
+) {
+  const admin = await requireSuperAdmin();
+  if (!admin) {
+    return NextResponse.json({ error: "Нет доступа" }, { status: 403 });
+  }
+
+  const { userId } = await params;
+
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    select: { id: true, isSuperAdmin: true, email: true },
+  });
+
+  if (!user) {
+    return NextResponse.json({ error: "Пользователь не найден" }, { status: 404 });
+  }
+
+  if (user.isSuperAdmin) {
+    return NextResponse.json(
+      { error: "Нельзя удалить суперадмина" },
+      { status: 403 }
+    );
+  }
+
+  await prisma.user.delete({
+    where: { id: userId },
+  });
+
+  return NextResponse.json({ success: true });
+}

@@ -12,6 +12,8 @@ import {
   Shield,
   Loader2,
   Ban,
+  Trash2,
+  AlertTriangle,
 } from "lucide-react";
 
 type Stats = {
@@ -87,6 +89,8 @@ export function SuperAdminDashboard({ stats }: { stats: Stats }) {
   const [selectedUser, setSelectedUser] = useState<UserDetail | null>(null);
   const [detailLoading, setDetailLoading] = useState(false);
   const [updatingPlan, setUpdatingPlan] = useState(false);
+  const [deleteConfirm, setDeleteConfirm] = useState(false);
+  const [deleting, setDeleting] = useState(false);
 
   const fetchUsers = useCallback(async () => {
     setLoading(true);
@@ -110,6 +114,7 @@ export function SuperAdminDashboard({ stats }: { stats: Stats }) {
 
   async function openUserDetail(userId: string) {
     setDetailLoading(true);
+    setDeleteConfirm(false);
     try {
       const res = await fetch(`/api/superadmin/users/${userId}`);
       if (res.ok) {
@@ -118,6 +123,26 @@ export function SuperAdminDashboard({ stats }: { stats: Stats }) {
       }
     } catch { /* ignore */ }
     setDetailLoading(false);
+  }
+
+  async function deleteUser(userId: string) {
+    setDeleting(true);
+    try {
+      const res = await fetch(`/api/superadmin/users/${userId}`, {
+        method: "DELETE",
+      });
+      if (res.ok) {
+        setSelectedUser(null);
+        setDeleteConfirm(false);
+        fetchUsers();
+      } else {
+        const data = await res.json();
+        alert(data.error || "Ошибка удаления");
+      }
+    } catch {
+      alert("Ошибка соединения");
+    }
+    setDeleting(false);
   }
 
   async function updateUserPlan(userId: string, plan: string) {
@@ -268,6 +293,62 @@ export function SuperAdminDashboard({ stats }: { stats: Stats }) {
                 </div>
               ))}
             </div>
+          </div>
+        )}
+
+        {/* Delete user */}
+        {!u.isSuperAdmin && (
+          <div className="rounded-2xl bg-gray-900 border border-red-900/50 p-5">
+            <h3 className="text-sm font-bold text-red-400 mb-3 flex items-center gap-2">
+              <Trash2 className="h-4 w-4" />
+              Удаление пользователя
+            </h3>
+            {!deleteConfirm ? (
+              <div>
+                <p className="text-xs text-gray-500 mb-3">
+                  Все заведения, меню, заказы и данные пользователя будут удалены безвозвратно.
+                </p>
+                <button
+                  onClick={() => setDeleteConfirm(true)}
+                  className="px-4 py-2 rounded-xl text-sm font-bold bg-red-900/30 text-red-400 hover:bg-red-900/60 transition-all"
+                >
+                  Удалить пользователя
+                </button>
+              </div>
+            ) : (
+              <div className="space-y-3">
+                <div className="flex items-start gap-3 rounded-xl bg-red-900/30 p-3">
+                  <AlertTriangle className="h-5 w-5 text-red-400 shrink-0 mt-0.5" />
+                  <div>
+                    <p className="text-sm font-bold text-red-300">Это действие необратимо</p>
+                    <p className="text-xs text-red-400/70 mt-1">
+                      Пользователь <strong>{u.email}</strong> и все его данные будут удалены навсегда.
+                    </p>
+                  </div>
+                </div>
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => deleteUser(u.id)}
+                    disabled={deleting}
+                    className="px-4 py-2 rounded-xl text-sm font-bold bg-red-600 text-white hover:bg-red-700 transition-all disabled:opacity-50 flex items-center gap-2"
+                  >
+                    {deleting ? (
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                    ) : (
+                      <Trash2 className="h-4 w-4" />
+                    )}
+                    Удалить навсегда
+                  </button>
+                  <button
+                    onClick={() => setDeleteConfirm(false)}
+                    disabled={deleting}
+                    className="px-4 py-2 rounded-xl text-sm font-bold bg-gray-800 text-gray-400 hover:bg-gray-700 transition-all"
+                  >
+                    Отмена
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
         )}
       </div>
