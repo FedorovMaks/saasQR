@@ -17,7 +17,9 @@ export async function POST(req: Request) {
   try {
     const formData = await req.formData();
     const file = formData.get("file") as File | null;
-    const folder = (formData.get("folder") as string) || "venues";
+    const ALLOWED_FOLDERS = ["venues", "items"];
+    const rawFolder = (formData.get("folder") as string) || "venues";
+    const folder = ALLOWED_FOLDERS.includes(rawFolder) ? rawFolder : "venues";
 
     if (!file) {
       return NextResponse.json({ error: "Файл не выбран" }, { status: 400 });

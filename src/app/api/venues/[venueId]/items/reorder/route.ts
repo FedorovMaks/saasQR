@@ -27,9 +27,10 @@ export async function PATCH(
     return NextResponse.json({ error: "Некорректные данные" }, { status: 400 });
   }
 
+  // Scope updates to items belonging to this venue's categories
   const updates = result.data.ids.map((id, index) =>
-    prisma.menuItem.update({
-      where: { id },
+    prisma.menuItem.updateMany({
+      where: { id, category: { venueId } },
       data: { sortOrder: index },
     })
   );

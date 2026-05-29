@@ -1,6 +1,7 @@
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { orderEmitter, type OrderEvent } from "@/lib/order-events";
+import { prisma } from "@/lib/prisma";
 
 export const dynamic = "force-dynamic";
 
@@ -15,6 +16,25 @@ export async function GET(req: Request) {
 
   if (!venueId) {
     return new Response("venueId is required", { status: 400 });
+  }
+
+  // Verify user is owner or staff of this venue
+  const venue = await prisma.venue.findUnique({
+    where: { id: venueId },
+    select: { ownerId: true },
+  });
+
+  if (!venue) {
+    return new Response("Venue not found", { status: 404 });
+  }
+
+  if (venue.ownerId !== session.user.id) {
+    const staffRole = await prisma.staff.findFirst({
+      where: { venueId, userId: session.user.id, isActive: true },
+    });
+    if (!staffRole) {
+      return new Response("Forbidden", { status: 403 });
+    }
   }
 
   const encoder = new TextEncoder();

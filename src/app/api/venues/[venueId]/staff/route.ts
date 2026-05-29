@@ -47,6 +47,15 @@ export async function DELETE(
 
   const { staffId } = await req.json();
 
+  // Verify staff belongs to this venue
+  const staffRecord = await prisma.staff.findFirst({
+    where: { id: staffId, venueId },
+  });
+
+  if (!staffRecord) {
+    return NextResponse.json({ error: "Сотрудник не найден" }, { status: 404 });
+  }
+
   await prisma.staff.update({
     where: { id: staffId },
     data: { isActive: false },

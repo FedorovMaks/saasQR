@@ -9,11 +9,14 @@ const schema = z.object({
   staffId: z.string(),
 });
 
-function generatePassword(length = 8): string {
-  const chars = "abcdefghjkmnpqrstuvwxyz23456789";
+import crypto from "crypto";
+
+function generatePassword(length = 10): string {
+  const chars = "abcdefghjkmnpqrstuvwxyz23456789ABCDEFGHJKLMNPQRSTUVWXYZ";
+  const bytes = crypto.randomBytes(length);
   let password = "";
   for (let i = 0; i < length; i++) {
-    password += chars[Math.floor(Math.random() * chars.length)];
+    password += chars[bytes[i] % chars.length];
   }
   return password;
 }

@@ -3,7 +3,7 @@ import { authOptions } from "@/lib/auth";
 import { getUserPlanUsage, PLANS, TRIAL_CONFIG, formatRubles } from "@/lib/plans";
 import { Plan } from "@/generated/prisma";
 import { redirect } from "next/navigation";
-import { PlanSwitchButton } from "@/components/admin/plan-switch-button";
+// PlanSwitchButton removed — plan changes only via payment or superadmin
 import {
   Crown,
   Check,
@@ -231,11 +231,16 @@ export default async function BillingPage() {
                     Текущий тариф
                   </div>
                 ) : (
-                  <PlanSwitchButton
-                    planKey={planKey}
-                    planLabel={planConfig.label}
-                    isHighlighted={!!isHighlighted}
-                  />
+                  <button
+                    disabled
+                    className={`flex h-12 w-full items-center justify-center gap-2 rounded-2xl text-sm font-extrabold transition-all ${
+                      isHighlighted
+                        ? "bg-[#2563eb] text-white shadow-lg shadow-blue-500/20 opacity-70"
+                        : "bg-[#f0f2f8] text-gray-600 opacity-70"
+                    }`}
+                  >
+                    Скоро
+                  </button>
                 )}
               </div>
             );
@@ -250,10 +255,6 @@ export default async function BillingPage() {
         </div>
       )}
 
-      {/* Dev mode note */}
-      <div className="rounded-2xl bg-blue-50 border border-blue-100 px-5 py-4 text-sm text-blue-700 font-semibold">
-        Режим разработки: тарифы переключаются без оплаты. Активация на 30 дней.
-      </div>
     </div>
   );
 }

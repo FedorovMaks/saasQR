@@ -28,8 +28,8 @@ export async function PATCH(
   }
 
   const updates = result.data.ids.map((id, index) =>
-    prisma.category.update({
-      where: { id },
+    prisma.category.updateMany({
+      where: { id, venueId },
       data: { sortOrder: index },
     })
   );
