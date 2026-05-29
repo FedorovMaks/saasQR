@@ -47,7 +47,7 @@ export const authOptions: NextAuthOptions = {
 
         // Block unverified users (but allow staff/waiters — they are verified on invite)
         if (!user.emailVerified && !user.isSuperAdmin) {
-          throw new Error("EMAIL_NOT_VERIFIED");
+          throw new Error("Подтвердите email перед входом");
         }
 
         // Determine if user is staff (waiter) — has staff roles but no venues as owner

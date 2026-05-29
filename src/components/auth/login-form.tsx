@@ -28,13 +28,22 @@ export function LoginForm() {
     setLoginEmail(email);
 
     try {
+      // Check email verification before attempting login
+      const checkRes = await fetch("/api/auth/check-verification", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email }),
+      });
+      const checkData = await checkRes.json();
+      if (!checkData.verified) {
+        setNeedsVerification(true);
+        setLoading(false);
+        return;
+      }
+
       const result = await signIn("credentials", { email, password, redirect: false });
       if (result?.error) {
-        if (result.error === "EMAIL_NOT_VERIFIED") {
-          setNeedsVerification(true);
-        } else {
-          setError("Неверный email или пароль");
-        }
+        setError("Неверный email или пароль");
       } else {
         router.push("/admin");
         router.refresh();
