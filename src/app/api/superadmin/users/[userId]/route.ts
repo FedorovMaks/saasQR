@@ -39,7 +39,7 @@ export async function GET(
               categories: true,
               orders: true,
               tables: true,
-              staffMembers: true,
+              staff: true,
             },
           },
         },
