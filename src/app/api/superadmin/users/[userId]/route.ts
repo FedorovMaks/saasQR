@@ -37,7 +37,6 @@ export async function GET(
           _count: {
             select: {
               categories: true,
-              orders: true,
               tables: true,
               staff: true,
             },
@@ -60,41 +59,7 @@ export async function GET(
     return NextResponse.json({ error: "Пользователь не найден" }, { status: 404 });
   }
 
-  // Get recent orders across all venues
-  const venueIds = user.venues.map((v) => v.id);
-  const recentOrders = venueIds.length > 0
-    ? await prisma.order.findMany({
-        where: { venueId: { in: venueIds } },
-        select: {
-          id: true,
-          orderNumber: true,
-          status: true,
-          totalAmount: true,
-          createdAt: true,
-          venue: { select: { name: true } },
-        },
-        orderBy: { createdAt: "desc" },
-        take: 20,
-      })
-    : [];
-
-  // Stats
-  const orderStats = venueIds.length > 0
-    ? await prisma.order.aggregate({
-        where: { venueId: { in: venueIds } },
-        _count: true,
-        _sum: { totalAmount: true },
-      })
-    : { _count: 0, _sum: { totalAmount: null } };
-
-  return NextResponse.json({
-    user,
-    recentOrders,
-    stats: {
-      totalOrders: orderStats._count,
-      totalRevenue: orderStats._sum.totalAmount || 0,
-    },
-  });
+  return NextResponse.json({ user });
 }
 
 // PATCH — update user plan

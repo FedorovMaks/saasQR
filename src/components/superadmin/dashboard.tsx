@@ -1,11 +1,9 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { formatPrice } from "@/lib/utils";
 import {
   Users,
   Store,
-  ShoppingBag,
   Search,
   Crown,
   ChevronRight,
@@ -13,12 +11,12 @@ import {
   X,
   Shield,
   Loader2,
+  Ban,
 } from "lucide-react";
 
 type Stats = {
   totalUsers: number;
   totalVenues: number;
-  totalOrders: number;
   plans: Record<string, number>;
 };
 
@@ -43,7 +41,7 @@ type UserDetail = {
       slug: string;
       isActive: boolean;
       createdAt: string;
-      _count: { categories: number; orders: number; tables: number; staffMembers: number };
+      _count: { categories: number; tables: number; staff: number };
     }[];
     staffRoles: {
       id: string;
@@ -52,15 +50,6 @@ type UserDetail = {
       venue: { id: string; name: string };
     }[];
   };
-  recentOrders: {
-    id: string;
-    orderNumber: number;
-    status: string;
-    totalAmount: number;
-    createdAt: string;
-    venue: { name: string };
-  }[];
-  stats: { totalOrders: number; totalRevenue: number };
 };
 
 const PLAN_COLORS: Record<string, string> = {
@@ -200,7 +189,7 @@ export function SuperAdminDashboard({ stats }: { stats: Stats }) {
           {/* Plan switcher */}
           <div className="mt-4 pt-4 border-t border-gray-800">
             <p className="text-xs font-bold text-gray-500 mb-2">Переключить тариф:</p>
-            <div className="flex gap-2">
+            <div className="flex gap-2 flex-wrap">
               {["BASIC", "BUSINESS", "PRO"].map((p) => (
                 <button
                   key={p}
@@ -215,16 +204,24 @@ export function SuperAdminDashboard({ stats }: { stats: Stats }) {
                   {PLAN_LABELS[p]}
                 </button>
               ))}
+              {u.plan !== "BASIC" && (
+                <button
+                  onClick={() => updateUserPlan(u.id, "BASIC")}
+                  disabled={updatingPlan}
+                  className="px-4 py-2 rounded-xl text-sm font-bold bg-red-900/50 text-red-400 hover:bg-red-900 transition-all disabled:opacity-50 flex items-center gap-2"
+                >
+                  <Ban className="h-3.5 w-3.5" />
+                  Отменить подписку
+                </button>
+              )}
             </div>
           </div>
         </div>
 
         {/* Stats */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+        <div className="grid grid-cols-2 gap-3">
           <StatCard icon={Store} label="Заведения" value={u.venues.length} />
-          <StatCard icon={ShoppingBag} label="Заказы" value={selectedUser.stats.totalOrders} />
-          <StatCard icon={Crown} label="Выручка" value={formatPrice(selectedUser.stats.totalRevenue)} />
-          <StatCard icon={Users} label="Роли" value={u.staffRoles.length} sub="как сотрудник" />
+          <StatCard icon={Users} label="Сотрудники" value={u.venues.reduce((sum, v) => sum + v._count.staff, 0)} />
         </div>
 
         {/* Venues */}
@@ -242,41 +239,11 @@ export function SuperAdminDashboard({ stats }: { stats: Stats }) {
                   </div>
                   <div className="flex items-center gap-3 text-xs text-gray-500">
                     <span>{v._count.categories} кат.</span>
-                    <span>{v._count.orders} заказов</span>
-                    <span>{v._count.staffMembers} сотр.</span>
+                    <span>{v._count.tables} стол.</span>
+                    <span>{v._count.staff} сотр.</span>
                     {!v.isActive && (
                       <span className="text-red-400 font-bold">Удалено</span>
                     )}
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-
-        {/* Recent orders */}
-        <div className="rounded-2xl bg-gray-900 border border-gray-800 p-5">
-          <h3 className="text-sm font-bold text-gray-400 mb-3">
-            Последние заказы ({selectedUser.recentOrders.length})
-          </h3>
-          {selectedUser.recentOrders.length === 0 ? (
-            <p className="text-gray-500 text-sm">Нет заказов</p>
-          ) : (
-            <div className="space-y-1.5">
-              {selectedUser.recentOrders.map((o) => (
-                <div key={o.id} className="flex items-center justify-between rounded-xl bg-gray-800/50 px-4 py-2.5 text-sm">
-                  <div className="flex items-center gap-3">
-                    <span className="font-bold">#{o.orderNumber}</span>
-                    <span className="text-gray-500">{o.venue.name}</span>
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <span className={`text-xs font-bold ${
-                      o.status === "NEW" ? "text-blue-400" :
-                      o.status === "ACCEPTED" ? "text-green-400" :
-                      o.status === "CANCELLED" ? "text-red-400" : "text-gray-400"
-                    }`}>{o.status}</span>
-                    <span className="text-gray-400">{formatPrice(o.totalAmount)}</span>
-                    <span className="text-gray-500 text-xs">{formatDate(o.createdAt)}</span>
                   </div>
                 </div>
               ))}
@@ -316,10 +283,9 @@ export function SuperAdminDashboard({ stats }: { stats: Stats }) {
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+      <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
         <StatCard icon={Users} label="Пользователи" value={stats.totalUsers} />
         <StatCard icon={Store} label="Заведения" value={stats.totalVenues} />
-        <StatCard icon={ShoppingBag} label="Заказы" value={stats.totalOrders} />
         <StatCard
           icon={Crown}
           label="Подписки"
