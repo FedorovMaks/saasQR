@@ -1,16 +1,15 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { signIn } from "next-auth/react";
 import Link from "next/link";
-import { Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff, Mail } from "lucide-react";
 
 export function RegisterForm() {
-  const router = useRouter();
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [emailSent, setEmailSent] = useState(false);
+  const [registeredEmail, setRegisteredEmail] = useState("");
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -34,19 +33,38 @@ export function RegisterForm() {
         setLoading(false);
         return;
       }
-      const result = await signIn("credentials", { email, password, redirect: false });
-      if (result?.error) {
-        setError("Регистрация успешна, но не удалось войти автоматически");
-        router.push("/login");
-      } else {
-        router.push("/admin");
-        router.refresh();
+      if (data.needsVerification) {
+        setRegisteredEmail(email);
+        setEmailSent(true);
       }
     } catch {
       setError("Ошибка соединения с сервером");
     } finally {
       setLoading(false);
     }
+  }
+
+  if (emailSent) {
+    return (
+      <div className="rounded-3xl bg-white p-10 shadow-[0_4px_24px_rgba(0,0,0,0.06)] text-center">
+        <Mail className="h-16 w-16 text-[#2563eb] mx-auto mb-4" />
+        <h1 className="text-2xl font-black mb-3">Проверьте вашу почту</h1>
+        <p className="text-gray-400 font-semibold mb-2">
+          Мы отправили письмо с подтверждением на
+        </p>
+        <p className="text-lg font-bold text-gray-700 mb-6">{registeredEmail}</p>
+        <p className="text-sm text-gray-400 mb-6">
+          Нажмите на ссылку в письме, чтобы подтвердить email и войти в аккаунт.
+          Если письма нет — проверьте папку &laquo;Спам&raquo;.
+        </p>
+        <Link
+          href="/login"
+          className="inline-flex h-12 items-center justify-center rounded-2xl bg-[#f0f2f8] px-8 text-base font-bold text-gray-600 hover:bg-gray-200 transition-all"
+        >
+          На страницу входа
+        </Link>
+      </div>
+    );
   }
 
   return (

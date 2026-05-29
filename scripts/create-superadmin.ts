@@ -13,12 +13,13 @@ async function main() {
 
   const user = await prisma.user.upsert({
     where: { email },
-    update: { isSuperAdmin: true, hashedPassword },
+    update: { isSuperAdmin: true, hashedPassword, emailVerified: true },
     create: {
       email,
       hashedPassword,
       name,
       isSuperAdmin: true,
+      emailVerified: true,
       plan: "PRO",
     },
   });

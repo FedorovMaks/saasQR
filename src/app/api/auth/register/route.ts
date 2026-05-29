@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 import { hash } from "bcryptjs";
 import { prisma } from "@/lib/prisma";
 import { registerSchema } from "@/lib/validators";
+import { sendVerificationEmail } from "@/lib/email";
+import crypto from "crypto";
 
 export async function POST(req: Request) {
   try {
@@ -39,8 +41,25 @@ export async function POST(req: Request) {
       },
     });
 
+    // Generate verification token and send email
+    const token = crypto.randomUUID();
+    await prisma.verificationToken.create({
+      data: {
+        identifier: email,
+        token,
+        expires: new Date(Date.now() + 24 * 60 * 60 * 1000), // 24 hours
+      },
+    });
+
+    try {
+      await sendVerificationEmail(email, token);
+    } catch (emailError) {
+      console.error("Failed to send verification email:", emailError);
+      // Don't fail registration if email fails — user can resend later
+    }
+
     return NextResponse.json(
-      { user: { id: user.id, email: user.email, name: user.name } },
+      { needsVerification: true },
       { status: 201 }
     );
   } catch (error) {

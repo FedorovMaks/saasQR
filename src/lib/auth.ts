@@ -45,6 +45,11 @@ export const authOptions: NextAuthOptions = {
           throw new Error("Неверный email или пароль");
         }
 
+        // Block unverified users (but allow staff/waiters — they are verified on invite)
+        if (!user.emailVerified && !user.isSuperAdmin) {
+          throw new Error("EMAIL_NOT_VERIFIED");
+        }
+
         // Determine if user is staff (waiter) — has staff roles but no venues as owner
         const isOwner = await prisma.venue.count({
           where: { ownerId: user.id, isActive: true },
