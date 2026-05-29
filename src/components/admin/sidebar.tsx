@@ -16,6 +16,7 @@ import {
   ClipboardList,
   Download,
   Bell,
+  Shield,
 } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
 
@@ -32,13 +33,20 @@ function NavLinks({ onNavigate }: { onNavigate?: () => void }) {
   const isWaiter = session?.user?.role === "waiter";
   const staffVenueIds = session?.user?.staffVenueIds || [];
 
+  const isSuperAdmin = session?.user?.isSuperAdmin === true;
+
   const navItems = isWaiter
     ? staffVenueIds.map((venueId) => ({
         href: `/admin/venues/${venueId}/orders`,
         label: "Заказы",
         icon: ClipboardList,
       }))
-    : ownerNavItems;
+    : [
+        ...ownerNavItems,
+        ...(isSuperAdmin
+          ? [{ href: "/superadmin", label: "Super Admin", icon: Shield }]
+          : []),
+      ];
 
   return (
     <nav className="flex flex-col gap-1.5">

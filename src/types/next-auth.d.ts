@@ -7,6 +7,7 @@ declare module "next-auth" {
       plan: string;
       role: string;
       staffVenueIds: string[];
+      isSuperAdmin: boolean;
     } & DefaultSession["user"];
   }
 }
@@ -17,5 +18,6 @@ declare module "next-auth/jwt" {
     plan: string;
     role: string;
     staffVenueIds: string[];
+    isSuperAdmin: boolean;
   }
 }

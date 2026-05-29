@@ -57,6 +57,7 @@ export const authOptions: NextAuthOptions = {
           email: user.email,
           name: user.name,
           plan: user.plan,
+          isSuperAdmin: user.isSuperAdmin,
           role: isOwner > 0 ? "owner" : staffVenueIds.length > 0 ? "waiter" : "owner",
           staffVenueIds,
         };
@@ -67,10 +68,11 @@ export const authOptions: NextAuthOptions = {
     async jwt({ token, user }) {
       if (user) {
         token.id = user.id;
-        const u = user as { plan?: string; role?: string; staffVenueIds?: string[] };
+        const u = user as { plan?: string; role?: string; staffVenueIds?: string[]; isSuperAdmin?: boolean };
         token.plan = u.plan || "BASIC";
         token.role = u.role || "owner";
         token.staffVenueIds = u.staffVenueIds || [];
+        token.isSuperAdmin = u.isSuperAdmin || false;
       }
 
       // Refresh plan from DB every 60 seconds to pick up plan changes
@@ -101,11 +103,13 @@ export const authOptions: NextAuthOptions = {
           plan: string;
           role: string;
           staffVenueIds: string[];
+          isSuperAdmin: boolean;
         };
         u.id = token.id as string;
         u.plan = (token.plan as string) || "BASIC";
         u.role = (token.role as string) || "owner";
         u.staffVenueIds = (token.staffVenueIds as string[]) || [];
+        u.isSuperAdmin = (token.isSuperAdmin as boolean) || false;
       }
       return session;
     },
