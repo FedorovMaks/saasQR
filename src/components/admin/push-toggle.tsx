@@ -69,11 +69,14 @@ export function PushToggle() {
   if (state === "subscribed") {
     return (
       <button
-        onClick={unsubscribe}
+        onClick={() => {
+          if (confirm("Отключить уведомления о новых заказах?")) unsubscribe();
+        }}
         className="inline-flex h-11 items-center gap-2 rounded-2xl bg-green-50 px-5 text-sm font-extrabold text-green-600 transition-all hover:bg-green-100 active:scale-[0.97]"
       >
         <BellRing className="h-4 w-4" />
         Уведомления включены
+        <span className="ml-1 text-xs font-bold text-green-500/70">· отключить</span>
       </button>
     );
   }

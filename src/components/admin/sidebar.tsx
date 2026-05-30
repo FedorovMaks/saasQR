@@ -16,9 +16,12 @@ import {
   ClipboardList,
   Download,
   Bell,
+  BellOff,
+  BellRing,
   Shield,
 } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
+import { usePushNotifications } from "@/hooks/use-push";
 
 const ownerNavItems = [
   { href: "/admin", label: "Заведения", icon: Store },
@@ -114,41 +117,45 @@ function InstallAppButton() {
 }
 
 function EnablePushButton() {
-  const [supported, setSupported] = useState(false);
-  const [subscribed, setSubscribed] = useState(false);
-  const [denied, setDenied] = useState(false);
+  const { state, subscribe, unsubscribe } = usePushNotifications();
 
-  useEffect(() => {
-    if ("Notification" in window && "serviceWorker" in navigator && "PushManager" in window) {
-      setSupported(true);
-      if (Notification.permission === "granted") {
-        setSubscribed(true);
-      } else if (Notification.permission === "denied") {
-        setDenied(true);
-      }
-    }
-  }, []);
-
-  // Already subscribed — show status
-  if (subscribed) {
+  if (state === "loading") {
     return (
-      <div className="w-full flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-bold text-green-600 bg-green-50">
-        <Bell className="h-5 w-5" />
-        Уведомления включены
+      <div className="w-full flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-bold text-gray-400 bg-gray-50">
+        <Bell className="h-5 w-5 animate-pulse" />
+        Проверка уведомлений...
       </div>
     );
   }
 
-  if (denied) {
+  // Subscribed — tappable to turn OFF
+  if (state === "subscribed") {
+    return (
+      <button
+        onClick={() => {
+          if (confirm("Отключить уведомления о новых заказах?")) unsubscribe();
+        }}
+        className="w-full flex items-center justify-between gap-3 rounded-2xl px-4 py-3 text-sm font-bold text-green-600 bg-green-50 hover:bg-green-100 transition-all active:scale-[0.98]"
+      >
+        <span className="flex items-center gap-3">
+          <BellRing className="h-5 w-5" />
+          Уведомления включены
+        </span>
+        <span className="text-xs font-extrabold text-green-500/70">Отключить</span>
+      </button>
+    );
+  }
+
+  if (state === "denied") {
     return (
       <div className="w-full flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-bold text-red-500 bg-red-50">
-        <Bell className="h-5 w-5" />
+        <BellOff className="h-5 w-5" />
         Уведомления заблокированы
       </div>
     );
   }
 
-  if (!supported) {
+  if (state === "unsupported") {
     return (
       <div className="w-full flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-bold text-amber-600 bg-amber-50">
         <Bell className="h-5 w-5" />
@@ -157,37 +164,11 @@ function EnablePushButton() {
     );
   }
 
-  async function handleEnable() {
-    const permission = await Notification.requestPermission();
-    if (permission === "granted") {
-      setSubscribed(true);
-      // Also register push subscription
-      try {
-        const reg = await navigator.serviceWorker.register("/sw.js");
-        const vapidKey = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY;
-        if (vapidKey) {
-          const sub = await reg.pushManager.subscribe({
-            userVisibleOnly: true,
-            applicationServerKey: vapidKey,
-          });
-          await fetch("/api/push/subscribe", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(sub.toJSON()),
-          });
-        }
-      } catch (err) {
-        console.error("Push subscribe error:", err);
-      }
-    } else if (permission === "denied") {
-      setDenied(true);
-    }
-  }
-
+  // unsubscribed
   return (
     <button
-      onClick={handleEnable}
-      className="w-full flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-bold text-amber-600 bg-amber-50 hover:bg-amber-100 transition-all"
+      onClick={subscribe}
+      className="w-full flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-bold text-amber-600 bg-amber-50 hover:bg-amber-100 transition-all active:scale-[0.98]"
     >
       <Bell className="h-5 w-5" />
       Включить уведомления

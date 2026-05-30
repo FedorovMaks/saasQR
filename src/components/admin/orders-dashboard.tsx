@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
-import { useOrderStream, useSound, type OrderFromAPI } from "@/hooks/use-orders";
+import { useOrderStream, useSound, unlockAudio, type OrderFromAPI } from "@/hooks/use-orders";
 import { formatPrice } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
@@ -187,6 +187,18 @@ export function OrdersDashboard({
   useEffect(() => {
     const interval = setInterval(() => setTick((t) => t + 1), 30000);
     return () => clearInterval(interval);
+  }, []);
+
+  // Unlock audio on first user interaction so in-app beep works on iOS
+  // (iOS keeps AudioContext suspended until a gesture resumes it)
+  useEffect(() => {
+    const handler = () => unlockAudio();
+    window.addEventListener("touchstart", handler, { once: true });
+    window.addEventListener("click", handler, { once: true });
+    return () => {
+      window.removeEventListener("touchstart", handler);
+      window.removeEventListener("click", handler);
+    };
   }, []);
 
   // Update order status

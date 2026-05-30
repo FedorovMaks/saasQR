@@ -144,37 +144,70 @@ export function useOrderStream(
   }, [venueId]);
 }
 
+// Single shared AudioContext — iOS requires it to be created/resumed
+// during a user gesture, otherwise it stays "suspended" and is silent.
+let sharedCtx: AudioContext | null = null;
+
+function getAudioContext(): AudioContext | null {
+  if (typeof window === "undefined") return null;
+  if (!sharedCtx) {
+    try {
+      const Ctx =
+        window.AudioContext ||
+        (window as unknown as { webkitAudioContext: typeof AudioContext })
+          .webkitAudioContext;
+      sharedCtx = new Ctx();
+    } catch {
+      return null;
+    }
+  }
+  return sharedCtx;
+}
+
+/**
+ * Unlock audio playback. MUST be called from a user gesture (tap/click)
+ * so iOS allows later programmatic sounds while the app is open.
+ */
+export function unlockAudio() {
+  const ctx = getAudioContext();
+  if (!ctx) return;
+  if (ctx.state === "suspended") {
+    ctx.resume().catch(() => {});
+  }
+  // Play a 1-sample silent buffer to fully unlock on iOS Safari
+  try {
+    const buffer = ctx.createBuffer(1, 1, 22050);
+    const source = ctx.createBufferSource();
+    source.buffer = buffer;
+    source.connect(ctx.destination);
+    source.start(0);
+  } catch {
+    // ignore
+  }
+}
+
 export function useSound() {
   const playSound = useCallback(() => {
+    const ctx = getAudioContext();
+    if (!ctx) return;
+    // Resume in case it got suspended (iOS suspends on backgrounding)
+    if (ctx.state === "suspended") ctx.resume().catch(() => {});
+
     try {
-      const ctx = new AudioContext();
-      const oscillator = ctx.createOscillator();
-      const gainNode = ctx.createGain();
-
-      oscillator.connect(gainNode);
-      gainNode.connect(ctx.destination);
-
-      oscillator.frequency.value = 800;
-      oscillator.type = "sine";
-      gainNode.gain.value = 0.3;
-
-      oscillator.start();
-      gainNode.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.5);
-      oscillator.stop(ctx.currentTime + 0.5);
-
-      // Second beep
-      setTimeout(() => {
-        const osc2 = ctx.createOscillator();
-        const gain2 = ctx.createGain();
-        osc2.connect(gain2);
-        gain2.connect(ctx.destination);
-        osc2.frequency.value = 1000;
-        osc2.type = "sine";
-        gain2.gain.value = 0.3;
-        osc2.start();
-        gain2.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.5);
-        osc2.stop(ctx.currentTime + 0.5);
-      }, 200);
+      const beep = (freq: number, at: number) => {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.frequency.value = freq;
+        osc.type = "sine";
+        gain.gain.setValueAtTime(0.3, ctx.currentTime + at);
+        osc.start(ctx.currentTime + at);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + at + 0.5);
+        osc.stop(ctx.currentTime + at + 0.5);
+      };
+      beep(800, 0);
+      beep(1000, 0.25);
     } catch {
       // Audio not available
     }
