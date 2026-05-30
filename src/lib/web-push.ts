@@ -31,7 +31,13 @@ export async function sendPushNotification(
           auth: subscription.auth,
         },
       },
-      JSON.stringify(payload)
+      JSON.stringify(payload),
+      {
+        // High urgency = APNs priority 10 → iOS delivers immediately
+        // instead of batching/delaying for power saving
+        urgency: "high",
+        TTL: 3600,
+      }
     );
     return true;
   } catch (error: unknown) {

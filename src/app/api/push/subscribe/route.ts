@@ -24,7 +24,14 @@ export async function POST(req: Request) {
 
   const { endpoint, keys } = result.data;
 
-  // Upsert — avoid duplicates
+  // Remove this user's OTHER subscriptions — re-installing the PWA creates
+  // a fresh endpoint each time, leaving stale dead subscriptions behind.
+  // A waiter uses one device, so keep only the current (live) endpoint.
+  await prisma.pushSubscription.deleteMany({
+    where: { userId: user.id, endpoint: { not: endpoint } },
+  });
+
+  // Upsert the current device's subscription
   await prisma.pushSubscription.upsert({
     where: { endpoint },
     update: {

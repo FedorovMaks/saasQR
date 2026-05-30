@@ -43,7 +43,8 @@ export async function POST() {
             endpoint: sub.endpoint,
             keys: { p256dh: sub.p256dh, auth: sub.auth },
           },
-          payload
+          payload,
+          { urgency: "high", TTL: 3600 }
         );
         return { ok: true, endpoint: sub.endpoint.slice(0, 40) };
       } catch (error: unknown) {
