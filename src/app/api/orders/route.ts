@@ -194,15 +194,23 @@ export async function POST(req: Request) {
       },
     });
 
-    // Send push notification to venue owner AND staff (non-blocking)
-    sendPushToVenueTeam(venueId, {
-      title: `Новый заказ #${order.orderNumber}`,
-      body: order.tableNumber
-        ? `Столик ${order.tableNumber} · ${order.items.length} позиций`
-        : `${order.items.length} позиций`,
-      tag: `order-${order.id}`,
-      url: `/admin/venues/${venueId}/orders`,
-    }).catch(() => {/* ignore push errors */});
+    // Send push notification to venue owner AND staff.
+    // MUST await — on Vercel the serverless function is frozen right after
+    // the response is returned, so fire-and-forget pushes often never reach
+    // APNs/FCM (the "sometimes arrives" bug). Awaiting guarantees delivery;
+    // a push failure must not break order creation, hence the try/catch.
+    try {
+      await sendPushToVenueTeam(venueId, {
+        title: `Новый заказ #${order.orderNumber}`,
+        body: order.tableNumber
+          ? `Столик ${order.tableNumber} · ${order.items.length} позиций`
+          : `${order.items.length} позиций`,
+        tag: `order-${order.id}`,
+        url: `/admin/venues/${venueId}/orders`,
+      });
+    } catch {
+      // ignore push errors — order is already created
+    }
 
     return NextResponse.json(
       {

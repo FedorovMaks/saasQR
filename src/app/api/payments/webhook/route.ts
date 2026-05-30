@@ -72,13 +72,18 @@ export async function POST(req: Request) {
           },
         });
 
-        // Notify venue team
-        sendPushToVenueTeam(order.venueId, {
-          title: `Оплата получена #${order.orderNumber}`,
-          body: `Заказ #${order.orderNumber} оплачен`,
-          tag: `payment-${order.id}`,
-          url: `/admin/venues/${order.venueId}/orders`,
-        }).catch(() => {});
+        // Notify venue team — await so the serverless function isn't
+        // frozen before the push reaches APNs/FCM
+        try {
+          await sendPushToVenueTeam(order.venueId, {
+            title: `Оплата получена #${order.orderNumber}`,
+            body: `Заказ #${order.orderNumber} оплачен`,
+            tag: `payment-${order.id}`,
+            url: `/admin/venues/${order.venueId}/orders`,
+          });
+        } catch {
+          // ignore push errors
+        }
       }
     }
 
