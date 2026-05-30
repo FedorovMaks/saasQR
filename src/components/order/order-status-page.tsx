@@ -120,7 +120,10 @@ export function OrderStatusPage({
   // Poll for status updates every 5 seconds
   const pollStatus = useCallback(async () => {
     try {
-      const res = await fetch(`/api/orders/${initialOrder.id}`);
+      const res = await fetch(`/api/orders/${initialOrder.id}`, {
+        cache: "no-store",
+        headers: { "Cache-Control": "no-cache" },
+      });
       if (!res.ok) return;
       const data = await res.json();
       if (data.status && data.status !== status) {

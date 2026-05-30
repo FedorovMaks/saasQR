@@ -808,22 +808,48 @@ function GuestOrderCard({
 }) {
   const [status, setStatus] = useState(order.status);
 
-  // SSE for live status updates
+  // Polling for live status updates (SSE doesn't work on Vercel serverless)
   useEffect(() => {
     if (status === "DELIVERED" || status === "CANCELLED") return;
 
-    const es = new EventSource(`/api/orders/${order.id}/stream`);
-    es.onmessage = (event) => {
+    let active = true;
+    let timer: ReturnType<typeof setTimeout> | null = null;
+
+    async function poll() {
+      if (!active) return;
       try {
-        const data = JSON.parse(event.data);
-        if (data.status && data.status !== status) {
-          setStatus(data.status);
-          onStatusUpdate(order.id, data.status);
+        const res = await fetch(`/api/orders/${order.id}`, {
+          cache: "no-store",
+          headers: { "Cache-Control": "no-cache" },
+        });
+        if (res.ok) {
+          const data = await res.json();
+          if (data.status && data.status !== status) {
+            setStatus(data.status);
+            onStatusUpdate(order.id, data.status);
+          }
         }
       } catch { /* ignore */ }
-    };
+      if (active) timer = setTimeout(poll, 4000);
+    }
 
-    return () => es.close();
+    poll();
+
+    function resume() {
+      if (active && document.visibilityState === "visible") {
+        if (timer) clearTimeout(timer);
+        poll();
+      }
+    }
+    document.addEventListener("visibilitychange", resume);
+    window.addEventListener("focus", resume);
+
+    return () => {
+      active = false;
+      if (timer) clearTimeout(timer);
+      document.removeEventListener("visibilitychange", resume);
+      window.removeEventListener("focus", resume);
+    };
   }, [order.id, status, onStatusUpdate]);
 
   const info = ORDER_STATUS_MAP[status] || ORDER_STATUS_MAP.NEW;
