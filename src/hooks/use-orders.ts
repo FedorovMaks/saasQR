@@ -3,14 +3,14 @@
 import { useEffect, useRef, useCallback } from "react";
 
 type OrderEvent = {
-  type: "new_order" | "status_change" | "waiter_call";
+  type: "new_order" | "waiter_call";
   venueId: string;
   order?: Record<string, unknown>;
   tableNumber?: string;
   timestamp?: string;
 };
 
-type OrderFromAPI = {
+export type OrderFromAPI = {
   id: string;
   orderNumber: number;
   tableNumber: string | null;
@@ -28,15 +28,32 @@ type OrderFromAPI = {
   }[];
 };
 
-// Polling-based order stream (replaces SSE for Vercel compatibility)
+/**
+ * Polling-based order stream with full refresh on every poll.
+ *
+ * - `onEvent`: called for NEW orders only (for sound/toast)
+ * - `onRefresh`: called every poll with the full server order list
+ *    → component always reflects real server state, fixes stale statuses
+ * - `initialOrders`: seeds known order IDs so the first poll
+ *    doesn't false-trigger "new order" sounds for existing orders
+ */
 export function useOrderStream(
   venueId: string,
-  onEvent: (event: OrderEvent) => void
+  onEvent: (event: OrderEvent) => void,
+  onRefresh?: (orders: OrderFromAPI[]) => void,
+  initialOrders?: { id: string }[]
 ) {
   const onEventRef = useRef(onEvent);
   onEventRef.current = onEvent;
-  const knownOrdersRef = useRef<Map<string, string>>(new Map());
-  const initializedRef = useRef(false);
+  const onRefreshRef = useRef(onRefresh);
+  onRefreshRef.current = onRefresh;
+
+  // Track known order IDs to detect truly NEW orders for sound/notification
+  const knownOrderIdsRef = useRef<Set<string>>(
+    new Set(initialOrders?.map((o) => o.id) || [])
+  );
+  // If initialOrders provided, we already know the baseline — no skip needed
+  const initializedRef = useRef(!!initialOrders?.length);
 
   useEffect(() => {
     let active = true;
@@ -60,35 +77,29 @@ export function useOrderStream(
         const orders: OrderFromAPI[] = await res.json();
 
         if (!initializedRef.current) {
-          // First poll — just populate the known orders map
+          // First poll without initialOrders — just populate known IDs
           for (const order of orders) {
-            knownOrdersRef.current.set(order.id, order.status);
+            knownOrderIdsRef.current.add(order.id);
           }
           initializedRef.current = true;
-          return;
-        }
-
-        for (const order of orders) {
-          const knownStatus = knownOrdersRef.current.get(order.id);
-
-          if (knownStatus === undefined) {
-            // New order
-            knownOrdersRef.current.set(order.id, order.status);
-            onEventRef.current({
-              type: "new_order",
-              venueId,
-              order: order as unknown as Record<string, unknown>,
-            });
-          } else if (knownStatus !== order.status) {
-            // Status changed
-            knownOrdersRef.current.set(order.id, order.status);
-            onEventRef.current({
-              type: "status_change",
-              venueId,
-              order: order as unknown as Record<string, unknown>,
-            });
+        } else {
+          // Detect truly new orders (for sound/notification)
+          for (const order of orders) {
+            if (!knownOrderIdsRef.current.has(order.id)) {
+              knownOrderIdsRef.current.add(order.id);
+              onEventRef.current({
+                type: "new_order",
+                venueId,
+                order: order as unknown as Record<string, unknown>,
+              });
+            }
           }
         }
+
+        // ALWAYS send full refresh to component — this is the key fix:
+        // status changes, new orders, payment updates — all reflected
+        // from actual server state, not stale local state
+        onRefreshRef.current?.(orders);
       } catch {
         // ignore poll errors
       }

@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { z } from "zod";
 import { emitOrderEvent } from "@/lib/order-events";
-import { sendPushToVenueOwner } from "@/lib/push-notify";
+import { sendPushToVenueTeam } from "@/lib/push-notify";
 import { rateLimit, getClientIP } from "@/lib/rate-limit";
 import { createPayment } from "@/lib/yookassa";
 
@@ -194,14 +194,14 @@ export async function POST(req: Request) {
       },
     });
 
-    // Send push notification to venue owner (non-blocking)
-    sendPushToVenueOwner(venueId, {
+    // Send push notification to venue owner AND staff (non-blocking)
+    sendPushToVenueTeam(venueId, {
       title: `Новый заказ #${order.orderNumber}`,
       body: order.tableNumber
         ? `Столик ${order.tableNumber} · ${order.items.length} позиций`
         : `${order.items.length} позиций`,
       tag: `order-${order.id}`,
-      url: `/admin`,
+      url: `/admin/venues/${venueId}/orders`,
     }).catch(() => {/* ignore push errors */});
 
     return NextResponse.json(

@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
-import { useOrderStream, useSound } from "@/hooks/use-orders";
+import { useOrderStream, useSound, type OrderFromAPI } from "@/hooks/use-orders";
 import { formatPrice } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
@@ -125,7 +125,7 @@ export function OrdersDashboard({
     setWaiterCalls((prev) => prev.filter((c) => c.tableNumber !== tableNumber));
   }
 
-  // SSE handler
+  // Handle new order events (sound + toast)
   const handleOrderEvent = useCallback(
     (event: {
       type: string;
@@ -142,20 +142,14 @@ export function OrdersDashboard({
           duration: 10000,
         });
         setWaiterCalls((prev) => {
-          // Replace existing call from same table
           const filtered = prev.filter((c) => c.tableNumber !== tbl);
           return [{ tableNumber: tbl, timestamp: event.timestamp || new Date().toISOString() }, ...filtered];
         });
         return;
       }
 
-      const order = event.order as unknown as Order;
-
       if (event.type === "new_order") {
-        setOrders((prev) => {
-          if (prev.some((o) => o.id === order.id)) return prev;
-          return [order, ...prev];
-        });
+        const order = event.order as unknown as Order;
         setNewOrderIds((prev) => new Set(prev).add(order.id));
         playSound();
         toast.success(`Новый заказ #${order.orderNumber}`, {
@@ -172,17 +166,21 @@ export function OrdersDashboard({
           });
         }, 10000);
       }
-
-      if (event.type === "status_change") {
-        setOrders((prev) =>
-          prev.map((o) => (o.id === order.id ? { ...o, ...order } : o))
-        );
-      }
     },
     [playSound]
   );
 
-  useOrderStream(venue.id, handleOrderEvent);
+  // Full refresh from server on every poll — guarantees status is always correct
+  const handleOrdersRefresh = useCallback((freshOrders: OrderFromAPI[]) => {
+    setOrders(freshOrders as Order[]);
+  }, []);
+
+  useOrderStream(
+    venue.id,
+    handleOrderEvent,
+    handleOrdersRefresh,
+    initialOrders.map((o) => ({ id: o.id }))
+  );
 
   // Refresh "time ago" every 30s
   const [, setTick] = useState(0);

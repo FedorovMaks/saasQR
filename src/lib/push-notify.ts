@@ -2,10 +2,10 @@ import { prisma } from "@/lib/prisma";
 import { sendPushNotification, type PushPayload } from "@/lib/web-push";
 
 /**
- * Send push notification to all subscriptions of a venue's owner.
+ * Send push notification to venue owner AND all active staff.
  * Automatically removes expired subscriptions.
  */
-export async function sendPushToVenueOwner(
+export async function sendPushToVenueTeam(
   venueId: string,
   payload: PushPayload
 ) {
@@ -17,9 +17,18 @@ export async function sendPushToVenueOwner(
 
   if (!venue) return;
 
-  // Get all push subscriptions for this user
+  // Get active staff for this venue
+  const activeStaff = await prisma.staff.findMany({
+    where: { venueId, isActive: true },
+    select: { userId: true },
+  });
+
+  // All team members: owner + active staff
+  const userIds = [venue.ownerId, ...activeStaff.map((s) => s.userId)];
+
+  // Get all push subscriptions for these users
   const subscriptions = await prisma.pushSubscription.findMany({
-    where: { userId: venue.ownerId },
+    where: { userId: { in: userIds } },
   });
 
   if (subscriptions.length === 0) return;

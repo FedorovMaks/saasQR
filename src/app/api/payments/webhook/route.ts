@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { parseWebhookEvent } from "@/lib/yookassa";
 import { emitOrderEvent } from "@/lib/order-events";
-import { sendPushToVenueOwner } from "@/lib/push-notify";
+import { sendPushToVenueTeam } from "@/lib/push-notify";
 
 /**
  * YooKassa webhook handler.
@@ -72,12 +72,12 @@ export async function POST(req: Request) {
           },
         });
 
-        // Notify venue owner
-        sendPushToVenueOwner(order.venueId, {
+        // Notify venue team
+        sendPushToVenueTeam(order.venueId, {
           title: `Оплата получена #${order.orderNumber}`,
           body: `Заказ #${order.orderNumber} оплачен`,
           tag: `payment-${order.id}`,
-          url: `/admin`,
+          url: `/admin/venues/${order.venueId}/orders`,
         }).catch(() => {});
       }
     }

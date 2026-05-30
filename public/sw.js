@@ -1,4 +1,4 @@
-const CACHE_NAME = "qrmenu-v3";
+const CACHE_NAME = "qrmenu-v4";
 const OFFLINE_URL = "/offline.html";
 
 // Static assets to pre-cache
@@ -75,7 +75,7 @@ self.addEventListener("fetch", (event) => {
   }
 });
 
-// Push notification
+// Push notification — shows even when app is closed/in background
 self.addEventListener("push", (event) => {
   let data = { title: "QRMenu", body: "Новый заказ!" };
   try {
@@ -88,27 +88,41 @@ self.addEventListener("push", (event) => {
     body: data.body,
     icon: "/icons/icon-192.png",
     badge: "/icons/icon-192.png",
-    vibrate: [200, 100, 200],
-    tag: data.tag || "order",
+    vibrate: [300, 100, 300, 100, 300],
+    tag: data.tag || "order-" + Date.now(),
+    renotify: true,
+    requireInteraction: true,
+    silent: false,
     data: { url: data.url || "/admin" },
+    actions: [
+      { action: "open", title: "Открыть" },
+      { action: "dismiss", title: "Закрыть" },
+    ],
   };
 
   event.waitUntil(self.registration.showNotification(data.title, options));
 });
 
-// Click on notification — open app
+// Click on notification — open/focus the correct page
 self.addEventListener("notificationclick", (event) => {
   event.notification.close();
-  const url = event.notification.data?.url || "/admin";
+
+  // "Закрыть" button — just close notification
+  if (event.action === "dismiss") return;
+
+  const targetUrl = event.notification.data?.url || "/admin";
 
   event.waitUntil(
     self.clients.matchAll({ type: "window", includeUncontrolled: true }).then((clients) => {
+      // Find existing admin window and navigate it to the right page
       for (const client of clients) {
         if (client.url.includes("/admin") && "focus" in client) {
+          client.navigate(targetUrl);
           return client.focus();
         }
       }
-      return self.clients.openWindow(url);
+      // No existing window — open new one
+      return self.clients.openWindow(targetUrl);
     })
   );
 });
