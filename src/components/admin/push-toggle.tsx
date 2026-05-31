@@ -2,30 +2,7 @@
 
 import { useState } from "react";
 import { usePushNotifications } from "@/hooks/use-push";
-import { Bell, BellOff, BellRing, Loader2, Info, X, Send } from "lucide-react";
-
-async function runPushTest() {
-  try {
-    const res = await fetch("/api/push/test", { method: "POST" });
-    const data = await res.json();
-    if (data.ok) {
-      alert(
-        `Тест отправлен (${data.sent} из ${data.total}). Сейчас должно прийти уведомление. Если оно не появилось — проверьте настройки уведомлений телефона.`
-      );
-    } else if (data.reason === "no_subscriptions") {
-      alert(data.message || "Подписка не найдена. Включите уведомления заново.");
-    } else {
-      const first = data.results?.find((r: { ok: boolean }) => !r.ok);
-      alert(
-        `Не удалось отправить. Код: ${first?.statusCode ?? "—"}. ${
-          first?.body || first?.message || ""
-        }`.trim()
-      );
-    }
-  } catch {
-    alert("Ошибка сети при отправке теста.");
-  }
-}
+import { Bell, BellOff, BellRing, Loader2, Info, X } from "lucide-react";
 
 export function PushToggle() {
   const { state, subscribe, unsubscribe } = usePushNotifications();
@@ -91,26 +68,16 @@ export function PushToggle() {
 
   if (state === "subscribed") {
     return (
-      <div className="inline-flex items-center gap-2">
-        <button
-          onClick={() => {
-            if (confirm("Отключить уведомления о новых заказах?")) unsubscribe();
-          }}
-          className="inline-flex h-11 items-center gap-2 rounded-2xl bg-green-50 px-5 text-sm font-extrabold text-green-600 transition-all hover:bg-green-100 active:scale-[0.97]"
-        >
-          <BellRing className="h-4 w-4" />
-          Уведомления включены
-          <span className="ml-1 text-xs font-bold text-green-500/70">· отключить</span>
-        </button>
-        <button
-          onClick={runPushTest}
-          title="Отправить тестовое уведомление"
-          className="inline-flex h-11 items-center gap-1.5 rounded-2xl bg-[#f0f2f8] px-4 text-sm font-extrabold text-gray-500 transition-all hover:bg-gray-200 active:scale-[0.97]"
-        >
-          <Send className="h-4 w-4" />
-          Тест
-        </button>
-      </div>
+      <button
+        onClick={() => {
+          if (confirm("Отключить уведомления о новых заказах?")) unsubscribe();
+        }}
+        className="inline-flex h-11 items-center gap-2 rounded-2xl bg-green-50 px-5 text-sm font-extrabold text-green-600 transition-all hover:bg-green-100 active:scale-[0.97]"
+      >
+        <BellRing className="h-4 w-4" />
+        Уведомления включены
+        <span className="ml-1 text-xs font-bold text-green-500/70">· отключить</span>
+      </button>
     );
   }
 

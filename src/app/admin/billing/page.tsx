@@ -166,7 +166,7 @@ export default async function BillingPage() {
             return (
               <div
                 key={planKey}
-                className={`rounded-3xl bg-white p-6 shadow-[0_2px_12px_rgba(0,0,0,0.06)] transition-all relative ${
+                className={`flex flex-col rounded-3xl bg-white p-6 shadow-[0_2px_12px_rgba(0,0,0,0.06)] transition-all relative ${
                   isHighlighted
                     ? "ring-2 ring-[#2563eb] shadow-[0_4px_24px_rgba(37,99,235,0.12)]"
                     : ""
@@ -195,7 +195,7 @@ export default async function BillingPage() {
                 </div>
 
                 {/* Features */}
-                <ul className="space-y-3 mb-6">
+                <ul className="space-y-3 mb-6 flex-1">
                   {planConfig.features.map((feature) => (
                     <li
                       key={feature}
