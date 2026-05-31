@@ -76,20 +76,107 @@ export const TRIAL_CONFIG = {
   label: "7 дней за 1₽ на тарифе «Про»",
 };
 
+// Грейс-период после истечения подписки: всё работает как обычно 1 день.
+export const GRACE_DAYS = 1;
+const GRACE_MS = GRACE_DAYS * 24 * 60 * 60 * 1000;
+
 /**
- * Get the user's effective plan, considering expiry.
- * If plan has expired, falls back to BASIC.
+ * Подписка/триал считается истёкшей только ПОСЛЕ грейс-периода.
+ * Пока (expiresAt + грейс) в будущем — доступ есть.
+ */
+export function isExpired(expiresAt: Date | null): boolean {
+  if (!expiresAt) return true;
+  return new Date(expiresAt).getTime() + GRACE_MS < Date.now();
+}
+
+/** Не истекло (с учётом грейса). */
+export function isWithinAccess(expiresAt: Date | null): boolean {
+  if (!expiresAt) return false;
+  return new Date(expiresAt).getTime() + GRACE_MS >= Date.now();
+}
+
+/**
+ * Get the user's effective plan, considering expiry (+ grace period).
+ * If plan has expired (past grace), falls back to BASIC.
  */
 export function getEffectivePlan(user: {
   plan: Plan;
   planExpiresAt: Date | null;
 }): Plan {
   if (user.plan !== "BASIC") {
-    if (user.planExpiresAt && user.planExpiresAt < new Date()) {
-      return "BASIC"; // expired → downgrade
+    if (isExpired(user.planExpiresAt)) {
+      return "BASIC"; // expired (past grace) → downgrade
     }
   }
   return user.plan;
+}
+
+export type BillingPeriod = "monthly" | "yearly";
+
+/**
+ * Активировать пробный период (1₽ / 7 дней PRO). Триал — строго один раз.
+ */
+export async function activateTrial(userId: string) {
+  const now = Date.now();
+  const ends = new Date(now + TRIAL_CONFIG.durationDays * 24 * 60 * 60 * 1000);
+  await prisma.user.update({
+    where: { id: userId },
+    data: {
+      plan: TRIAL_CONFIG.plan,
+      trialEndsAt: ends,
+      planExpiresAt: ends,
+      trialUsed: true,
+    },
+  });
+  return ends;
+}
+
+/**
+ * Активировать платный тариф на период (месяц/год).
+ * Продлевает от текущего planExpiresAt, если он ещё в будущем.
+ */
+export async function activatePlan(
+  userId: string,
+  plan: Plan,
+  period: BillingPeriod
+) {
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    select: { planExpiresAt: true },
+  });
+
+  // Продление: если подписка ещё активна — добавляем к остатку, иначе от now
+  const base =
+    user?.planExpiresAt && isWithinAccess(user.planExpiresAt)
+      ? new Date(user.planExpiresAt).getTime()
+      : Date.now();
+
+  const addMs =
+    period === "yearly"
+      ? 365 * 24 * 60 * 60 * 1000
+      : 30 * 24 * 60 * 60 * 1000;
+
+  const expires = new Date(base + addMs);
+
+  await prisma.user.update({
+    where: { id: userId },
+    data: {
+      plan,
+      planExpiresAt: expires,
+      // триал больше не активен после покупки тарифа
+      trialEndsAt: null,
+    },
+  });
+  return expires;
+}
+
+/**
+ * Стоимость тарифа за период в КОПЕЙКАХ (для ЮKassa).
+ */
+export function getPlanPriceKopecks(plan: Plan, period: BillingPeriod): number {
+  const config = PLANS[plan];
+  const rubles = period === "yearly" ? config.yearlyPrice : config.monthlyPrice;
+  return rubles * 100;
 }
 
 /**
@@ -121,18 +208,18 @@ export async function hasActiveSubscription(userId: string) {
   // Superadmin always has access
   if (user.isSuperAdmin) return { active: true };
 
-  // Active trial
-  if (user.trialEndsAt && user.trialEndsAt > new Date()) {
+  // Active trial (с учётом грейса)
+  if (user.trialEndsAt && isWithinAccess(user.trialEndsAt)) {
     return { active: true, isTrial: true, trialEndsAt: user.trialEndsAt };
   }
 
-  // Paid plan that hasn't expired
-  if (user.plan !== "BASIC" && user.planExpiresAt && user.planExpiresAt > new Date()) {
+  // Paid plan that hasn't expired (с учётом грейса)
+  if (user.plan !== "BASIC" && isWithinAccess(user.planExpiresAt)) {
     return { active: true };
   }
 
   // BASIC with active expiry (user paid for BASIC)
-  if (user.plan === "BASIC" && user.planExpiresAt && user.planExpiresAt > new Date()) {
+  if (user.plan === "BASIC" && isWithinAccess(user.planExpiresAt)) {
     return { active: true };
   }
 

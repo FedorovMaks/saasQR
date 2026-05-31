@@ -20,6 +20,7 @@ import {
   Check,
 } from "lucide-react";
 import { DeleteVenueButton } from "@/components/admin/delete-venue-button";
+import { TrialButton } from "@/components/admin/plan-purchase";
 
 export default async function AdminPage() {
   const session = await getServerSession(authOptions);
@@ -30,6 +31,11 @@ export default async function AdminPage() {
   }
 
   const subscription = await hasActiveSubscription(session!.user.id);
+  const me = await prisma.user.findUnique({
+    where: { id: session!.user.id },
+    select: { trialUsed: true },
+  });
+  const trialUsed = me?.trialUsed ?? false;
 
   const venues = await prisma.venue.findMany({
     where: { ownerId: session!.user.id, isActive: true },
@@ -86,15 +92,25 @@ export default async function AdminPage() {
             ))}
           </div>
 
-          <button
-            disabled
-            className="inline-flex h-14 items-center gap-3 rounded-2xl bg-white px-8 text-lg font-extrabold text-[#2563eb] shadow-lg transition-all hover:shadow-xl active:scale-[0.97] disabled:opacity-70"
-          >
-            Начать за {TRIAL_CONFIG.price}₽
-            <ArrowRight className="h-5 w-5" />
-          </button>
+          {trialUsed ? (
+            <Link
+              href="/admin/billing"
+              className="inline-flex h-14 items-center gap-3 rounded-2xl bg-white px-8 text-lg font-extrabold text-[#2563eb] shadow-lg transition-all hover:shadow-xl active:scale-[0.97]"
+            >
+              Выбрать тариф
+              <ArrowRight className="h-5 w-5" />
+            </Link>
+          ) : (
+            <TrialButton
+              priceRub={TRIAL_CONFIG.price}
+              className="inline-flex h-14 items-center gap-3 rounded-2xl bg-white px-8 text-lg font-extrabold text-[#2563eb] shadow-lg transition-all hover:shadow-xl active:scale-[0.97] disabled:opacity-70"
+            >
+              Начать за {TRIAL_CONFIG.price}₽
+              <ArrowRight className="h-5 w-5" />
+            </TrialButton>
+          )}
           <p className="text-white/50 text-xs font-semibold mt-3">
-            Оплата будет доступна после подключения платёжной системы
+            Оплата через СБП · {TRIAL_CONFIG.durationDays} дней доступа
           </p>
         </div>
 

@@ -1,7 +1,13 @@
 /**
- * YooKassa API client for per-venue payment integration.
+ * YooKassa API client.
  * Docs: https://yookassa.ru/developers/api
+ *
+ * Two flows:
+ *  - Per-venue order payments (venue's own shopId/secretKey)
+ *  - Platform subscription payments (platform shopId/secretKey from PlatformConfig)
  */
+
+import { prisma } from "./prisma";
 
 const YOOKASSA_API = "https://api.yookassa.ru/v3";
 
@@ -79,6 +85,76 @@ export async function createPayment(options: {
   if (!res.ok) {
     const error = await res.text();
     console.error("YooKassa create payment error:", res.status, error);
+    throw new Error(`YooKassa error: ${res.status}`);
+  }
+
+  return res.json();
+}
+
+/**
+ * Read the platform's YooKassa credentials from PlatformConfig.
+ * Returns null if not configured yet (e.g. before самозанятость is ready).
+ */
+export async function getPlatformCredentials(): Promise<{
+  shopId: string;
+  secretKey: string;
+} | null> {
+  const configs = await prisma.platformConfig.findMany({
+    where: { key: { in: ["yookassaShopId", "yookassaSecretKey"] } },
+  });
+  const map: Record<string, string> = {};
+  for (const c of configs) map[c.key] = c.value;
+
+  const shopId = map.yookassaShopId?.trim();
+  const secretKey = map.yookassaSecretKey?.trim();
+  if (!shopId || !secretKey) return null;
+  return { shopId, secretKey };
+}
+
+/**
+ * Create a platform SUBSCRIPTION payment via SBP (СБП only).
+ * Uses the platform's credentials. Amount is computed by the caller
+ * (server-side, from PLANS) and passed in kopecks.
+ */
+export async function createSubscriptionPayment(options: {
+  shopId: string;
+  secretKey: string;
+  amount: number; // kopecks
+  description: string;
+  returnUrl: string;
+  metadata: Record<string, string>;
+  idempotencyKey: string;
+}): Promise<YooKassaPayment> {
+  const { shopId, secretKey, amount, description, returnUrl, metadata, idempotencyKey } =
+    options;
+
+  const amountValue = (amount / 100).toFixed(2);
+
+  const res = await fetch(`${YOOKASSA_API}/payments`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization:
+        "Basic " + Buffer.from(`${shopId}:${secretKey}`).toString("base64"),
+      "Idempotence-Key": idempotencyKey,
+    },
+    body: JSON.stringify({
+      amount: { value: amountValue, currency: "RUB" },
+      // СБП только
+      payment_method_data: { type: "sbp" },
+      confirmation: {
+        type: "redirect",
+        return_url: returnUrl,
+      },
+      capture: true,
+      description,
+      metadata,
+    }),
+  });
+
+  if (!res.ok) {
+    const error = await res.text();
+    console.error("YooKassa subscription payment error:", res.status, error);
     throw new Error(`YooKassa error: ${res.status}`);
   }
 

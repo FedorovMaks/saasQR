@@ -1,8 +1,15 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { parseWebhookEvent } from "@/lib/yookassa";
+import {
+  parseWebhookEvent,
+  getPayment,
+  getPlatformCredentials,
+  type YooKassaPayment,
+} from "@/lib/yookassa";
 import { emitOrderEvent } from "@/lib/order-events";
 import { sendPushToVenueTeam } from "@/lib/push-notify";
+import { activateTrial, activatePlan, type BillingPeriod } from "@/lib/plans";
+import { Plan } from "@/generated/prisma";
 
 /**
  * YooKassa webhook handler.
@@ -26,6 +33,14 @@ export async function POST(req: Request) {
     }
 
     const payment = event.object;
+
+    // ─── Subscription payments (platform) ───
+    if (payment.metadata?.kind === "subscription") {
+      await handleSubscriptionPayment(event.event, payment);
+      return NextResponse.json({ ok: true });
+    }
+
+    // ─── Order payments (per-venue) ───
     const orderId = payment.metadata?.order_id;
 
     if (!orderId) {
@@ -111,4 +126,82 @@ export async function POST(req: Request) {
     console.error("Webhook error:", error);
     return NextResponse.json({ ok: true }); // Always return 200 to YooKassa
   }
+}
+
+/**
+ * Handle a platform subscription payment notification.
+ * Verifies the payment with the platform credentials (don't trust the body
+ * blindly), then activates the trial/plan idempotently.
+ */
+async function handleSubscriptionPayment(
+  eventType: string,
+  payment: YooKassaPayment
+) {
+  // Locate our pending record (by YooKassa id, fallback to recordId metadata)
+  const recordId = payment.metadata?.recordId;
+  const record =
+    (await prisma.subscriptionPayment.findUnique({
+      where: { yookassaId: payment.id },
+    })) ||
+    (recordId
+      ? await prisma.subscriptionPayment.findUnique({ where: { id: recordId } })
+      : null);
+
+  if (!record) return; // unknown payment — ignore
+
+  // Idempotency — already processed
+  if (record.status === "succeeded") return;
+
+  if (eventType === "payment.canceled") {
+    await prisma.subscriptionPayment.update({
+      where: { id: record.id },
+      data: { status: "cancelled" },
+    });
+    return;
+  }
+
+  if (eventType !== "payment.succeeded") return;
+
+  // Verify the payment really succeeded by re-fetching from YooKassa
+  const creds = await getPlatformCredentials();
+  if (!creds) return;
+
+  let verified: YooKassaPayment;
+  try {
+    verified = await getPayment({
+      shopId: creds.shopId,
+      secretKey: creds.secretKey,
+      paymentId: payment.id,
+    });
+  } catch {
+    return; // can't verify — don't activate
+  }
+
+  if (verified.status !== "succeeded" || !verified.paid) return;
+
+  const type = payment.metadata?.type;
+  const userId = record.userId;
+
+  // Activate access
+  let periodStart = new Date();
+  let periodEnd: Date;
+
+  if (type === "TRIAL") {
+    periodEnd = await activateTrial(userId);
+  } else {
+    const plan = (payment.metadata?.plan as Plan) || record.plan;
+    const period = (payment.metadata?.period as BillingPeriod) || "monthly";
+    periodEnd = await activatePlan(userId, plan, period);
+  }
+  periodStart = new Date();
+
+  await prisma.subscriptionPayment.update({
+    where: { id: record.id },
+    data: {
+      status: "succeeded",
+      yookassaId: payment.id,
+      periodStart,
+      periodEnd,
+    },
+  });
 }

@@ -1,16 +1,16 @@
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
-import { getUserPlanUsage, PLANS, TRIAL_CONFIG, formatRubles } from "@/lib/plans";
-import { Plan } from "@/generated/prisma";
+import { getUserPlanUsage, PLANS, TRIAL_CONFIG, formatRubles, hasActiveSubscription } from "@/lib/plans";
+import { prisma } from "@/lib/prisma";
 import { redirect } from "next/navigation";
-// PlanSwitchButton removed — plan changes only via payment or superadmin
+import { Suspense } from "react";
+import { PlansGrid, TrialButton } from "@/components/admin/plan-purchase";
+import { PaymentProcessingBanner } from "@/components/admin/payment-processing-banner";
 import {
   Crown,
-  Check,
   Zap,
   Building2,
   Sparkles,
-  ArrowRight,
   Clock,
 } from "lucide-react";
 
@@ -39,6 +39,15 @@ export default async function BillingPage() {
   const currentPlan = usage.plan;
   const config = usage.config;
 
+  const dbUser = await prisma.user.findUnique({
+    where: { id: session.user.id },
+    select: { trialUsed: true },
+  });
+  const trialUsed = dbUser?.trialUsed ?? false;
+
+  const sub = await hasActiveSubscription(session.user.id);
+  const subActive = sub.active;
+
   return (
     <div className="space-y-8 max-w-5xl">
       {/* Header */}
@@ -48,6 +57,11 @@ export default async function BillingPage() {
           Выберите тариф под ваши задачи
         </p>
       </div>
+
+      {/* Payment processing banner (after returning from YooKassa) */}
+      <Suspense fallback={null}>
+        <PaymentProcessingBanner />
+      </Suspense>
 
       {/* Trial banner */}
       {usage.isOnTrial && usage.trialEndsAt && (
@@ -129,11 +143,11 @@ export default async function BillingPage() {
       </div>
 
       {/* Trial CTA */}
-      {currentPlan === "BASIC" && !usage.isOnTrial && (
+      {currentPlan === "BASIC" && !usage.isOnTrial && !trialUsed && (
         <div className="rounded-3xl bg-gradient-to-br from-[#eef2ff] to-white p-6 border border-blue-100">
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div className="flex items-center gap-4">
-              <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-[#2563eb] text-white shadow-lg shadow-blue-500/20">
+              <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-[#2563eb] text-white shadow-lg shadow-blue-500/20 shrink-0">
                 <Sparkles className="h-7 w-7" />
               </div>
               <div>
@@ -141,112 +155,20 @@ export default async function BillingPage() {
                   {TRIAL_CONFIG.label}
                 </h3>
                 <p className="text-sm text-gray-400 font-semibold">
-                  Попробуйте все возможности с привязкой карты
+                  Полный доступ ко всем функциям на {TRIAL_CONFIG.durationDays} дней
                 </p>
               </div>
             </div>
-            <button
-              className="inline-flex h-12 items-center gap-2 rounded-2xl bg-[#2563eb] px-6 text-sm font-extrabold text-white shadow-lg shadow-blue-500/20 transition-all hover:shadow-xl active:scale-[0.97]"
-              disabled
-            >
-              Попробовать за {TRIAL_CONFIG.price}₽
-              <ArrowRight className="h-4 w-4" />
-            </button>
+            <TrialButton
+              priceRub={TRIAL_CONFIG.price}
+              className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl bg-[#2563eb] px-6 text-sm font-extrabold text-white shadow-lg shadow-blue-500/20 transition-all hover:shadow-xl active:scale-[0.97] disabled:opacity-70 shrink-0"
+            />
           </div>
         </div>
       )}
 
-      {/* Plans comparison */}
-      <div className="grid gap-5 lg:grid-cols-3">
-        {(Object.entries(PLANS) as [Plan, (typeof PLANS)[Plan]][]).map(
-          ([planKey, planConfig]) => {
-            const isCurrentPlan = currentPlan === planKey;
-            const isHighlighted = planConfig.highlighted;
-
-            return (
-              <div
-                key={planKey}
-                className={`flex flex-col rounded-3xl bg-white p-6 shadow-[0_2px_12px_rgba(0,0,0,0.06)] transition-all relative ${
-                  isHighlighted
-                    ? "ring-2 ring-[#2563eb] shadow-[0_4px_24px_rgba(37,99,235,0.12)]"
-                    : ""
-                }`}
-              >
-                {isHighlighted && (
-                  <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                    <span className="inline-flex items-center rounded-full bg-[#2563eb] px-4 py-1 text-xs font-bold text-white shadow-md">
-                      Популярный
-                    </span>
-                  </div>
-                )}
-
-                {/* Plan header */}
-                <div className="mb-5 pt-1">
-                  <h3 className="text-xl font-black mb-2">{planConfig.label}</h3>
-                  <div className="flex items-baseline gap-1">
-                    <span className="text-3xl font-black">
-                      {planConfig.monthlyPrice.toLocaleString("ru-RU")}
-                    </span>
-                    <span className="text-gray-400 font-semibold">₽/мес</span>
-                  </div>
-                  <p className="text-xs text-gray-300 font-semibold mt-1">
-                    или {planConfig.yearlyPrice.toLocaleString("ru-RU")} ₽/год
-                  </p>
-                </div>
-
-                {/* Features */}
-                <ul className="space-y-3 mb-6 flex-1">
-                  {planConfig.features.map((feature) => (
-                    <li
-                      key={feature}
-                      className="flex items-start gap-2.5 text-sm font-semibold"
-                    >
-                      <div
-                        className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full mt-0.5 ${
-                          isHighlighted
-                            ? "bg-[#2563eb]/10 text-[#2563eb]"
-                            : "bg-gray-100 text-gray-400"
-                        }`}
-                      >
-                        <Check className="h-3 w-3" />
-                      </div>
-                      <span className="text-gray-600">{feature}</span>
-                    </li>
-                  ))}
-                  {planConfig.extraVenuePrice > 0 && (
-                    <li className="flex items-start gap-2.5 text-sm font-semibold">
-                      <div className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full mt-0.5 bg-gray-100 text-gray-400">
-                        <Check className="h-3 w-3" />
-                      </div>
-                      <span className="text-gray-400">
-                        Доп. заведение +{planConfig.extraVenuePrice.toLocaleString("ru-RU")} ₽/мес
-                      </span>
-                    </li>
-                  )}
-                </ul>
-
-                {/* Button */}
-                {isCurrentPlan ? (
-                  <div className="flex h-12 items-center justify-center rounded-2xl bg-[#f0f2f8] text-sm font-extrabold text-gray-400">
-                    Текущий тариф
-                  </div>
-                ) : (
-                  <button
-                    disabled
-                    className={`flex h-12 w-full items-center justify-center gap-2 rounded-2xl text-sm font-extrabold transition-all ${
-                      isHighlighted
-                        ? "bg-[#2563eb] text-white shadow-lg shadow-blue-500/20 opacity-70"
-                        : "bg-[#f0f2f8] text-gray-600 opacity-70"
-                    }`}
-                  >
-                    Скоро
-                  </button>
-                )}
-              </div>
-            );
-          }
-        )}
-      </div>
+      {/* Plans comparison — clickable */}
+      <PlansGrid plans={PLANS} currentPlan={currentPlan} isActive={subActive} />
 
       {/* Watermark note for basic */}
       {currentPlan === "BASIC" && (

@@ -25,6 +25,7 @@ model User {
   plan           Plan      @default(BASIC)
   planExpiresAt  DateTime?
   trialEndsAt    DateTime?
+  trialUsed      Boolean   @default(false)
   emailVerified  Boolean   @default(false)
   isSuperAdmin   Boolean   @default(false)
   createdAt      DateTime  @default(now())
@@ -278,7 +279,7 @@ model StaffInvite {
 // ───── PLATFORM CONFIG ─────
 
 model PlatformConfig {
-  id    String @id @default("platform")
+  id    String @id @default(cuid())
   key   String @unique
   value String @db.Text
 

@@ -5,6 +5,7 @@ import { emitOrderEvent } from "@/lib/order-events";
 import { sendPushToVenueTeam } from "@/lib/push-notify";
 import { rateLimit, getClientIP } from "@/lib/rate-limit";
 import { createPayment } from "@/lib/yookassa";
+import { hasActiveSubscription } from "@/lib/plans";
 
 const orderItemSchema = z.object({
   menuItemId: z.string(),
@@ -52,6 +53,7 @@ export async function POST(req: Request) {
         isActive: true,
         name: true,
         slug: true,
+        ownerId: true,
         yookassaShopId: true,
         yookassaSecretKey: true,
       },
@@ -61,6 +63,15 @@ export async function POST(req: Request) {
       return NextResponse.json(
         { error: "Заведение не найдено" },
         { status: 404 }
+      );
+    }
+
+    // Block orders if the owner's subscription is inactive (past grace)
+    const ownerSub = await hasActiveSubscription(venue.ownerId);
+    if (!ownerSub.active) {
+      return NextResponse.json(
+        { error: "Заведение временно не принимает заказы" },
+        { status: 403 }
       );
     }
 
