@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
+import { uploadToStorage } from "@/lib/storage";
 import sharp from "sharp";
 import crypto from "crypto";
 
@@ -51,19 +52,15 @@ export async function POST(req: Request) {
 
     const filename = `${folder}/${crypto.randomUUID()}.webp`;
 
-    // Production / any deployment: store in Vercel Blob (persistent CDN).
-    if (process.env.BLOB_READ_WRITE_TOKEN) {
-      const { put } = await import("@vercel/blob");
-      const blob = await put(filename, processed, {
-        access: "public",
-        contentType: "image/webp",
-      });
-      return NextResponse.json({ url: blob.url });
+    // Primary: Yandex Object Storage (S3-compatible, persistent CDN).
+    const storageUrl = await uploadToStorage(filename, processed, "image/webp");
+    if (storageUrl) {
+      return NextResponse.json({ url: storageUrl });
     }
 
-    // No Blob configured. On a real deployment (Vercel) the filesystem is
+    // Storage not configured. On a real deployment (Vercel) the filesystem is
     // read-only, so a local-FS fallback would silently fail. Only allow the
-    // local fallback in development; otherwise return a clear error.
+    // local fallback in true local development; otherwise return a clear error.
     if (process.env.NODE_ENV !== "production" && !process.env.VERCEL) {
       const { writeFile, mkdir } = await import("fs/promises");
       const path = await import("path");
@@ -75,7 +72,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ url });
     }
 
-    console.error("Upload failed: BLOB_READ_WRITE_TOKEN is not configured");
+    console.error("Upload failed: object storage is not configured (YANDEX_S3_* env vars)");
     return NextResponse.json(
       {
         error:
