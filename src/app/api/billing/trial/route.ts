@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getApiUser, unauthorized } from "@/lib/auth-guard";
 import { hasActiveSubscription, TRIAL_CONFIG } from "@/lib/plans";
+import { rateLimit } from "@/lib/rate-limit";
 import {
   getPlatformCredentials,
   createSubscriptionPayment,
@@ -11,6 +12,15 @@ import {
 export async function POST(req: Request) {
   const user = await getApiUser();
   if (!user) return unauthorized();
+
+  // Rate limit: max 5 payment attempts per user per 10 minutes
+  const limit = rateLimit(`billing:${user.id}`, 5, 10 * 60 * 1000);
+  if (!limit.allowed) {
+    return NextResponse.json(
+      { error: "Слишком много попыток. Попробуйте позже." },
+      { status: 429 }
+    );
+  }
 
   const dbUser = await prisma.user.findUnique({
     where: { id: user.id },

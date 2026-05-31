@@ -180,6 +180,19 @@ export function getPlanPriceKopecks(plan: Plan, period: BillingPeriod): number {
 }
 
 /**
+ * Определить период по сумме платежа (защита: период берём не из тела
+ * вебхука, а сверяем оплаченную сумму с прайсом тарифа).
+ */
+export function getPeriodFromAmountKopecks(
+  plan: Plan,
+  amountKopecks: number
+): BillingPeriod | null {
+  if (amountKopecks === PLANS[plan].monthlyPrice * 100) return "monthly";
+  if (amountKopecks === PLANS[plan].yearlyPrice * 100) return "yearly";
+  return null;
+}
+
+/**
  * Check if user is on trial.
  */
 export function isOnTrial(user: {

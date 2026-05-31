@@ -8,8 +8,12 @@ import {
 } from "@/lib/yookassa";
 import { emitOrderEvent } from "@/lib/order-events";
 import { sendPushToVenueTeam } from "@/lib/push-notify";
-import { activateTrial, activatePlan, type BillingPeriod } from "@/lib/plans";
-import { Plan } from "@/generated/prisma";
+import {
+  activateTrial,
+  activatePlan,
+  getPeriodFromAmountKopecks,
+  type BillingPeriod,
+} from "@/lib/plans";
 
 /**
  * YooKassa webhook handler.
@@ -48,7 +52,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ ok: true });
     }
 
-    // Find the order
+    // Find the order + venue credentials (needed to verify with YooKassa)
     const order = await prisma.order.findUnique({
       where: { id: orderId },
       select: {
@@ -57,6 +61,10 @@ export async function POST(req: Request) {
         venueId: true,
         paymentStatus: true,
         paymentId: true,
+        totalAmount: true,
+        venue: {
+          select: { yookassaShopId: true, yookassaSecretKey: true },
+        },
       },
     });
 
@@ -70,7 +78,37 @@ export async function POST(req: Request) {
     }
 
     if (event.event === "payment.succeeded") {
-      // Payment successful
+      // SECURITY: never trust the webhook body. Re-fetch the payment from
+      // YooKassa with the venue's own credentials and verify status + amount
+      // before marking the order paid. Otherwise anyone who knows an orderId
+      // could forge a "succeeded" webhook and get a free meal.
+      const shopId = order.venue?.yookassaShopId;
+      const secretKey = order.venue?.yookassaSecretKey;
+      if (!shopId || !secretKey) {
+        return NextResponse.json({ ok: true });
+      }
+
+      let verified: YooKassaPayment;
+      try {
+        verified = await getPayment({ shopId, secretKey, paymentId: payment.id });
+      } catch {
+        return NextResponse.json({ ok: true });
+      }
+
+      const amountOk =
+        verified.amount?.value === (order.totalAmount / 100).toFixed(2);
+      const boundToOrder = verified.metadata?.order_id === orderId;
+
+      if (
+        verified.status !== "succeeded" ||
+        !verified.paid ||
+        !amountOk ||
+        !boundToOrder
+      ) {
+        return NextResponse.json({ ok: true });
+      }
+
+      // Payment verified
       if (order.paymentStatus !== "PAID") {
         await prisma.order.update({
           where: { id: orderId },
@@ -103,8 +141,9 @@ export async function POST(req: Request) {
     }
 
     if (event.event === "payment.canceled") {
-      // Payment canceled
-      if (order.paymentStatus !== "UNPAID") {
+      // Only a still-PENDING order may be moved to UNPAID. Never flip a
+      // verified PAID order back to UNPAID from a (potentially forged) cancel.
+      if (order.paymentStatus === "PENDING") {
         await prisma.order.update({
           where: { id: orderId },
           data: { paymentStatus: "UNPAID" },
@@ -162,7 +201,9 @@ async function handleSubscriptionPayment(
 
   if (eventType !== "payment.succeeded") return;
 
-  // Verify the payment really succeeded by re-fetching from YooKassa
+  // Verify the payment really succeeded by re-fetching from YooKassa.
+  // We trust ONLY: our own DB record (server-created) + the verified payment
+  // amount/metadata returned by YooKassa — never the raw webhook body.
   const creds = await getPlatformCredentials();
   if (!creds) return;
 
@@ -179,21 +220,25 @@ async function handleSubscriptionPayment(
 
   if (verified.status !== "succeeded" || !verified.paid) return;
 
-  const type = payment.metadata?.type;
-  const userId = record.userId;
+  // Bind the verified payment to THIS record (metadata from YooKassa, not body)
+  if (verified.metadata?.recordId !== record.id) return;
 
-  // Activate access
-  let periodStart = new Date();
+  // The amount actually paid must equal what we charged for this record
+  const expectedValue = (record.amount / 100).toFixed(2);
+  if (verified.amount?.value !== expectedValue) return;
+
+  const userId = record.userId;
+  const periodStart = new Date();
   let periodEnd: Date;
 
-  if (type === "TRIAL") {
+  if (record.type === "TRIAL") {
     periodEnd = await activateTrial(userId);
   } else {
-    const plan = (payment.metadata?.plan as Plan) || record.plan;
-    const period = (payment.metadata?.period as BillingPeriod) || "monthly";
-    periodEnd = await activatePlan(userId, plan, period);
+    // Period is derived from the paid amount, not trusted from the body
+    const period: BillingPeriod =
+      getPeriodFromAmountKopecks(record.plan, record.amount) ?? "monthly";
+    periodEnd = await activatePlan(userId, record.plan, period);
   }
-  periodStart = new Date();
 
   await prisma.subscriptionPayment.update({
     where: { id: record.id },

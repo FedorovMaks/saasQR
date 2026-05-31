@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { getApiUser, unauthorized } from "@/lib/auth-guard";
 import { z } from "zod";
 import { PLANS, getPlanPriceKopecks, hasActiveSubscription } from "@/lib/plans";
+import { rateLimit } from "@/lib/rate-limit";
 import {
   getPlatformCredentials,
   createSubscriptionPayment,
@@ -17,6 +18,15 @@ const schema = z.object({
 export async function POST(req: Request) {
   const user = await getApiUser();
   if (!user) return unauthorized();
+
+  // Rate limit: max 5 payment attempts per user per 10 minutes
+  const limit = rateLimit(`billing:${user.id}`, 5, 10 * 60 * 1000);
+  if (!limit.allowed) {
+    return NextResponse.json(
+      { error: "Слишком много попыток. Попробуйте позже." },
+      { status: 429 }
+    );
+  }
 
   const body = await req.json();
   const parsed = schema.safeParse(body);
