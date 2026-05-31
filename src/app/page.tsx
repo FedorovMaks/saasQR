@@ -18,7 +18,7 @@ export default function Home() {
         <div className="relative mx-auto max-w-3xl px-6 pt-24 pb-28 sm:pt-32 sm:pb-36 text-center">
           <div className="inline-flex items-center gap-2.5 rounded-full bg-blue-500/10 px-6 py-2.5 text-base font-extrabold text-[#2563eb] mb-10">
             <Zap className="h-5 w-5" />
-            Бесплатно для одного заведения
+            Попробуйте 7 дней за 1₽
           </div>
 
           <h1 className="text-5xl sm:text-7xl font-black tracking-tight leading-[1.05]">
