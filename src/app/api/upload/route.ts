@@ -51,7 +51,7 @@ export async function POST(req: Request) {
 
     const filename = `${folder}/${crypto.randomUUID()}.webp`;
 
-    // Use Vercel Blob in production, local filesystem in development
+    // Production / any deployment: store in Vercel Blob (persistent CDN).
     if (process.env.BLOB_READ_WRITE_TOKEN) {
       const { put } = await import("@vercel/blob");
       const blob = await put(filename, processed, {
@@ -59,8 +59,12 @@ export async function POST(req: Request) {
         contentType: "image/webp",
       });
       return NextResponse.json({ url: blob.url });
-    } else {
-      // Local development — save to public/uploads
+    }
+
+    // No Blob configured. On a real deployment (Vercel) the filesystem is
+    // read-only, so a local-FS fallback would silently fail. Only allow the
+    // local fallback in development; otherwise return a clear error.
+    if (process.env.NODE_ENV !== "production" && !process.env.VERCEL) {
       const { writeFile, mkdir } = await import("fs/promises");
       const path = await import("path");
       const uploadDir = path.join(process.cwd(), "public", "uploads", folder);
@@ -70,6 +74,15 @@ export async function POST(req: Request) {
       const url = `/uploads/${folder}/${localFilename}`;
       return NextResponse.json({ url });
     }
+
+    console.error("Upload failed: BLOB_READ_WRITE_TOKEN is not configured");
+    return NextResponse.json(
+      {
+        error:
+          "Хранилище изображений не настроено. Обратитесь к администратору сайта.",
+      },
+      { status: 503 }
+    );
   } catch (error) {
     console.error("Upload error:", error);
     return NextResponse.json(
