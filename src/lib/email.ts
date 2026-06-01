@@ -9,7 +9,7 @@ function getResend() {
   return resendClient;
 }
 
-const FROM_EMAIL = process.env.EMAIL_FROM || "QR Menu <onboarding@resend.dev>";
+const FROM_EMAIL = process.env.EMAIL_FROM || "QR Menu <noreply@tap-menu.ru>";
 
 export async function sendVerificationEmail(email: string, token: string) {
   const baseUrl = process.env.NEXTAUTH_URL || "https://saas-qr-55st.vercel.app";
