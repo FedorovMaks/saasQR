@@ -1,78 +1,61 @@
-const CACHE_NAME = "qrmenu-v4";
+const CACHE_NAME = "qrmenu-v5";
 const OFFLINE_URL = "/offline.html";
 
-// Static assets to pre-cache
-const PRECACHE_URLS = [
-  OFFLINE_URL,
-  "/icons/icon-192.png",
-  "/icons/icon-512.png",
-];
-
-// Install — cache essential assets
+// Install — precache only the offline page
 self.addEventListener("install", (event) => {
   event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => cache.addAll(PRECACHE_URLS))
+    caches
+      .open(CACHE_NAME)
+      .then((cache) => cache.add(OFFLINE_URL))
+      .catch(() => {})
   );
   self.skipWaiting();
 });
 
-// Activate — clean old caches
+// Activate — drop all old caches and take control immediately
 self.addEventListener("activate", (event) => {
   event.waitUntil(
-    caches.keys().then((keys) =>
-      Promise.all(keys.filter((k) => k !== CACHE_NAME).map((k) => caches.delete(k)))
-    )
+    caches
+      .keys()
+      .then((keys) =>
+        Promise.all(keys.filter((k) => k !== CACHE_NAME).map((k) => caches.delete(k)))
+      )
+      .then(() => self.clients.claim())
   );
-  self.clients.claim();
 });
 
-// Fetch — stale-while-revalidate for static, network-first for pages
+// Fetch — intentionally minimal and safe.
+// We only provide an offline fallback for page navigations. Everything else
+// passes straight through to the network (no SW caching), which avoids the
+// scheme/Response bugs that previously broke the whole site.
 self.addEventListener("fetch", (event) => {
   const { request } = event;
-  const url = new URL(request.url);
 
-  // Skip non-GET requests entirely
   if (request.method !== "GET") return;
 
-  // NEVER cache API calls — let them pass through to network
-  if (url.pathname.startsWith("/api/")) return;
-
-  // Skip SSE streams
-  if (request.headers.get("accept")?.includes("text/event-stream")) return;
-
-  // Skip requests with no-cache/no-store headers (polling)
-  if (request.headers.get("cache-control")?.includes("no-cache") ||
-      request.headers.get("cache-control")?.includes("no-store")) return;
-
-  // Navigation requests — always network first, offline fallback
-  if (request.mode === "navigate") {
-    event.respondWith(
-      fetch(request).catch(() => caches.match(OFFLINE_URL))
-    );
+  let url;
+  try {
+    url = new URL(request.url);
+  } catch {
     return;
   }
 
-  // Static assets (images, fonts, CSS, JS) — cache first, network fallback
-  if (
-    url.pathname.startsWith("/icons/") ||
-    url.pathname.startsWith("/uploads/") ||
-    url.pathname.match(/\.(js|css|woff2?|png|jpg|webp|svg|ico)$/)
-  ) {
-    event.respondWith(
-      caches.match(request).then((cached) => {
-        const networkFetch = fetch(request).then((response) => {
-          if (response.ok) {
-            const clone = response.clone();
-            caches.open(CACHE_NAME).then((cache) => cache.put(request, clone));
-          }
-          return response;
-        }).catch(() => cached);
+  // Only touch same-origin http(s) requests — never extensions / cross-origin
+  if (url.origin !== self.location.origin) return;
+  if (url.protocol !== "http:" && url.protocol !== "https:") return;
 
-        return cached || networkFetch;
+  // Page navigations: try network, fall back to the offline page if truly offline
+  if (request.mode === "navigate") {
+    event.respondWith(
+      fetch(request).catch(async () => {
+        const cached = await caches.match(OFFLINE_URL);
+        return cached || new Response("Offline", { status: 503 });
       })
     );
     return;
   }
+
+  // All other requests: do nothing — let the browser handle them normally.
 });
 
 // Push notification — shows even when app is closed/in background
@@ -107,21 +90,18 @@ self.addEventListener("push", (event) => {
 self.addEventListener("notificationclick", (event) => {
   event.notification.close();
 
-  // "Закрыть" button — just close notification
   if (event.action === "dismiss") return;
 
   const targetUrl = event.notification.data?.url || "/admin";
 
   event.waitUntil(
     self.clients.matchAll({ type: "window", includeUncontrolled: true }).then((clients) => {
-      // Find existing admin window and navigate it to the right page
       for (const client of clients) {
         if (client.url.includes("/admin") && "focus" in client) {
           client.navigate(targetUrl);
           return client.focus();
         }
       }
-      // No existing window — open new one
       return self.clients.openWindow(targetUrl);
     })
   );
