@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import { Download, QrCode, Copy, Check, Printer } from "lucide-react";
 import { toast } from "sonner";
+import { SITE_URL } from "@/lib/config";
 
 export function VenueQR({
   venueId,
@@ -17,10 +18,9 @@ export function VenueQR({
   const [copied, setCopied] = useState(false);
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
-  const menuUrl =
-    typeof window !== "undefined"
-      ? `${window.location.origin}/${slug}`
-      : `/${slug}`;
+  // Always use the canonical public domain so the QR works from any phone,
+  // even if the admin is opened on localhost or vercel.app.
+  const menuUrl = `${SITE_URL}/${slug}`;
 
   // Generate QR on client using canvas (lightweight, no API call needed for preview)
   useEffect(() => {
@@ -37,7 +37,7 @@ export function VenueQR({
   const handleDownload = async () => {
     try {
       const res = await fetch(
-        `/api/venues/${venueId}/qr?host=${encodeURIComponent(window.location.origin)}`
+        `/api/venues/${venueId}/qr?host=${encodeURIComponent(SITE_URL)}`
       );
       if (!res.ok) throw new Error();
       const blob = await res.blob();
