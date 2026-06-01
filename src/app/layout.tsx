@@ -16,6 +16,14 @@ export const metadata: Metadata = {
   description:
     "SaaS-платформа для малого общепита. Создайте цифровое меню, генерируйте QR-код, принимайте заказы.",
   manifest: "/manifest.json",
+  icons: {
+    icon: [
+      { url: "/icons/icon-192.png", sizes: "192x192", type: "image/png" },
+      { url: "/icons/icon-512.png", sizes: "512x512", type: "image/png" },
+    ],
+    apple: "/icons/icon-192.png",
+    shortcut: "/icons/icon-192.png",
+  },
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
@@ -37,9 +45,6 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ru" className={`${nunito.variable} h-full antialiased`}>
-      <head>
-        <link rel="apple-touch-icon" href="/icons/icon-192.png" />
-      </head>
       <body className="min-h-full flex flex-col" style={{ fontFamily: "var(--font-nunito), system-ui, sans-serif" }}>
         <SessionProvider>
           <ServiceWorkerRegister />
