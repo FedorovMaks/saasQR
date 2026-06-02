@@ -279,6 +279,7 @@ export function MenuItemList({ venueId, category, onUpdate }: MenuItemListProps)
   const [formFats, setFormFats] = useState("");
   const [formCarbs, setFormCarbs] = useState("");
   const [formComposition, setFormComposition] = useState("");
+  const [formHasNutrition, setFormHasNutrition] = useState(false);
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
@@ -297,6 +298,7 @@ export function MenuItemList({ venueId, category, onUpdate }: MenuItemListProps)
     setFormFats("");
     setFormCarbs("");
     setFormComposition("");
+    setFormHasNutrition(false);
     setDialogOpen(true);
   }
 
@@ -318,6 +320,12 @@ export function MenuItemList({ venueId, category, onUpdate }: MenuItemListProps)
     setFormFats(item.fats != null ? String(item.fats) : "");
     setFormCarbs(item.carbs != null ? String(item.carbs) : "");
     setFormComposition(item.composition || "");
+    setFormHasNutrition(
+      item.calories != null ||
+        item.proteins != null ||
+        item.fats != null ||
+        item.carbs != null
+    );
     setDialogOpen(true);
   }
 
@@ -367,10 +375,10 @@ export function MenuItemList({ venueId, category, onUpdate }: MenuItemListProps)
           price: priceNum,
           categoryId: category.id,
           imageUrl: formImage || undefined,
-          calories: formCalories ? parseInt(formCalories) : null,
-          proteins: formProteins ? parseFloat(formProteins) : null,
-          fats: formFats ? parseFloat(formFats) : null,
-          carbs: formCarbs ? parseFloat(formCarbs) : null,
+          calories: formHasNutrition && formCalories ? parseInt(formCalories) : null,
+          proteins: formHasNutrition && formProteins ? parseFloat(formProteins) : null,
+          fats: formHasNutrition && formFats ? parseFloat(formFats) : null,
+          carbs: formHasNutrition && formCarbs ? parseFloat(formCarbs) : null,
           composition: formComposition.trim() || null,
           variants,
         }),
@@ -544,59 +552,86 @@ export function MenuItemList({ venueId, category, onUpdate }: MenuItemListProps)
               />
             </div>
 
-            {/* КБЖУ */}
+            {/* КБЖУ (опционально) */}
             <div className="space-y-2">
-              <Label>КБЖУ (на 100 г / 100 мл)</Label>
-              <div className="grid grid-cols-4 gap-2">
-                <div>
-                  <span className="text-xs text-muted-foreground">Ккал</span>
-                  <Input
-                    type="number"
-                    min="0"
-                    step="1"
-                    value={formCalories}
-                    onChange={(e) => setFormCalories(e.target.value)}
-                    placeholder="250"
-                    disabled={saving}
+              <div className="flex items-center justify-between">
+                <Label>КБЖУ (на 100 г / 100 мл)</Label>
+                <button
+                  type="button"
+                  role="switch"
+                  aria-checked={formHasNutrition}
+                  aria-label="Указать КБЖУ"
+                  onClick={() => setFormHasNutrition((v) => !v)}
+                  disabled={saving}
+                  className={cn(
+                    "relative inline-flex h-5 w-9 shrink-0 items-center rounded-full transition-colors disabled:opacity-50",
+                    formHasNutrition ? "bg-[#2563eb]" : "bg-gray-300"
+                  )}
+                >
+                  <span
+                    className={cn(
+                      "inline-block h-4 w-4 transform rounded-full bg-white shadow transition-transform",
+                      formHasNutrition ? "translate-x-[18px]" : "translate-x-0.5"
+                    )}
                   />
-                </div>
-                <div>
-                  <span className="text-xs text-muted-foreground">Белки, г</span>
-                  <Input
-                    type="number"
-                    min="0"
-                    step="0.1"
-                    value={formProteins}
-                    onChange={(e) => setFormProteins(e.target.value)}
-                    placeholder="12"
-                    disabled={saving}
-                  />
-                </div>
-                <div>
-                  <span className="text-xs text-muted-foreground">Жиры, г</span>
-                  <Input
-                    type="number"
-                    min="0"
-                    step="0.1"
-                    value={formFats}
-                    onChange={(e) => setFormFats(e.target.value)}
-                    placeholder="8"
-                    disabled={saving}
-                  />
-                </div>
-                <div>
-                  <span className="text-xs text-muted-foreground">Углев., г</span>
-                  <Input
-                    type="number"
-                    min="0"
-                    step="0.1"
-                    value={formCarbs}
-                    onChange={(e) => setFormCarbs(e.target.value)}
-                    placeholder="30"
-                    disabled={saving}
-                  />
-                </div>
+                </button>
               </div>
+              {formHasNutrition ? (
+                <div className="grid grid-cols-4 gap-2">
+                  <div>
+                    <span className="text-xs text-muted-foreground">Ккал</span>
+                    <Input
+                      type="number"
+                      min="0"
+                      step="1"
+                      value={formCalories}
+                      onChange={(e) => setFormCalories(e.target.value)}
+                      placeholder="250"
+                      disabled={saving}
+                    />
+                  </div>
+                  <div>
+                    <span className="text-xs text-muted-foreground">Белки, г</span>
+                    <Input
+                      type="number"
+                      min="0"
+                      step="0.1"
+                      value={formProteins}
+                      onChange={(e) => setFormProteins(e.target.value)}
+                      placeholder="12"
+                      disabled={saving}
+                    />
+                  </div>
+                  <div>
+                    <span className="text-xs text-muted-foreground">Жиры, г</span>
+                    <Input
+                      type="number"
+                      min="0"
+                      step="0.1"
+                      value={formFats}
+                      onChange={(e) => setFormFats(e.target.value)}
+                      placeholder="8"
+                      disabled={saving}
+                    />
+                  </div>
+                  <div>
+                    <span className="text-xs text-muted-foreground">Углев., г</span>
+                    <Input
+                      type="number"
+                      min="0"
+                      step="0.1"
+                      value={formCarbs}
+                      onChange={(e) => setFormCarbs(e.target.value)}
+                      placeholder="30"
+                      disabled={saving}
+                    />
+                  </div>
+                </div>
+              ) : (
+                <p className="text-xs text-muted-foreground">
+                  КБЖУ не указано — включите тумблер, чтобы добавить пищевую ценность.
+                </p>
+              )}
             </div>
 
             {/* Variants */}
