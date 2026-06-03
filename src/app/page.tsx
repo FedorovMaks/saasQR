@@ -1,5 +1,13 @@
 import Link from "next/link";
 import { QrCode, ShoppingBag, Bell, Smartphone, ArrowRight, Zap } from "lucide-react";
+import { COMPANY } from "@/lib/legal";
+
+const footerLinks = [
+  { href: "/pricing", label: "Тарифы" },
+  { href: "/offer", label: "Оферта" },
+  { href: "/privacy", label: "Конфиденциальность" },
+  { href: "/contacts", label: "Контакты" },
+];
 
 const features = [
   { icon: QrCode, title: "QR-код для столика", desc: "Гость сканирует — сразу видит ваше меню. Без приложений и загрузок." },
@@ -91,12 +99,27 @@ export default function Home() {
         </div>
       </section>
       {/* Footer */}
-      <footer className="border-t border-gray-100 py-6">
-        <div className="mx-auto max-w-4xl px-6 flex items-center justify-between">
-          <span className="text-xs text-gray-300 font-medium">© {new Date().getFullYear()} QR Menu</span>
-          <Link href="/superadmin" className="text-[10px] text-gray-200 hover:text-gray-400 transition-colors">
-            SA
-          </Link>
+      <footer className="border-t border-gray-100 py-10">
+        <div className="mx-auto max-w-4xl px-6">
+          <nav className="flex flex-wrap justify-center gap-x-6 gap-y-2">
+            {footerLinks.map((l) => (
+              <Link
+                key={l.href}
+                href={l.href}
+                className="text-sm font-bold text-gray-400 transition-colors hover:text-[#2563eb]"
+              >
+                {l.label}
+              </Link>
+            ))}
+          </nav>
+          <div className="mt-5 flex items-center justify-center gap-2">
+            <span className="text-center text-xs font-medium text-gray-300">
+              © {new Date().getFullYear()} {COMPANY.brand} · {COMPANY.legalName} · ИНН {COMPANY.inn}
+            </span>
+            <Link href="/superadmin" className="text-[10px] text-gray-200 transition-colors hover:text-gray-400">
+              SA
+            </Link>
+          </div>
         </div>
       </footer>
     </div>
