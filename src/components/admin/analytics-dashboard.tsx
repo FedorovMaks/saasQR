@@ -126,35 +126,35 @@ export function AnalyticsDashboard({ venue }: { venue: Venue }) {
       ) : data ? (
         <div className="space-y-5">
           {/* Summary cards */}
-          <div className="grid grid-cols-3 gap-4">
-            <div className="rounded-3xl bg-white p-5 shadow-[0_2px_12px_rgba(0,0,0,0.06)]">
-              <div className="flex items-center gap-2 mb-3">
-                <div className="h-9 w-9 rounded-2xl bg-green-50 flex items-center justify-center">
-                  <TrendingUp className="h-4 w-4 text-green-600" />
+          <div className="grid grid-cols-3 gap-2.5 sm:gap-4">
+            <div className="min-w-0 rounded-3xl bg-white p-3 sm:p-5 shadow-[0_2px_12px_rgba(0,0,0,0.06)]">
+              <div className="flex items-center gap-1.5 sm:gap-2 mb-2 sm:mb-3">
+                <div className="h-7 w-7 sm:h-9 sm:w-9 rounded-xl sm:rounded-2xl bg-green-50 flex items-center justify-center shrink-0">
+                  <TrendingUp className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-green-600" />
                 </div>
-                <span className="text-sm font-bold text-gray-400">Выручка</span>
+                <span className="text-xs sm:text-sm font-bold text-gray-400 truncate">Выручка</span>
               </div>
-              <p className="text-2xl font-black">{formatPrice(data.totalRevenue)}</p>
+              <p className="text-lg sm:text-2xl font-black truncate">{formatPrice(data.totalRevenue)}</p>
             </div>
 
-            <div className="rounded-3xl bg-white p-5 shadow-[0_2px_12px_rgba(0,0,0,0.06)]">
-              <div className="flex items-center gap-2 mb-3">
-                <div className="h-9 w-9 rounded-2xl bg-blue-50 flex items-center justify-center">
-                  <ShoppingBag className="h-4 w-4 text-[#2563eb]" />
+            <div className="min-w-0 rounded-3xl bg-white p-3 sm:p-5 shadow-[0_2px_12px_rgba(0,0,0,0.06)]">
+              <div className="flex items-center gap-1.5 sm:gap-2 mb-2 sm:mb-3">
+                <div className="h-7 w-7 sm:h-9 sm:w-9 rounded-xl sm:rounded-2xl bg-blue-50 flex items-center justify-center shrink-0">
+                  <ShoppingBag className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-[#2563eb]" />
                 </div>
-                <span className="text-sm font-bold text-gray-400">Заказы</span>
+                <span className="text-xs sm:text-sm font-bold text-gray-400 truncate">Заказы</span>
               </div>
-              <p className="text-2xl font-black">{data.orderCount}</p>
+              <p className="text-lg sm:text-2xl font-black truncate">{data.orderCount}</p>
             </div>
 
-            <div className="rounded-3xl bg-white p-5 shadow-[0_2px_12px_rgba(0,0,0,0.06)]">
-              <div className="flex items-center gap-2 mb-3">
-                <div className="h-9 w-9 rounded-2xl bg-amber-50 flex items-center justify-center">
-                  <Receipt className="h-4 w-4 text-amber-600" />
+            <div className="min-w-0 rounded-3xl bg-white p-3 sm:p-5 shadow-[0_2px_12px_rgba(0,0,0,0.06)]">
+              <div className="flex items-center gap-1.5 sm:gap-2 mb-2 sm:mb-3">
+                <div className="h-7 w-7 sm:h-9 sm:w-9 rounded-xl sm:rounded-2xl bg-amber-50 flex items-center justify-center shrink-0">
+                  <Receipt className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-amber-600" />
                 </div>
-                <span className="text-sm font-bold text-gray-400">Ср. чек</span>
+                <span className="text-xs sm:text-sm font-bold text-gray-400 truncate">Ср. чек</span>
               </div>
-              <p className="text-2xl font-black">{formatPrice(data.avgCheck)}</p>
+              <p className="text-lg sm:text-2xl font-black truncate">{formatPrice(data.avgCheck)}</p>
             </div>
           </div>
 
