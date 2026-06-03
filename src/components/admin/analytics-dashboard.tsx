@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
-import { formatPrice } from "@/lib/utils";
+import { formatPrice, cn } from "@/lib/utils";
 import {
   ArrowLeft,
   TrendingUp,
@@ -164,42 +164,66 @@ export function AnalyticsDashboard({ venue }: { venue: Venue }) {
               <h3 className="text-sm font-bold text-gray-400 uppercase tracking-wide mb-5">
                 Выручка по дням
               </h3>
-              <div className="flex items-end gap-1.5" style={{ height: 192 }}>
-                {data.chart.map((point) => {
-                  const barH =
-                    maxRevenue > 0
-                      ? Math.max(Math.round((point.revenue / maxRevenue) * 160), 3)
-                      : 3;
-                  return (
+              {(() => {
+                const many = data.chart.length > 14;
+                const gapClass = many ? "gap-0.5" : "gap-1.5";
+                const labelEvery = many ? Math.ceil(data.chart.length / 8) : 1;
+                return (
+                  <>
+                    {/* Bars */}
                     <div
-                      key={point.date}
-                      className="flex-1 relative flex flex-col justify-end items-center group"
-                      style={{ height: 192 }}
+                      className={cn("flex items-end", gapClass)}
+                      style={{ height: 176 }}
                     >
-                      {/* Tooltip */}
-                      <div className="absolute -top-1 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity text-center pointer-events-none whitespace-nowrap z-10">
-                        <p className="text-xs font-black text-[#2563eb]">
-                          {formatPrice(point.revenue)}
-                        </p>
-                        <p className="text-[10px] font-bold text-gray-400">
-                          {point.orders} зак.
-                        </p>
-                      </div>
-                      {/* Bar */}
-                      <div
-                        className="w-full rounded-t-lg bg-[#2563eb]/80 hover:bg-[#2563eb] transition-all cursor-pointer"
-                        style={{ height: barH, minHeight: 3 }}
-                      />
-                      {/* Date label */}
-                      <span className="text-[10px] font-bold text-gray-400 truncate w-full text-center mt-1.5 shrink-0">
-                        {data.chart.length <= 14
-                          ? formatShortDate(point.date)
-                          : point.date.slice(8)}
-                      </span>
+                      {data.chart.map((point) => {
+                        const barH =
+                          maxRevenue > 0
+                            ? Math.max(
+                                Math.round((point.revenue / maxRevenue) * 160),
+                                3
+                              )
+                            : 3;
+                        return (
+                          <div
+                            key={point.date}
+                            className="flex-1 min-w-0 relative flex flex-col justify-end group h-full"
+                          >
+                            {/* Tooltip */}
+                            <div className="absolute -top-1 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity text-center pointer-events-none whitespace-nowrap z-10">
+                              <p className="text-xs font-black text-[#2563eb]">
+                                {formatPrice(point.revenue)}
+                              </p>
+                              <p className="text-[10px] font-bold text-gray-400">
+                                {point.orders} зак.
+                              </p>
+                            </div>
+                            {/* Bar */}
+                            <div
+                              className="w-full rounded-t-lg bg-[#2563eb]/80 hover:bg-[#2563eb] transition-all cursor-pointer"
+                              style={{ height: barH, minHeight: 3 }}
+                            />
+                          </div>
+                        );
+                      })}
                     </div>
-                  );
-                })}
-              </div>
+                    {/* Date labels (sparse when many) */}
+                    <div className={cn("flex mt-2", gapClass)}>
+                      {data.chart.map((point, i) => (
+                        <span
+                          key={point.date}
+                          className="flex-1 min-w-0 text-center text-[10px] font-bold text-gray-400 whitespace-nowrap"
+                        >
+                          {i % labelEvery === 0
+                            ? many
+                              ? point.date.slice(8)
+                              : formatShortDate(point.date)
+                            : ""}
+                        </span>
+                      ))}
+                    </div>
+                  </>
+                );
+              })()}
             </div>
           )}
 
