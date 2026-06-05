@@ -2,14 +2,26 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getApiUser, unauthorized } from "@/lib/auth-guard";
 import { emitOrderEvent } from "@/lib/order-events";
+import { reconcileOrderPayment } from "@/lib/order-reconcile";
 import { z } from "zod";
 
-// Public GET — guest polls for order status (no auth required)
+// Public GET — guest polls for order status (no auth required).
+//
+// Primary payment confirmation is the YooKassa webhook, but it can be delayed
+// or not delivered (e.g. for freshly-activated shops). As a fallback we
+// reconcile the order's payment against YooKassa on each poll, so it flips to
+// PAID even if the webhook never arrives.
 export async function GET(
   _req: Request,
   { params }: { params: Promise<{ orderId: string }> }
 ) {
   const { orderId } = await params;
+
+  try {
+    await reconcileOrderPayment(orderId);
+  } catch {
+    // never break status polling because of a reconcile error
+  }
 
   const order = await prisma.order.findUnique({
     where: { id: orderId },
