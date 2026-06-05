@@ -409,6 +409,14 @@ export function VenueForm({ venue, userPlan = "BASIC" }: VenueFormProps) {
                   Заполните — и мы автоматически создадим публичную страницу с
                   офертой и реквизитами. Её ссылку вставите в ЮKassa при подключении.
                 </p>
+                <a
+                  href="/admin/help/payments"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="mt-2 inline-flex items-center gap-1.5 text-xs font-bold text-[#2563eb] hover:underline"
+                >
+                  📘 Как подключить оплату — пошаговая инструкция →
+                </a>
               </div>
 
               <div className="space-y-2">
