@@ -8,8 +8,9 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { slugify } from "@/lib/utils";
 import { toast } from "sonner";
-import { Check, X, Loader2, Lock } from "lucide-react";
+import { Check, X, Loader2, Lock, Copy } from "lucide-react";
 import { ImageUpload } from "@/components/admin/image-upload";
+import { SITE_URL } from "@/lib/config";
 
 const PRESET_COLORS = [
   "#2563eb", "#dc2626", "#16a34a", "#7c3aed", "#ea580c",
@@ -39,6 +40,12 @@ interface VenueFormProps {
     accentColor: string;
     yookassaShopId: string | null;
     yookassaSecretKey: string | null;
+    legalForm: string | null;
+    legalName: string | null;
+    legalInn: string | null;
+    legalOgrn: string | null;
+    legalEmail: string | null;
+    legalPhone: string | null;
   };
   userPlan?: string;
 }
@@ -56,6 +63,12 @@ export function VenueForm({ venue, userPlan = "BASIC" }: VenueFormProps) {
   const [hue, setHue] = useState(220); // default blue
   const [yookassaShopId, setYookassaShopId] = useState(venue?.yookassaShopId || "");
   const [yookassaSecretKey, setYookassaSecretKey] = useState(venue?.yookassaSecretKey || "");
+  const [legalForm, setLegalForm] = useState(venue?.legalForm || "");
+  const [legalName, setLegalName] = useState(venue?.legalName || "");
+  const [legalInn, setLegalInn] = useState(venue?.legalInn || "");
+  const [legalOgrn, setLegalOgrn] = useState(venue?.legalOgrn || "");
+  const [legalEmail, setLegalEmail] = useState(venue?.legalEmail || "");
+  const [legalPhone, setLegalPhone] = useState(venue?.legalPhone || "");
   const [slugManuallyEdited, setSlugManuallyEdited] = useState(!!venue);
   const [slugStatus, setSlugStatus] = useState<
     "idle" | "checking" | "available" | "taken"
@@ -142,6 +155,12 @@ export function VenueForm({ venue, userPlan = "BASIC" }: VenueFormProps) {
           accentColor: canCustomizeDesign ? accentColor : undefined,
           yookassaShopId: yookassaShopId || undefined,
           yookassaSecretKey: yookassaSecretKey || undefined,
+          legalForm: legalForm || undefined,
+          legalName: legalName || undefined,
+          legalInn: legalInn || undefined,
+          legalOgrn: legalOgrn || undefined,
+          legalEmail: legalEmail || undefined,
+          legalPhone: legalPhone || undefined,
         }),
       });
 
@@ -379,6 +398,109 @@ export function VenueForm({ venue, userPlan = "BASIC" }: VenueFormProps) {
             </div>
           )}
 
+          {/* Legal info → auto-generated offer/requisites page */}
+          {venue && (
+            <div className="space-y-4 rounded-2xl border border-dashed border-gray-200 p-4">
+              <div>
+                <h4 className="text-sm font-bold">
+                  Юридическая информация (для подключения оплаты)
+                </h4>
+                <p className="text-xs text-muted-foreground mt-0.5">
+                  Заполните — и мы автоматически создадим публичную страницу с
+                  офертой и реквизитами. Её ссылку вставите в ЮKassa при подключении.
+                </p>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="legalForm">Форма</Label>
+                <select
+                  id="legalForm"
+                  value={legalForm}
+                  onChange={(e) => setLegalForm(e.target.value)}
+                  disabled={loading}
+                  className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  <option value="">— выберите —</option>
+                  <option value="Самозанятый">Самозанятый (НПД)</option>
+                  <option value="ИП">ИП</option>
+                  <option value="ООО">ООО</option>
+                </select>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="legalName">ФИО / Наименование</Label>
+                <Input
+                  id="legalName"
+                  value={legalName}
+                  onChange={(e) => setLegalName(e.target.value)}
+                  placeholder="Иванов Иван Иванович / ООО «Ромашка»"
+                  disabled={loading}
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-2">
+                  <Label htmlFor="legalInn">ИНН</Label>
+                  <Input
+                    id="legalInn"
+                    value={legalInn}
+                    onChange={(e) => setLegalInn(e.target.value)}
+                    placeholder="590423271267"
+                    disabled={loading}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="legalOgrn">ОГРН / ОГРНИП</Label>
+                  <Input
+                    id="legalOgrn"
+                    value={legalOgrn}
+                    onChange={(e) => setLegalOgrn(e.target.value)}
+                    placeholder="если есть"
+                    disabled={loading}
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-2">
+                  <Label htmlFor="legalEmail">E-mail</Label>
+                  <Input
+                    id="legalEmail"
+                    value={legalEmail}
+                    onChange={(e) => setLegalEmail(e.target.value)}
+                    placeholder="mail@example.ru"
+                    disabled={loading}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="legalPhone">Телефон</Label>
+                  <Input
+                    id="legalPhone"
+                    value={legalPhone}
+                    onChange={(e) => setLegalPhone(e.target.value)}
+                    placeholder="+7 999 123-45-67"
+                    disabled={loading}
+                  />
+                </div>
+              </div>
+
+              <div className="rounded-xl bg-blue-50 p-3 space-y-2.5">
+                <p className="text-xs font-bold text-[#2563eb]">
+                  Готовые ссылки для ЮKassa:
+                </p>
+                <CopyableUrl label="Адрес сайта" url={`${SITE_URL}/${venue.slug}`} />
+                <CopyableUrl
+                  label="Страница с реквизитами и офертой"
+                  url={`${SITE_URL}/${venue.slug}/info`}
+                />
+                <p className="text-[11px] text-blue-500/80">
+                  Сначала заполните данные выше и сохраните — затем вставьте эти
+                  ссылки в форму подключения ЮKassa.
+                </p>
+              </div>
+            </div>
+          )}
+
           <div className="flex gap-3 pt-2">
             <Button type="submit" disabled={loading || slugStatus === "taken"}>
               {loading ? (
@@ -404,5 +526,37 @@ export function VenueForm({ venue, userPlan = "BASIC" }: VenueFormProps) {
         </CardContent>
       </form>
     </Card>
+  );
+}
+
+function CopyableUrl({ label, url }: { label: string; url: string }) {
+  const [copied, setCopied] = useState(false);
+  return (
+    <div className="flex items-center gap-2">
+      <div className="min-w-0 flex-1">
+        <p className="text-[11px] font-semibold text-gray-500">{label}</p>
+        <p className="truncate font-mono text-xs text-gray-700">{url}</p>
+      </div>
+      <button
+        type="button"
+        onClick={async () => {
+          try {
+            await navigator.clipboard.writeText(url);
+            setCopied(true);
+            toast.success("Ссылка скопирована");
+            setTimeout(() => setCopied(false), 2000);
+          } catch {
+            toast.error("Не удалось скопировать");
+          }
+        }}
+        className="shrink-0 inline-flex h-8 w-8 items-center justify-center rounded-lg bg-white text-[#2563eb] transition-colors hover:bg-blue-100"
+      >
+        {copied ? (
+          <Check className="h-4 w-4 text-green-500" />
+        ) : (
+          <Copy className="h-4 w-4" />
+        )}
+      </button>
+    </div>
   );
 }

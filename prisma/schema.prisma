@@ -101,6 +101,14 @@ model Venue {
   yookassaShopId    String?
   yookassaSecretKey String?
 
+  // Legal info for auto-generated payment-onboarding pages (offer + requisites)
+  legalForm  String? // "Самозанятый" | "ИП" | "ООО"
+  legalName  String?
+  legalInn   String?
+  legalOgrn  String?
+  legalEmail String?
+  legalPhone String?
+
   owner        User          @relation(fields: [ownerId], references: [id], onDelete: Cascade)
   categories   Category[]
   orders       Order[]

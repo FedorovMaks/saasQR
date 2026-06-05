@@ -39,6 +39,13 @@ export const venueSchema = z.object({
   accentColor: z.string().regex(/^#[0-9a-fA-F]{6}$/, "Некорректный цвет").optional(),
   yookassaShopId: z.string().max(50).optional(),
   yookassaSecretKey: z.string().max(200).optional(),
+  // Legal info for the auto-generated offer/requisites page
+  legalForm: z.string().max(50).optional(),
+  legalName: z.string().max(200).optional(),
+  legalInn: z.string().max(20).optional(),
+  legalOgrn: z.string().max(20).optional(),
+  legalEmail: z.string().max(200).optional(),
+  legalPhone: z.string().max(50).optional(),
 });
 
 export type VenueInput = z.infer<typeof venueSchema>;
