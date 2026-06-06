@@ -279,8 +279,11 @@ export default function PaymentsHelpPage() {
             </code>
           </li>
           <li>
-            <b>события:</b> отметьте <code>payment.succeeded</code> и{" "}
-            <code>payment.canceled</code>
+            <b>события:</b> поставьте галочки <b>только</b> на{" "}
+            <code>payment.succeeded</code> и <code>payment.canceled</code>{" "}
+            (остальные — <code>waiting_for_capture</code>,{" "}
+            <code>payment_method.active</code>, <code>refund.succeeded</code> —{" "}
+            <b>не нужно</b>).
           </li>
           <li>
             нажмите <b>«Сохранить»</b> — без этого уведомления не приходят.
@@ -288,7 +291,7 @@ export default function PaymentsHelpPage() {
         </ul>
         <Screenshot
           n={13}
-          caption="Форма: URL + события payment.succeeded / payment.canceled → Сохранить"
+          caption="Форма: URL + галочки payment.succeeded и payment.canceled → Сохранить"
         />
 
         <H3>3. Внесите ключи в QRMenu</H3>
