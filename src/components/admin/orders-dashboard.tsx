@@ -399,6 +399,9 @@ function OrderCard({
 }) {
   const config = STATUS_CONFIG[order.status] || STATUS_CONFIG.NEW;
   const nextStatuses = STATUS_FLOW[order.status] || [];
+  // Block accepting/forwarding an order while its online payment is pending,
+  // so a waiter can't accept it before the guest has paid.
+  const awaitingPayment = order.paymentStatus === "PENDING";
 
   return (
     <Card
@@ -493,28 +496,38 @@ function OrderCard({
 
         {/* Action buttons */}
         {nextStatuses.length > 0 && (
-          <div className="flex gap-2">
-            {nextStatuses.map((s) => {
-              const sConfig = STATUS_CONFIG[s];
-              const isCancelled = s === "CANCELLED";
-              return (
-                <Button
-                  key={s}
-                  size="sm"
-                  variant={isCancelled ? "outline" : "default"}
-                  className={`flex-1 rounded-xl ${
-                    isCancelled
-                      ? "text-destructive hover:text-destructive border-destructive/20"
-                      : "shadow-md shadow-primary/15"
-                  }`}
-                  disabled={isUpdating}
-                  onClick={() => onUpdateStatus(order.id, s)}
-                >
-                  {sConfig?.icon}
-                  <span className="ml-1">{sConfig?.label || s}</span>
-                </Button>
-              );
-            })}
+          <div className="space-y-2">
+            {awaitingPayment && (
+              <p className="flex items-center gap-1 text-xs font-semibold text-amber-600">
+                <Clock className="h-3 w-3" />
+                Ожидает оплаты — приём заблокирован
+              </p>
+            )}
+            <div className="flex gap-2">
+              {nextStatuses.map((s) => {
+                const sConfig = STATUS_CONFIG[s];
+                const isCancelled = s === "CANCELLED";
+                // While awaiting payment, allow only «Отменить»
+                const blocked = awaitingPayment && !isCancelled;
+                return (
+                  <Button
+                    key={s}
+                    size="sm"
+                    variant={isCancelled ? "outline" : "default"}
+                    className={`flex-1 rounded-xl ${
+                      isCancelled
+                        ? "text-destructive hover:text-destructive border-destructive/20"
+                        : "shadow-md shadow-primary/15"
+                    }`}
+                    disabled={isUpdating || blocked}
+                    onClick={() => onUpdateStatus(order.id, s)}
+                  >
+                    {sConfig?.icon}
+                    <span className="ml-1">{sConfig?.label || s}</span>
+                  </Button>
+                );
+              })}
+            </div>
           </div>
         )}
       </CardContent>

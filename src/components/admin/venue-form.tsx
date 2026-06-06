@@ -373,6 +373,8 @@ export function VenueForm({ venue, userPlan = "BASIC" }: VenueFormProps) {
                   onChange={(e) => setYookassaShopId(e.target.value)}
                   placeholder="123456"
                   disabled={loading}
+                  autoComplete="off"
+                  inputMode="numeric"
                 />
               </div>
               <div className="space-y-2">
@@ -384,6 +386,7 @@ export function VenueForm({ venue, userPlan = "BASIC" }: VenueFormProps) {
                   onChange={(e) => setYookassaSecretKey(e.target.value)}
                   placeholder="live_..."
                   disabled={loading}
+                  autoComplete="new-password"
                 />
               </div>
               {yookassaShopId && yookassaSecretKey ? (
