@@ -63,6 +63,9 @@ export function VenueForm({ venue, userPlan = "BASIC" }: VenueFormProps) {
   const [hue, setHue] = useState(220); // default blue
   const [yookassaShopId, setYookassaShopId] = useState(venue?.yookassaShopId || "");
   const [yookassaSecretKey, setYookassaSecretKey] = useState(venue?.yookassaSecretKey || "");
+  // Anti-autofill: keep the payment-key fields read-only until the user
+  // focuses them, so the browser can't auto-fill saved logins/passwords.
+  const [keysLocked, setKeysLocked] = useState(true);
   const [legalForm, setLegalForm] = useState(venue?.legalForm || "");
   const [legalName, setLegalName] = useState(venue?.legalName || "");
   const [legalInn, setLegalInn] = useState(venue?.legalInn || "");
@@ -369,24 +372,30 @@ export function VenueForm({ venue, userPlan = "BASIC" }: VenueFormProps) {
                 <Label htmlFor="yookassaShopId">Shop ID</Label>
                 <Input
                   id="yookassaShopId"
+                  name="yk-shop-id"
                   value={yookassaShopId}
                   onChange={(e) => setYookassaShopId(e.target.value)}
                   placeholder="123456"
                   disabled={loading}
                   autoComplete="off"
                   inputMode="numeric"
+                  readOnly={keysLocked}
+                  onFocus={() => setKeysLocked(false)}
                 />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="yookassaSecretKey">Секретный ключ</Label>
                 <Input
                   id="yookassaSecretKey"
+                  name="yk-secret-key"
                   type="password"
                   value={yookassaSecretKey}
                   onChange={(e) => setYookassaSecretKey(e.target.value)}
                   placeholder="live_..."
                   disabled={loading}
                   autoComplete="new-password"
+                  readOnly={keysLocked}
+                  onFocus={() => setKeysLocked(false)}
                 />
               </div>
               {yookassaShopId && yookassaSecretKey ? (
