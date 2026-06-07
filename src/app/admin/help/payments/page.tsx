@@ -1,12 +1,19 @@
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 
-function Screenshot({ n, caption }: { n: number; caption: string }) {
+function Screenshot({ src, caption }: { src: string; caption: string }) {
   return (
-    <div className="rounded-2xl border-2 border-dashed border-gray-300 bg-gray-50 px-4 py-6 text-center">
-      <p className="text-sm font-bold text-gray-400">📷 Скрин {n}</p>
-      <p className="mt-1 text-xs text-gray-400">{caption}</p>
-    </div>
+    <figure className="rounded-2xl border border-gray-200 bg-gray-50 p-2">
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src={src}
+        alt={caption}
+        className="mx-auto block max-w-full rounded-lg"
+      />
+      <figcaption className="px-2 pb-1 pt-2 text-center text-xs font-semibold text-gray-400">
+        {caption}
+      </figcaption>
+    </figure>
   );
 }
 
@@ -30,9 +37,7 @@ function Note({
 }
 
 function H2({ children }: { children: React.ReactNode }) {
-  return (
-    <h2 className="pt-4 text-2xl font-black text-gray-900">{children}</h2>
-  );
+  return <h2 className="pt-4 text-2xl font-black text-gray-900">{children}</h2>;
 }
 
 function H3({ children }: { children: React.ReactNode }) {
@@ -109,7 +114,7 @@ export default function PaymentsHelpPage() {
           Этот вариант даёт онлайн-приём платежей (ключи API + webhook), которые
           использует QRMenu.
         </Note>
-        <Screenshot n={1} caption="Выбор «В онлайн»" />
+        <Screenshot src="/guide/1.png" caption="Выбор «В онлайн»" />
 
         <p className="font-bold text-gray-800">
           2.2. «Как планируете принимать платежи?»
@@ -121,7 +126,6 @@ export default function PaymentsHelpPage() {
           Ваш «сайт» — это страница меню tap-menu.ru/… Остальные варианты (ссылка
           на оплату, бот, мобильное SDK) — не наш случай.
         </Note>
-        <Screenshot n={2} caption="Выбор «На своём сайте»" />
 
         <p className="font-bold text-gray-800">
           2.3. «Платежи на сайте»: адрес сайта и реквизиты ⭐ (самый важный шаг)
@@ -129,11 +133,15 @@ export default function PaymentsHelpPage() {
         <p>
           <b>Сначала в QRMenu:</b> заведение → «Настройки» → блок «Юридическая
           информация» → заполните форму (Самозанятый/ИП/ООО), ФИО/наименование,
-          ИНН, e-mail, телефон → «Сохранить». Там же скопируйте две готовые
-          ссылки.
+          ИНН, e-mail, телефон → «Сохранить». Там же скопируйте <b>две готовые
+          ссылки</b>.
         </p>
+        <Screenshot
+          src="/guide/6.png"
+          caption="QRMenu: заполните юр-данные и скопируйте 2 ссылки"
+        />
         <p>
-          <b>Теперь на экране ЮKassa:</b>
+          <b>Теперь на экране ЮKassa</b> вставьте эти ссылки:
         </p>
         <ul className="list-disc space-y-1 pl-5">
           <li>
@@ -162,7 +170,10 @@ export default function PaymentsHelpPage() {
           контакты и реквизиты (ИНН) → /info; способ получения заказа → заказ
           подаётся гостю в заведении (в оферте).
         </Note>
-        <Screenshot n={3} caption="Поля «Адрес сайта» и «Ссылка на реквизиты»" />
+        <Screenshot
+          src="/guide/2.png"
+          caption="ЮKassa: «Адрес сайта» и «Ссылка на реквизиты»"
+        />
 
         <p className="font-bold text-gray-800">2.4. «Данные о бизнесе»</p>
         <ul className="list-disc space-y-1 pl-5">
@@ -180,7 +191,10 @@ export default function PaymentsHelpPage() {
         <Note tone="amber">
           Это ваши личные банковские данные — вводите сами.
         </Note>
-        <Screenshot n={4} caption="Цель деятельности + БИК и номер счёта" />
+        <Screenshot
+          src="/guide/3.png"
+          caption="Цель деятельности + БИК и номер счёта"
+        />
 
         <p className="font-bold text-gray-800">2.5. «Паспортные данные»</p>
         <p>
@@ -188,7 +202,7 @@ export default function PaymentsHelpPage() {
           Загрузите цветной снимок паспорта (разворот с фото; цветное, чёткое,
           до 20 МБ, PDF/PNG/JPG/HEIC). → «Продолжить».
         </p>
-        <Screenshot n={5} caption="Паспортные данные + загрузка скана" />
+        <Screenshot src="/guide/4.png" caption="Паспортные данные + загрузка скана" />
 
         <p className="font-bold text-gray-800">
           2.6. «Проверьте данные перед отправкой»
@@ -197,7 +211,7 @@ export default function PaymentsHelpPage() {
           Разверните все три раздела, проверьте (особенно ИНН, адрес сайта,
           ссылку /info) → «Отправить на проверку».
         </p>
-        <Screenshot n={6} caption="Отправка анкеты на проверку" />
+        <Screenshot src="/guide/5.png" caption="Отправка анкеты на проверку" />
 
         <H3>Шаг 3. Проверка</H3>
         <p>
@@ -216,12 +230,15 @@ export default function PaymentsHelpPage() {
           кабинет ЮKassa → нажмите <b>«Подписать договор»</b> → подтвердите кодом
           из СМС.
         </p>
-        <Screenshot n={7} caption="Письмо «Договор готов» → подписать в кабинете" />
+        <Screenshot
+          src="/guide/7.png"
+          caption="Письмо «Договор готов» → подписать в кабинете"
+        />
         <p>
           После подписания ЮKassa автоматически подключит <b>СБП</b> — придёт
           письмо «Подключили вам СБП». Дополнительно настраивать ничего не нужно.
         </p>
-        <Screenshot n={8} caption="Письмо «Подключили вам СБП»" />
+        <Screenshot src="/guide/8.png" caption="Письмо «Подключили вам СБП»" />
         <Note>
           В письме про СБП будут «требования НСПК» к логотипу. Для оплаты через
           QRMenu <b>добавлять логотип СБП на сайт не нужно</b>: оплата проходит на
@@ -235,9 +252,10 @@ export default function PaymentsHelpPage() {
           <b>«Интеграция»</b> (ключи и webhook) станет доступен <b>только после</b>{" "}
           этой проверки — дождитесь уведомления.
         </p>
+        <Screenshot src="/guide/9.png" caption="«Проверяем договор» — ждём" />
         <Screenshot
-          n={9}
-          caption="«Проверяем договор» — Интеграция откроется после неё"
+          src="/guide/10.png"
+          caption="«Проверили договор — всё отлично» — можно к интеграции"
         />
 
         {/* ФИНАЛЬНЫЕ ШАГИ */}
@@ -252,15 +270,21 @@ export default function PaymentsHelpPage() {
           В левом меню раскройте <b>«Интеграция»</b> → откройте <b>«Ключи API»</b>.
           <b> Shop ID</b> (число) виден в левом меню под названием магазина.
         </p>
-        <Screenshot n={10} caption="«Интеграция» → «Ключи API» → «Выпустить ключ»" />
+        <Screenshot
+          src="/guide/12.png"
+          caption="Левое меню → раскрыть «Интеграция» → «Ключи API»"
+        />
         <p>
-          В разделе <b>«Секретный ключ»</b> нажмите <b>«Выпустить ключ»</b>. Ключ{" "}
-          <code className="text-[#2563eb]">live_…</code> появится в окне и будет
-          доступен <b>только один раз</b> — нажмите <b>«Скопировать»</b> (или
-          «Скачать в файле») и сохраните в надёжном месте.
+          В разделе <b>«Секретный ключ»</b> нажмите <b>«Выпустить ключ»</b>.
+        </p>
+        <Screenshot src="/guide/13.png" caption="«Ключи API» → «Выпустить ключ»" />
+        <p>
+          Ключ <code className="text-[#2563eb]">live_…</code> появится в окне и
+          будет доступен <b>только один раз</b> — нажмите <b>«Скопировать»</b>{" "}
+          (или «Скачать в файле») и сохраните в надёжном месте.
         </p>
         <Screenshot
-          n={11}
+          src="/guide/14.png"
           caption="Окно «Скопируйте ключ» — сохранить (показывается один раз!)"
         />
 
@@ -269,7 +293,10 @@ export default function PaymentsHelpPage() {
           ЮKassa → «Интеграция» → <b>«HTTP-уведомления»</b> → нажмите{" "}
           <b>«Изменить настройки»</b>.
         </p>
-        <Screenshot n={12} caption="HTTP-уведомления → «Изменить настройки»" />
+        <Screenshot
+          src="/guide/15.png"
+          caption="HTTP-уведомления → «Изменить настройки»"
+        />
         <p>В открывшейся форме:</p>
         <ul className="list-disc space-y-1 pl-5">
           <li>
@@ -281,16 +308,14 @@ export default function PaymentsHelpPage() {
           <li>
             <b>события:</b> поставьте галочки <b>только</b> на{" "}
             <code>payment.succeeded</code> и <code>payment.canceled</code>{" "}
-            (остальные — <code>waiting_for_capture</code>,{" "}
-            <code>payment_method.active</code>, <code>refund.succeeded</code> —{" "}
-            <b>не нужно</b>).
+            (остальные — не нужно).
           </li>
           <li>
             нажмите <b>«Сохранить»</b> — без этого уведомления не приходят.
           </li>
         </ul>
         <Screenshot
-          n={13}
+          src="/guide/16.png"
           caption="Форма: URL + галочки payment.succeeded и payment.canceled → Сохранить"
         />
 
