@@ -14,6 +14,7 @@ type PlanConfig = {
   extraVenuePrice: number;
   features: string[];
   highlighted?: boolean;
+  hidden?: boolean;
 };
 
 async function startCheckout(url: string, body: object): Promise<void> {
@@ -106,7 +107,9 @@ export function PlansGrid({
     }
   }
 
-  const entries = Object.entries(plans) as [Plan, PlanConfig][];
+  const entries = (Object.entries(plans) as [Plan, PlanConfig][]).filter(
+    ([, config]) => !config.hidden
+  );
 
   return (
     <div className="space-y-5">
@@ -143,7 +146,7 @@ export function PlansGrid({
         <p className="text-center text-sm font-semibold text-red-500">{error}</p>
       )}
 
-      <div className="grid gap-5 lg:grid-cols-3">
+      <div className="mx-auto grid max-w-3xl gap-5 sm:grid-cols-2">
         {entries.map(([planKey, planConfig]) => {
           const isCurrentPlan = isActive && currentPlan === planKey;
           const isHighlighted = planConfig.highlighted;
