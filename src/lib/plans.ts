@@ -37,11 +37,11 @@ export const PLANS: Record<Plan, PlanConfig> = {
   BUSINESS: {
     name: "BUSINESS",
     label: "Бизнес",
-    monthlyPrice: 2990,
-    yearlyPrice: 23990,
+    monthlyPrice: 3990,
+    yearlyPrice: 39990,
     maxVenues: 1,
     maxTables: 0, // безлимит
-    extraVenuePrice: 1990,
+    extraVenuePrice: 2990,
     highlighted: true,
     features: [
       "1 заведение",
@@ -62,7 +62,7 @@ export const PLANS: Record<Plan, PlanConfig> = {
     yearlyPrice: 99990,
     maxVenues: 5,
     maxTables: 0, // безлимит
-    extraVenuePrice: 1490,
+    extraVenuePrice: 2490,
     features: [
       "Всё из «Бизнеса»",
       "До 5 заведений включено",

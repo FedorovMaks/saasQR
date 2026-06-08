@@ -15,8 +15,8 @@ const rub = (n: number) => n.toLocaleString("ru-RU") + " ₽";
 const PLANS_DISPLAY = [
   {
     label: "Бизнес",
-    monthly: 2990,
-    yearly: 23990,
+    monthly: 3990,
+    yearly: 39990,
     highlighted: true,
     features: [
       "1 заведение",
