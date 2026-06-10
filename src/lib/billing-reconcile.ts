@@ -73,6 +73,39 @@ export async function reconcileUserPendingPayments(
     });
     if (claimed.count === 0) continue; // already handled elsewhere
 
+    if (record.type === "EXTRA_VENUE") {
+      // Create the venue from stored data
+      const venueData = record.venueData as {
+        name: string;
+        slug: string;
+        description?: string;
+        address?: string;
+        logoUrl?: string;
+        accentColor?: string;
+      } | null;
+
+      if (venueData) {
+        const existing = await prisma.venue.findUnique({
+          where: { slug: venueData.slug },
+        });
+        if (!existing) {
+          await prisma.venue.create({
+            data: {
+              name: venueData.name,
+              slug: venueData.slug,
+              description: venueData.description || null,
+              address: venueData.address || null,
+              logoUrl: venueData.logoUrl || null,
+              accentColor: venueData.accentColor || "#2563eb",
+              ownerId: record.userId,
+            },
+          });
+        }
+      }
+      activated = true;
+      continue;
+    }
+
     const periodStart = new Date();
     let periodEnd: Date;
     if (record.type === "TRIAL") {

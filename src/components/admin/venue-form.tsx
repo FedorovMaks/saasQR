@@ -48,9 +48,11 @@ interface VenueFormProps {
     legalPhone: string | null;
   };
   userPlan?: string;
+  isExtraVenue?: boolean;
+  extraVenuePrice?: number;
 }
 
-export function VenueForm({ venue, userPlan = "BASIC" }: VenueFormProps) {
+export function VenueForm({ venue, userPlan = "BASIC", isExtraVenue = false, extraVenuePrice }: VenueFormProps) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [name, setName] = useState(venue?.name || "");
@@ -146,25 +148,47 @@ export function VenueForm({ venue, userPlan = "BASIC" }: VenueFormProps) {
     setLoading(true);
 
     try {
+      const venuePayload = {
+        name, slug, description, address,
+        logoUrl: logoUrl || undefined,
+        accentColor: canCustomizeDesign ? accentColor : undefined,
+        yookassaShopId: yookassaShopId || undefined,
+        yookassaSecretKey: yookassaSecretKey || undefined,
+        legalForm: legalForm || undefined,
+        legalName: legalName || undefined,
+        legalInn: legalInn || undefined,
+        legalOgrn: legalOgrn || undefined,
+        legalEmail: legalEmail || undefined,
+        legalPhone: legalPhone || undefined,
+      };
+
+      // Extra venue: redirect to payment instead of direct creation
+      if (!venue && isExtraVenue) {
+        const res = await fetch("/api/billing/extra-venue", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ venue: venuePayload }),
+        });
+        const data = await res.json();
+        if (!res.ok) {
+          toast.error(data.error || "Ошибка создания платежа");
+          return;
+        }
+        if (data.confirmationUrl) {
+          window.location.href = data.confirmationUrl;
+          return;
+        }
+        toast.error("Платёжная ссылка не получена");
+        return;
+      }
+
       const url = venue ? `/api/venues/${venue.id}` : "/api/venues";
       const method = venue ? "PATCH" : "POST";
 
       const res = await fetch(url, {
         method,
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          name, slug, description, address,
-          logoUrl: logoUrl || undefined,
-          accentColor: canCustomizeDesign ? accentColor : undefined,
-          yookassaShopId: yookassaShopId || undefined,
-          yookassaSecretKey: yookassaSecretKey || undefined,
-          legalForm: legalForm || undefined,
-          legalName: legalName || undefined,
-          legalInn: legalInn || undefined,
-          legalOgrn: legalOgrn || undefined,
-          legalEmail: legalEmail || undefined,
-          legalPhone: legalPhone || undefined,
-        }),
+        body: JSON.stringify(venuePayload),
       });
 
       const data = await res.json();
@@ -193,6 +217,16 @@ export function VenueForm({ venue, userPlan = "BASIC" }: VenueFormProps) {
       </CardHeader>
       <form onSubmit={onSubmit}>
         <CardContent className="space-y-4">
+          {isExtraVenue && extraVenuePrice && (
+            <div className="rounded-xl bg-blue-50 border border-blue-100 p-4 text-sm">
+              <p className="font-bold text-[#2563eb]">
+                Доп. заведение — {extraVenuePrice.toLocaleString("ru-RU")} ₽/мес
+              </p>
+              <p className="text-gray-500 mt-1">
+                Заполните данные и нажмите «Оплатить» — после оплаты заведение будет создано автоматически.
+              </p>
+            </div>
+          )}
           <div className="space-y-2">
             <Label htmlFor="name">Название *</Label>
             <Input
@@ -526,10 +560,12 @@ export function VenueForm({ venue, userPlan = "BASIC" }: VenueFormProps) {
               {loading ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Сохранение...
+                  {isExtraVenue ? "Переход к оплате..." : "Сохранение..."}
                 </>
               ) : venue ? (
                 "Сохранить"
+              ) : isExtraVenue && extraVenuePrice ? (
+                `Оплатить и создать — ${extraVenuePrice.toLocaleString("ru-RU")} ₽`
               ) : (
                 "Создать заведение"
               )}

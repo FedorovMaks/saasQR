@@ -300,6 +300,7 @@ enum PaymentType {
   TRIAL
   SUBSCRIPTION
   RENEWAL
+  EXTRA_VENUE
 }
 
 model SubscriptionPayment {
@@ -313,6 +314,7 @@ model SubscriptionPayment {
   status          String      @default("pending") // pending, succeeded, cancelled
   periodStart     DateTime?
   periodEnd       DateTime?
+  venueData       Json?       // for EXTRA_VENUE: stored venue creation data until payment succeeds
   createdAt       DateTime    @default(now())
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)

@@ -44,6 +44,12 @@ export async function POST(req: Request) {
       return NextResponse.json({ ok: true });
     }
 
+    // ─── Extra venue payments (platform) ───
+    if (payment.metadata?.kind === "extra_venue") {
+      await handleExtraVenuePayment(event.event, payment);
+      return NextResponse.json({ ok: true });
+    }
+
     // ─── Order payments (per-venue) ───
     const orderId = payment.metadata?.order_id;
 
@@ -249,4 +255,92 @@ async function handleSubscriptionPayment(
       periodEnd,
     },
   });
+}
+
+/**
+ * Handle an extra venue payment. Verifies with YooKassa, then creates
+ * the venue from the stored venueData.
+ */
+async function handleExtraVenuePayment(
+  eventType: string,
+  payment: YooKassaPayment
+) {
+  const recordId = payment.metadata?.recordId;
+  const record =
+    (await prisma.subscriptionPayment.findUnique({
+      where: { yookassaId: payment.id },
+    })) ||
+    (recordId
+      ? await prisma.subscriptionPayment.findUnique({ where: { id: recordId } })
+      : null);
+
+  if (!record || record.type !== "EXTRA_VENUE") return;
+  if (record.status === "succeeded") return;
+
+  if (eventType === "payment.canceled") {
+    await prisma.subscriptionPayment.update({
+      where: { id: record.id },
+      data: { status: "cancelled" },
+    });
+    return;
+  }
+
+  if (eventType !== "payment.succeeded") return;
+
+  const creds = await getPlatformCredentials();
+  if (!creds) return;
+
+  let verified: YooKassaPayment;
+  try {
+    verified = await getPayment({
+      shopId: creds.shopId,
+      secretKey: creds.secretKey,
+      paymentId: payment.id,
+    });
+  } catch {
+    return;
+  }
+
+  if (verified.status !== "succeeded" || !verified.paid) return;
+  if (verified.metadata?.recordId !== record.id) return;
+
+  const expectedValue = (record.amount / 100).toFixed(2);
+  if (verified.amount?.value !== expectedValue) return;
+
+  const venueData = record.venueData as {
+    name: string;
+    slug: string;
+    description?: string;
+    address?: string;
+    logoUrl?: string;
+    accentColor?: string;
+  } | null;
+
+  if (!venueData) return;
+
+  // Atomic: only process once
+  const claimed = await prisma.subscriptionPayment.updateMany({
+    where: { id: record.id, status: "pending" },
+    data: { status: "succeeded", yookassaId: payment.id },
+  });
+  if (claimed.count === 0) return;
+
+  // Check slug isn't taken (could have been claimed between payment and now)
+  const existing = await prisma.venue.findUnique({
+    where: { slug: venueData.slug },
+  });
+
+  if (!existing) {
+    await prisma.venue.create({
+      data: {
+        name: venueData.name,
+        slug: venueData.slug,
+        description: venueData.description || null,
+        address: venueData.address || null,
+        logoUrl: venueData.logoUrl || null,
+        accentColor: venueData.accentColor || "#2563eb",
+        ownerId: record.userId,
+      },
+    });
+  }
 }

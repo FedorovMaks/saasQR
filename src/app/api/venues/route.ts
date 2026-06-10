@@ -56,6 +56,18 @@ export async function POST(req: Request) {
       );
     }
 
+    // Extra venue requires payment first — block direct creation
+    if ("isExtra" in limitCheck && limitCheck.isExtra) {
+      return NextResponse.json(
+        {
+          error: "Доп. заведение требует оплаты",
+          requiresPayment: true,
+          extraPrice: limitCheck.extraPrice,
+        },
+        { status: 402 }
+      );
+    }
+
     const existingVenue = await prisma.venue.findUnique({
       where: { slug },
     });
