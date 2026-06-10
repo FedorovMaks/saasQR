@@ -61,7 +61,7 @@ export function MenuManager({ venue }: { venue: Venue }) {
         <div className="flex items-center gap-3">
           <Link
             href="/admin"
-            className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-[#f0f2f8] text-gray-500 hover:bg-[#e4e8f2] transition-colors"
+            className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-[#f0f0f0] text-gray-500 hover:bg-[#e4e8f2] transition-colors"
           >
             <ArrowLeft className="h-4 w-4" />
           </Link>
@@ -75,7 +75,7 @@ export function MenuManager({ venue }: { venue: Venue }) {
         <Link
           href={`/${venue.slug}`}
           target="_blank"
-          className="inline-flex h-10 items-center gap-2 rounded-xl bg-[#f0f2f8] px-4 text-sm font-extrabold text-gray-600 hover:bg-[#e4e8f2] transition-colors"
+          className="inline-flex h-10 items-center gap-2 rounded-xl bg-[#f0f0f0] px-4 text-sm font-extrabold text-gray-600 hover:bg-[#e4e8f2] transition-colors"
         >
           <ExternalLink className="h-3 w-3" />
           Как гость

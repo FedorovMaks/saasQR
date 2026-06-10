@@ -10,7 +10,7 @@ export function PushToggle() {
 
   if (state === "loading") {
     return (
-      <button disabled className="inline-flex h-11 items-center gap-2 rounded-2xl bg-[#f0f2f8] px-5 text-sm font-extrabold text-gray-400">
+      <button disabled className="inline-flex h-11 items-center gap-2 rounded-2xl bg-[#f0f0f0] px-5 text-sm font-extrabold text-gray-400">
         <Loader2 className="h-4 w-4 animate-spin" />
       </button>
     );
@@ -85,7 +85,7 @@ export function PushToggle() {
   return (
     <button
       onClick={subscribe}
-      className="inline-flex h-11 items-center gap-2 rounded-2xl bg-[#2563eb] px-5 text-sm font-extrabold text-white shadow-md shadow-blue-500/15 transition-all hover:shadow-lg active:scale-[0.97]"
+      className="inline-flex h-11 items-center gap-2 rounded-2xl bg-[#3c6e71] px-5 text-sm font-extrabold text-white shadow-md shadow-none transition-all hover:shadow-lg active:scale-[0.97]"
     >
       <Bell className="h-4 w-4" />
       Включить уведомления

@@ -4,7 +4,7 @@
  * и в футере лендинга.
  */
 export const COMPANY = {
-  brand: "QRMenu",
+  brand: "TapMenu",
   domain: "tap-menu.ru",
   url: "https://tap-menu.ru",
   legalName: "Федоров Максим Дмитриевич",

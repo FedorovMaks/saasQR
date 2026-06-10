@@ -20,32 +20,32 @@ export default async function SuperAdminLayout({
   if (!user?.isSuperAdmin) redirect("/admin");
 
   return (
-    <div className="min-h-screen bg-gray-950 text-white">
+    <div className="min-h-screen bg-[#101014] text-[#c8c8c4]" data-theme="dark">
       {/* Top bar */}
-      <div className="border-b border-gray-800 bg-gray-900">
+      <div className="border-b border-white/10 bg-[#18181c]">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="flex h-14 items-center justify-between">
+          <div className="flex h-12 items-center justify-between">
             <div className="flex items-center gap-4">
               <Link href="/superadmin" className="flex items-center gap-2">
-                <div className="h-8 w-8 rounded-lg bg-red-600 flex items-center justify-center text-xs font-black">
+                <div className="h-7 w-7 rounded-sm bg-[#a82828] flex items-center justify-center text-[10px] font-bold uppercase text-white">
                   SA
                 </div>
-                <span className="text-sm font-extrabold text-white">Super Admin</span>
+                <span className="text-xs font-bold uppercase tracking-[0.08em] text-[#f0f0ee]">Super Admin</span>
               </Link>
-              <span className="text-xs text-gray-500 font-medium">
+              <span className="text-[10px] text-[#55555a] font-mono">
                 {session.user.email}
               </span>
             </div>
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-4">
               <Link
                 href="/admin"
-                className="text-xs font-bold text-gray-400 hover:text-white transition-colors"
+                className="text-[10px] font-bold uppercase tracking-[0.08em] text-[#55555a] hover:text-[#c8c8c4] transition-colors"
               >
-                Обычная панель
+                Панель
               </Link>
               <Link
                 href="/"
-                className="text-xs font-bold text-gray-400 hover:text-white transition-colors"
+                className="text-[10px] font-bold uppercase tracking-[0.08em] text-[#55555a] hover:text-[#c8c8c4] transition-colors"
               >
                 Сайт
               </Link>
@@ -54,7 +54,6 @@ export default async function SuperAdminLayout({
         </div>
       </div>
 
-      {/* Content */}
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-6">
         {children}
       </div>

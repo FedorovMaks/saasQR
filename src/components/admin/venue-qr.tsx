@@ -98,7 +98,7 @@ export function VenueQR({
   return (
     <div className="rounded-3xl bg-white p-6 shadow-[0_2px_12px_rgba(0,0,0,0.06)]">
       <div className="flex items-center gap-3 mb-5">
-        <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-[#2563eb]/10 text-[#2563eb]">
+        <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-[#3c6e71]/10 text-[#3c6e71]">
           <QrCode className="h-5 w-5" />
         </div>
         <div>
@@ -111,7 +111,7 @@ export function VenueQR({
 
       {/* QR Preview */}
       <div className="flex flex-col items-center">
-        <div className="rounded-2xl bg-white border-2 border-[#f0f2f8] p-4 mb-4">
+        <div className="rounded-2xl bg-white border-2 border-[#f0f0f0] p-4 mb-4">
           {qrDataUrl ? (
             <img
               src={qrDataUrl}
@@ -120,12 +120,12 @@ export function VenueQR({
               draggable={false}
             />
           ) : (
-            <div className="w-48 h-48 bg-[#f0f2f8] rounded-xl animate-pulse" />
+            <div className="w-48 h-48 bg-[#f0f0f0] rounded-xl animate-pulse" />
           )}
         </div>
 
         {/* Menu URL */}
-        <div className="w-full rounded-2xl bg-[#f0f2f8] px-4 py-3 mb-4">
+        <div className="w-full rounded-2xl bg-[#f0f0f0] px-4 py-3 mb-4">
           <p className="text-sm text-center font-bold text-gray-500 truncate">
             {menuUrl}
           </p>
@@ -135,20 +135,20 @@ export function VenueQR({
         <div className="flex gap-2.5 w-full">
           <button
             onClick={handleDownload}
-            className="flex-1 inline-flex h-11 items-center justify-center gap-2 rounded-2xl bg-[#2563eb] text-sm font-extrabold text-white shadow-md shadow-blue-500/15 transition-all hover:shadow-lg active:scale-[0.97]"
+            className="flex-1 inline-flex h-11 items-center justify-center gap-2 rounded-2xl bg-[#3c6e71] text-sm font-extrabold text-white shadow-md shadow-none transition-all hover:shadow-lg active:scale-[0.97]"
           >
             <Download className="h-4 w-4" />
             Скачать
           </button>
           <button
             onClick={handlePrint}
-            className="inline-flex h-11 items-center justify-center gap-2 rounded-2xl bg-[#f0f2f8] px-5 text-sm font-extrabold text-gray-600 transition-all hover:bg-[#e4e8f2] active:scale-[0.97]"
+            className="inline-flex h-11 items-center justify-center gap-2 rounded-2xl bg-[#f0f0f0] px-5 text-sm font-extrabold text-gray-600 transition-all hover:bg-[#e4e8f2] active:scale-[0.97]"
           >
             <Printer className="h-4 w-4" />
           </button>
           <button
             onClick={handleCopyLink}
-            className="inline-flex h-11 items-center justify-center gap-2 rounded-2xl bg-[#f0f2f8] px-5 text-sm font-extrabold text-gray-600 transition-all hover:bg-[#e4e8f2] active:scale-[0.97]"
+            className="inline-flex h-11 items-center justify-center gap-2 rounded-2xl bg-[#f0f0f0] px-5 text-sm font-extrabold text-gray-600 transition-all hover:bg-[#e4e8f2] active:scale-[0.97]"
           >
             {copied ? (
               <Check className="h-4 w-4 text-green-500" />

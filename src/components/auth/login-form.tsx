@@ -30,7 +30,6 @@ export function LoginForm() {
     try {
       const result = await signIn("credentials", { email, password, redirect: false });
       if (result?.error) {
-        // Check if it's an email verification issue
         try {
           const checkRes = await fetch("/api/auth/check-verification", {
             method: "POST",
@@ -70,34 +69,34 @@ export function LoginForm() {
   }
 
   return (
-    <div className="rounded-3xl bg-white p-10 shadow-[0_4px_24px_rgba(0,0,0,0.06)]">
+    <div className="border border-[#d9d9d9] bg-white p-10">
       <div className="text-center mb-10">
-        <h1 className="text-3xl font-black">Войти в QRMenu</h1>
-        <p className="text-base text-gray-400 mt-3 font-semibold">
+        <h1 className="text-2xl font-extrabold uppercase tracking-[0.12em] text-[#1a1a1a]">Войти</h1>
+        <p className="text-sm text-[#7a7a7a] mt-3">
           Введите email и пароль для доступа к панели управления
         </p>
       </div>
 
-      <form onSubmit={onSubmit} className="space-y-6">
+      <form onSubmit={onSubmit} className="space-y-5">
         {needsVerification && (
-          <div className="rounded-2xl bg-amber-50 p-5 space-y-3">
+          <div className="border border-[#d4a83a] bg-[#fef8ec] p-4 space-y-3">
             <div className="flex items-center gap-3">
-              <Mail className="h-5 w-5 text-amber-600 shrink-0" />
-              <p className="text-sm font-bold text-amber-800">
+              <Mail className="h-5 w-5 text-[#9a7209] shrink-0" />
+              <p className="text-sm font-bold text-[#9a7209]">
                 Подтвердите вашу почту перед входом
               </p>
             </div>
-            <p className="text-xs text-amber-700">
+            <p className="text-xs text-[#9a7209]">
               Мы отправили письмо на <strong>{loginEmail}</strong>. Проверьте папку &laquo;Спам&raquo;.
             </p>
             {resendDone ? (
-              <p className="text-xs font-bold text-green-600">Письмо отправлено повторно!</p>
+              <p className="text-xs font-bold text-[#256841]">Письмо отправлено повторно!</p>
             ) : (
               <button
                 type="button"
                 onClick={handleResend}
                 disabled={resendLoading}
-                className="text-xs font-bold text-[#2563eb] hover:underline disabled:opacity-50"
+                className="text-xs font-bold text-[#3c6e71] hover:underline disabled:opacity-50"
               >
                 {resendLoading ? "Отправляем..." : "Отправить письмо повторно"}
               </button>
@@ -105,49 +104,49 @@ export function LoginForm() {
           </div>
         )}
         {error && (
-          <div className="rounded-2xl bg-red-50 p-4 text-base font-bold text-red-600">
+          <div className="border border-[#a82828] bg-[#fdf0f0] p-4 text-sm font-bold text-[#a82828]">
             {error}
           </div>
         )}
 
         <div>
-          <label htmlFor="email" className="text-base font-bold text-gray-500 mb-2 block">Email</label>
+          <label htmlFor="email" className="text-xs font-bold uppercase tracking-[0.08em] text-[#7a7a7a] mb-2 block">Email</label>
           <input
             id="email" name="email" type="email"
             placeholder="mail@example.com" required disabled={loading}
-            className="w-full h-14 rounded-2xl border-0 bg-[#f0f2f8] px-5 text-base font-bold placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500/30 transition-all disabled:opacity-50"
+            className="w-full h-12 border-b border-[#d9d9d9] bg-transparent px-0 text-sm text-[#1a1a1a] placeholder:text-[#c4c4c4] focus:outline-none focus:border-[#3c6e71] transition-colors disabled:opacity-50"
           />
         </div>
 
         <div>
-          <label htmlFor="password" className="text-base font-bold text-gray-500 mb-2 block">Пароль</label>
+          <label htmlFor="password" className="text-xs font-bold uppercase tracking-[0.08em] text-[#7a7a7a] mb-2 block">Пароль</label>
           <div className="relative">
             <input
               id="password" name="password" type={showPassword ? "text" : "password"}
               placeholder="Ваш пароль" required disabled={loading}
-              className="w-full h-14 rounded-2xl border-0 bg-[#f0f2f8] px-5 pr-14 text-base font-bold placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500/30 transition-all disabled:opacity-50"
+              className="w-full h-12 border-b border-[#d9d9d9] bg-transparent px-0 pr-10 text-sm text-[#1a1a1a] placeholder:text-[#c4c4c4] focus:outline-none focus:border-[#3c6e71] transition-colors disabled:opacity-50"
             />
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+              className="absolute right-0 top-1/2 -translate-y-1/2 text-[#a0a0a0] hover:text-[#353535] transition-colors"
               tabIndex={-1}
             >
-              {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+              {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
             </button>
           </div>
         </div>
 
         <button
           type="submit" disabled={loading}
-          className="w-full h-14 rounded-2xl bg-[#2563eb] text-white font-extrabold text-lg shadow-lg shadow-blue-500/25 transition-all hover:shadow-xl active:scale-[0.98] disabled:opacity-50 disabled:shadow-none"
+          className="w-full h-12 rounded-sm bg-[#3c6e71] text-white text-sm font-semibold uppercase tracking-[0.04em] transition-all hover:bg-[#325d5f] active:opacity-85 disabled:opacity-50"
         >
           {loading ? "Вход..." : "Войти"}
         </button>
 
-        <p className="text-center text-base text-gray-400 font-semibold">
+        <p className="text-center text-sm text-[#7a7a7a]">
           Нет аккаунта?{" "}
-          <Link href="/register" className="font-extrabold text-[#2563eb] hover:underline">
+          <Link href="/register" className="font-bold text-[#3c6e71] hover:underline">
             Зарегистрироваться
           </Link>
         </p>

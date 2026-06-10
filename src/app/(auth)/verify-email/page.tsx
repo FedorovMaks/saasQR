@@ -57,7 +57,7 @@ function VerifyEmailContent() {
           </p>
           <Link
             href="/login"
-            className="mt-6 inline-flex h-14 items-center justify-center rounded-2xl bg-[#2563eb] px-10 text-lg font-extrabold text-white shadow-lg shadow-blue-500/25 transition-all hover:shadow-xl active:scale-[0.98]"
+            className="mt-6 inline-flex h-14 items-center justify-center rounded-2xl bg-[#3c6e71] px-10 text-lg font-extrabold text-white shadow-lg shadow-none transition-all hover:shadow-xl active:scale-[0.98]"
           >
             Войти
           </Link>
@@ -72,13 +72,13 @@ function VerifyEmailContent() {
           <div className="flex flex-col gap-3 mt-6">
             <Link
               href="/login"
-              className="inline-flex h-14 items-center justify-center rounded-2xl bg-[#2563eb] px-10 text-lg font-extrabold text-white shadow-lg shadow-blue-500/25 transition-all hover:shadow-xl active:scale-[0.98]"
+              className="inline-flex h-14 items-center justify-center rounded-2xl bg-[#3c6e71] px-10 text-lg font-extrabold text-white shadow-lg shadow-none transition-all hover:shadow-xl active:scale-[0.98]"
             >
               На страницу входа
             </Link>
             <Link
               href="/register"
-              className="text-sm font-bold text-gray-400 hover:text-[#2563eb] transition-colors"
+              className="text-sm font-bold text-gray-400 hover:text-[#3c6e71] transition-colors"
             >
               Зарегистрироваться заново
             </Link>

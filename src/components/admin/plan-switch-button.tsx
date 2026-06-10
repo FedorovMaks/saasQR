@@ -48,8 +48,8 @@ export function PlanSwitchButton({
       disabled={loading}
       className={`flex h-12 w-full items-center justify-center gap-2 rounded-2xl text-sm font-extrabold transition-all active:scale-[0.97] disabled:opacity-50 ${
         isHighlighted
-          ? "bg-[#2563eb] text-white shadow-lg shadow-blue-500/20 hover:shadow-xl"
-          : "bg-[#f0f2f8] text-gray-600 hover:bg-[#e4e8f2]"
+          ? "bg-[#3c6e71] text-white shadow-lg shadow-none hover:shadow-xl"
+          : "bg-[#f0f0f0] text-gray-600 hover:bg-[#e4e8f2]"
       }`}
     >
       {loading ? (

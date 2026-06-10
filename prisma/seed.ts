@@ -8,10 +8,10 @@ async function main() {
   const hashedPassword = await hash("password123", 12);
 
   const user = await prisma.user.upsert({
-    where: { email: "demo@qrmenu.ru" },
+    where: { email: "demo@tap-menu.ru" },
     update: {},
     create: {
-      email: "demo@qrmenu.ru",
+      email: "demo@tap-menu.ru",
       name: "Демо Владелец",
       hashedPassword,
     },

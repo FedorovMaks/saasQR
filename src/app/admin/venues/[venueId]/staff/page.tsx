@@ -29,7 +29,7 @@ export default async function StaffPage({
       <div className="flex items-center gap-3">
         <Link
           href="/admin"
-          className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-[#f0f2f8] text-gray-500 hover:bg-[#e4e8f2] transition-colors"
+          className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-[#f0f0f0] text-gray-500 hover:bg-[#e4e8f2] transition-colors"
         >
           <ArrowLeft className="h-4 w-4" />
         </Link>

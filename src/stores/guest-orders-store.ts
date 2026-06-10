@@ -59,7 +59,7 @@ export const useGuestOrdersStore = create<GuestOrdersState>()(
       },
     }),
     {
-      name: "qrmenu-guest-orders",
+      name: "tapmenu-guest-orders",
     }
   )
 );

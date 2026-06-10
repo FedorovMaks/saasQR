@@ -4,12 +4,11 @@ import { Check, Zap } from "lucide-react";
 import { LegalShell } from "@/components/legal/legal-shell";
 
 export const metadata: Metadata = {
-  title: "Тарифы и услуги — QRMenu",
+  title: "Тарифы и услуги — TapMenu",
   description:
-    "Описание сервиса QRMenu, тарифы и стоимость подписки. Доступ онлайн сразу после оплаты.",
+    "Описание сервиса TapMenu, тарифы и стоимость подписки. Доступ онлайн сразу после оплаты.",
 };
 
-// Значения дублируют src/lib/plans.ts (PLANS). При изменении цен — синхронизировать.
 const rub = (n: number) => n.toLocaleString("ru-RU") + " ₽";
 
 const PLANS_DISPLAY = [
@@ -50,18 +49,18 @@ export default function PricingPage() {
       title="Тарифы и услуги"
       subtitle="Онлайн-сервис цифрового меню по подписке"
     >
-      <h2 className="text-xl font-black text-gray-900">Что это за услуга</h2>
+      <h2 className="text-sm font-bold uppercase tracking-[0.12em] text-[#1a1a1a]">Что это за услуга</h2>
       <p>
-        <b>QRMenu</b> — онлайн-сервис (SaaS) для заведений общепита: создание
+        <b>TapMenu</b> — онлайн-сервис (SaaS) для заведений общепита: создание
         цифрового меню, генерация QR-кодов для столиков и приём заказов в
         реальном времени. Сервис доступен по адресу{" "}
-        <a href="https://tap-menu.ru" className="text-[#2563eb] hover:underline">
+        <a href="https://tap-menu.ru" className="text-[#3c6e71] hover:underline">
           tap-menu.ru
         </a>{" "}
         и предоставляется по подписке.
       </p>
 
-      <h2 className="pt-2 text-xl font-black text-gray-900">
+      <h2 className="pt-2 text-sm font-bold uppercase tracking-[0.12em] text-[#1a1a1a]">
         Как предоставляется услуга
       </h2>
       <p>
@@ -73,40 +72,47 @@ export default function PricingPage() {
       </p>
 
       {/* Trial */}
-      <div className="flex items-center gap-3 rounded-2xl bg-blue-50 p-5 text-[#2563eb]">
-        <Zap className="h-5 w-5 shrink-0" />
-        <p className="font-bold">
+      <div className="flex items-center gap-3 border border-[#3c6e71] bg-[#eef6f6] p-4 text-[#3c6e71]">
+        <Zap className="h-4 w-4 shrink-0" />
+        <p className="text-sm font-semibold">
           Пробный период: 7 дней за 1&nbsp;₽ на тарифе «Про». Предоставляется
           один раз.
         </p>
       </div>
 
-      <h2 className="pt-2 text-xl font-black text-gray-900">Тарифы</h2>
+      <h2 className="pt-2 text-sm font-bold uppercase tracking-[0.12em] text-[#1a1a1a]">Тарифы</h2>
       <div className="grid gap-4 sm:grid-cols-2">
         {PLANS_DISPLAY.map((p) => (
           <div
             key={p.label}
-            className={`flex flex-col rounded-3xl border p-5 ${
+            className={`flex flex-col border p-5 ${
               p.highlighted
-                ? "border-[#2563eb] bg-white shadow-[0_8px_40px_rgba(37,99,235,0.12)]"
-                : "border-gray-100 bg-white"
+                ? "border-[#3c6e71] border-2"
+                : "border-[#d9d9d9]"
             }`}
           >
-            <div className="font-black text-gray-900">{p.label}</div>
+            <div className="flex items-center gap-2">
+              <span className="font-bold text-[#1a1a1a]">{p.label}</span>
+              {p.highlighted && (
+                <span className="rounded-full bg-[#eef6f6] px-2 py-0.5 text-[10px] font-bold uppercase tracking-[0.04em] text-[#3c6e71]">
+                  Рекомендуем
+                </span>
+              )}
+            </div>
             <div className="mt-2">
-              <span className="text-2xl font-black text-gray-900">
+              <span className="text-2xl font-bold text-[#1a1a1a]">
                 {rub(p.monthly)}
               </span>
-              <span className="text-sm font-bold text-gray-400"> / мес</span>
+              <span className="text-xs text-[#a0a0a0]"> / мес</span>
             </div>
-            <div className="mt-0.5 text-sm font-semibold text-gray-400">
+            <div className="mt-0.5 text-xs text-[#a0a0a0]">
               или {rub(p.yearly)} / год
             </div>
             <ul className="mt-4 space-y-2">
               {p.features.map((f) => (
                 <li key={f} className="flex items-start gap-2 text-sm">
-                  <Check className="mt-0.5 h-4 w-4 shrink-0 text-[#2563eb]" />
-                  <span className="text-gray-600">{f}</span>
+                  <Check className="mt-0.5 h-4 w-4 shrink-0 text-[#3c6e71]" />
+                  <span className="text-[#353535]">{f}</span>
                 </li>
               ))}
             </ul>
@@ -114,10 +120,10 @@ export default function PricingPage() {
         ))}
       </div>
 
-      <p className="text-sm text-gray-400">
+      <p className="text-xs text-[#a0a0a0]">
         Все цены указаны в рублях РФ и включают все комиссии сервиса. Условия
         оказания услуг и возвратов — в{" "}
-        <Link href="/offer" className="text-[#2563eb] hover:underline">
+        <Link href="/offer" className="text-[#3c6e71] hover:underline">
           публичной оферте
         </Link>
         .

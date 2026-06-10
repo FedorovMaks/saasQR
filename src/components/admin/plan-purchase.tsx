@@ -115,7 +115,7 @@ export function PlansGrid({
     <div className="space-y-5">
       {/* Period toggle */}
       <div className="flex items-center justify-center">
-        <div className="inline-flex items-center rounded-2xl bg-[#f0f2f8] p-1">
+        <div className="inline-flex items-center rounded-2xl bg-[#f0f0f0] p-1">
           <button
             onClick={() => setPeriod("monthly")}
             className={`h-10 rounded-xl px-5 text-sm font-extrabold transition-all ${
@@ -161,13 +161,13 @@ export function PlansGrid({
               key={planKey}
               className={`flex flex-col rounded-3xl bg-white p-6 shadow-[0_2px_12px_rgba(0,0,0,0.06)] transition-all relative ${
                 isHighlighted
-                  ? "ring-2 ring-[#2563eb] shadow-[0_4px_24px_rgba(37,99,235,0.12)]"
+                  ? "ring-2 ring-[#3c6e71] shadow-[0_4px_24px_rgba(37,99,235,0.12)]"
                   : ""
               }`}
             >
               {isHighlighted && (
                 <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                  <span className="inline-flex items-center rounded-full bg-[#2563eb] px-4 py-1 text-xs font-bold text-white shadow-md">
+                  <span className="inline-flex items-center rounded-full bg-[#3c6e71] px-4 py-1 text-xs font-bold text-white shadow-md">
                     Популярный
                   </span>
                 </div>
@@ -203,7 +203,7 @@ export function PlansGrid({
                     <div
                       className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full mt-0.5 ${
                         isHighlighted
-                          ? "bg-[#2563eb]/10 text-[#2563eb]"
+                          ? "bg-[#3c6e71]/10 text-[#3c6e71]"
                           : "bg-gray-100 text-gray-400"
                       }`}
                     >
@@ -226,7 +226,7 @@ export function PlansGrid({
               </ul>
 
               {isCurrentPlan ? (
-                <div className="flex h-12 items-center justify-center rounded-2xl bg-[#f0f2f8] text-sm font-extrabold text-gray-400">
+                <div className="flex h-12 items-center justify-center rounded-2xl bg-[#f0f0f0] text-sm font-extrabold text-gray-400">
                   Текущий тариф
                 </div>
               ) : (
@@ -235,8 +235,8 @@ export function PlansGrid({
                   disabled={isLoading}
                   className={`flex h-12 w-full items-center justify-center gap-2 rounded-2xl text-sm font-extrabold transition-all active:scale-[0.98] disabled:opacity-70 ${
                     isHighlighted
-                      ? "bg-[#2563eb] text-white shadow-lg shadow-blue-500/20 hover:shadow-xl"
-                      : "bg-[#f0f2f8] text-gray-700 hover:bg-[#e4e8f2]"
+                      ? "bg-[#3c6e71] text-white shadow-lg shadow-none hover:shadow-xl"
+                      : "bg-[#f0f0f0] text-gray-700 hover:bg-[#e4e8f2]"
                   }`}
                 >
                   {isLoading ? (

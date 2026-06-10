@@ -82,7 +82,7 @@ export default async function VenueInfoPage({
         <div className="mx-auto flex h-16 max-w-3xl items-center gap-3 px-5 sm:px-6">
           <Link
             href={`/${venue.slug}`}
-            className="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-[#f0f2f8] text-gray-500 transition-colors hover:bg-[#e4e8f2]"
+            className="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-[#f0f0f0] text-gray-500 transition-colors hover:bg-[#e4e8f2]"
           >
             <ArrowLeft className="h-4 w-4" />
           </Link>
@@ -98,7 +98,7 @@ export default async function VenueInfoPage({
 
         <div className="mt-8 space-y-5 text-[15px] leading-relaxed text-gray-600">
           <h2 className="text-xl font-black text-gray-900">Реквизиты</h2>
-          <div className="rounded-2xl bg-[#f0f2f8] p-5 sm:p-6">
+          <div className="rounded-2xl bg-[#f0f0f0] p-5 sm:p-6">
             <dl className="space-y-3">
               {rows.map((r) => (
                 <div key={r.label} className="flex flex-col sm:flex-row sm:gap-4">
@@ -107,7 +107,7 @@ export default async function VenueInfoPage({
                   </dt>
                   <dd className="break-words font-bold text-gray-800">
                     {r.href ? (
-                      <a href={r.href} className="text-[#2563eb] hover:underline">
+                      <a href={r.href} className="text-[#3c6e71] hover:underline">
                         {r.value}
                       </a>
                     ) : (
@@ -126,7 +126,7 @@ export default async function VenueInfoPage({
             Настоящий документ является публичной офертой {executor} (далее —
             «Исполнитель») на продажу продукции общественного питания,
             представленной в меню по адресу{" "}
-            <a href={menuUrl} className="text-[#2563eb] hover:underline">
+            <a href={menuUrl} className="text-[#3c6e71] hover:underline">
               {menuUrl}
             </a>
             .

@@ -1,12 +1,12 @@
 {
-  "name": "QRMenu — Цифровое меню",
-  "short_name": "QRMenu",
+  "name": "TapMenu — Цифровое меню",
+  "short_name": "TapMenu",
   "description": "Управление заведением и приём заказов",
   "start_url": "/admin",
   "scope": "/",
   "display": "standalone",
-  "background_color": "#f0f2f8",
-  "theme_color": "#2563eb",
+  "background_color": "#ffffff",
+  "theme_color": "#3c6e71",
   "orientation": "portrait",
   "categories": ["food", "business"],
   "icons": [

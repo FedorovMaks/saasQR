@@ -3,9 +3,9 @@ import { LegalShell, Requisites } from "@/components/legal/legal-shell";
 import { COMPANY, LEGAL_UPDATED } from "@/lib/legal";
 
 export const metadata: Metadata = {
-  title: "Политика конфиденциальности — QRMenu",
+  title: "Политика конфиденциальности — TapMenu",
   description:
-    "Политика обработки персональных данных сервиса QRMenu (tap-menu.ru).",
+    "Политика обработки персональных данных сервиса TapMenu (tap-menu.ru).",
 };
 
 export default function PrivacyPage() {
@@ -20,7 +20,7 @@ export default function PrivacyPage() {
         e-mail{" "}
         <a
           href={`mailto:${COMPANY.email}`}
-          className="text-[#2563eb] hover:underline"
+          className="text-[#3c6e71] hover:underline"
         >
           {COMPANY.email}
         </a>

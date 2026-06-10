@@ -24,14 +24,14 @@ export function LegalShell({
       <header className="border-b border-gray-100">
         <div className="mx-auto flex h-16 max-w-3xl items-center justify-between px-5 sm:px-6">
           <Link href="/" className="flex items-center gap-3">
-            <div className="flex h-9 w-9 items-center justify-center rounded-2xl bg-[#2563eb] text-white shadow-lg shadow-blue-500/20">
+            <div className="flex h-9 w-9 items-center justify-center rounded-2xl bg-[#3c6e71] text-white shadow-lg shadow-none">
               <QrCode className="h-5 w-5" />
             </div>
             <span className="text-lg font-black">{COMPANY.brand}</span>
           </Link>
           <Link
             href="/"
-            className="text-sm font-bold text-gray-400 transition-colors hover:text-[#2563eb]"
+            className="text-sm font-bold text-gray-400 transition-colors hover:text-[#3c6e71]"
           >
             На главную
           </Link>
@@ -59,7 +59,7 @@ export function LegalShell({
               <Link
                 key={l.href}
                 href={l.href}
-                className="text-sm font-bold text-gray-400 transition-colors hover:text-[#2563eb]"
+                className="text-sm font-bold text-gray-400 transition-colors hover:text-[#3c6e71]"
               >
                 {l.label}
               </Link>
@@ -86,7 +86,7 @@ export function Requisites() {
     { label: "Сайт", value: COMPANY.domain, href: COMPANY.url },
   ];
   return (
-    <div className="rounded-2xl bg-[#f0f2f8] p-5 sm:p-6">
+    <div className="rounded-2xl bg-[#f0f0f0] p-5 sm:p-6">
       <dl className="space-y-3">
         {rows.map((r) => (
           <div key={r.label} className="flex flex-col sm:flex-row sm:gap-4">
@@ -95,7 +95,7 @@ export function Requisites() {
             </dt>
             <dd className="font-bold text-gray-800">
               {r.href ? (
-                <a href={r.href} className="text-[#2563eb] hover:underline">
+                <a href={r.href} className="text-[#3c6e71] hover:underline">
                   {r.value}
                 </a>
               ) : (

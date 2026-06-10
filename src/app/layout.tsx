@@ -1,25 +1,24 @@
 import type { Metadata, Viewport } from "next";
-import { Manrope, Unbounded } from "next/font/google";
+import { Onest, JetBrains_Mono } from "next/font/google";
 import { SessionProvider } from "@/components/providers/session-provider";
 import { ServiceWorkerRegister } from "@/components/pwa/sw-register";
 import { InstallPrompt } from "@/components/pwa/install-prompt";
 import "./globals.css";
 
-const manrope = Manrope({
-  variable: "--font-manrope",
+const onest = Onest({
+  variable: "--font-onest",
   subsets: ["latin", "cyrillic"],
-  weight: ["400", "500", "600", "700", "800"],
+  weight: ["300", "400", "500", "600", "700", "800", "900"],
 });
 
-// Display font — bold geometric, used for venue name & section headings
-const unbounded = Unbounded({
-  variable: "--font-unbounded",
+const jetbrainsMono = JetBrains_Mono({
+  variable: "--font-mono",
   subsets: ["latin", "cyrillic"],
-  weight: ["500", "600", "700", "800"],
+  weight: ["400", "500", "600"],
 });
 
 export const metadata: Metadata = {
-  title: "QRMenu — Цифровое меню для вашего заведения",
+  title: "TapMenu — Цифровое меню для вашего заведения",
   description:
     "SaaS-платформа для малого общепита. Создайте цифровое меню, генерируйте QR-код, принимайте заказы.",
   manifest: "/manifest.json",
@@ -34,7 +33,7 @@ export const metadata: Metadata = {
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
-    title: "QRMenu",
+    title: "TapMenu",
   },
   other: {
     "mobile-web-app-capable": "yes",
@@ -42,7 +41,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#2563eb",
+  themeColor: "#3c6e71",
 };
 
 export default function RootLayout({
@@ -51,8 +50,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="ru" className={`${manrope.variable} ${unbounded.variable} h-full antialiased`}>
-      <body className="min-h-full flex flex-col" style={{ fontFamily: "var(--font-manrope), system-ui, sans-serif" }}>
+    <html lang="ru" className={`${onest.variable} ${jetbrainsMono.variable} h-full antialiased`}>
+      <body className="min-h-full flex flex-col" style={{ fontFamily: "var(--font-onest), system-ui, sans-serif" }}>
         <SessionProvider>
           <ServiceWorkerRegister />
           {children}

@@ -55,7 +55,7 @@ const STATUS_CONFIG: Record<
   NEW: {
     label: "Новый",
     color: "text-blue-700",
-    bgColor: "bg-blue-50 border-blue-200",
+    bgColor: "bg-[#eef6f6] border-[#a9d1d3]",
     icon: <Bell className="h-3.5 w-3.5" />,
   },
   ACCEPTED: {
@@ -252,7 +252,7 @@ export function OrdersDashboard({
             {!isWaiter && (
               <Link
                 href="/admin"
-                className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#f0f2f8] text-gray-500 hover:bg-[#e4e8f2] transition-colors"
+                className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#f0f0f0] text-gray-500 hover:bg-[#e4e8f2] transition-colors"
               >
                 <ArrowLeft className="h-4 w-4" />
               </Link>
@@ -277,7 +277,7 @@ export function OrdersDashboard({
             <Link
               href={`/${venue.slug}`}
               target="_blank"
-              className="hidden sm:inline-flex h-10 items-center gap-2 rounded-xl bg-[#f0f2f8] px-4 text-sm font-extrabold text-gray-600 hover:bg-[#e4e8f2] transition-colors shrink-0"
+              className="hidden sm:inline-flex h-10 items-center gap-2 rounded-xl bg-[#f0f0f0] px-4 text-sm font-extrabold text-gray-600 hover:bg-[#e4e8f2] transition-colors shrink-0"
             >
               <ExternalLink className="h-3.5 w-3.5" />
               Меню
@@ -291,7 +291,7 @@ export function OrdersDashboard({
             <Link
               href={`/${venue.slug}`}
               target="_blank"
-              className="sm:hidden inline-flex h-11 items-center gap-2 rounded-2xl bg-[#f0f2f8] px-5 text-sm font-extrabold text-gray-600 hover:bg-[#e4e8f2] transition-colors"
+              className="sm:hidden inline-flex h-11 items-center gap-2 rounded-2xl bg-[#f0f0f0] px-5 text-sm font-extrabold text-gray-600 hover:bg-[#e4e8f2] transition-colors"
             >
               <ExternalLink className="h-3.5 w-3.5" />
               Меню

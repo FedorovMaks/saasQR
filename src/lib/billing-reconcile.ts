@@ -96,7 +96,7 @@ export async function reconcileUserPendingPayments(
               description: venueData.description || null,
               address: venueData.address || null,
               logoUrl: venueData.logoUrl || null,
-              accentColor: venueData.accentColor || "#2563eb",
+              accentColor: venueData.accentColor || "#3c6e71",
               ownerId: record.userId,
             },
           });

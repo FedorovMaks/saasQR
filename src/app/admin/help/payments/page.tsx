@@ -25,7 +25,7 @@ function Note({
   tone?: "blue" | "amber" | "green";
 }) {
   const tones = {
-    blue: "bg-blue-50 text-blue-700",
+    blue: "bg-[#eef6f6] text-blue-700",
     amber: "bg-amber-50 text-amber-700",
     green: "bg-green-50 text-green-700",
   };
@@ -49,7 +49,7 @@ export default function PaymentsHelpPage() {
     <div className="mx-auto max-w-3xl">
       <Link
         href="/admin"
-        className="mb-6 inline-flex items-center gap-2 text-sm font-bold text-gray-400 transition-colors hover:text-[#2563eb]"
+        className="mb-6 inline-flex items-center gap-2 text-sm font-bold text-gray-400 transition-colors hover:text-[#3c6e71]"
       >
         <ArrowLeft className="h-4 w-4" />
         В админку
@@ -63,12 +63,12 @@ export default function PaymentsHelpPage() {
         <p>
           Гость сканирует QR, собирает заказ и оплачивает прямо со смартфона
           <b> через СБП</b> — без карты, по кнопке в приложении банка. Деньги
-          поступают <b>напрямую на ваш счёт</b>, минуя QRMenu, комиссия СБП —
+          поступают <b>напрямую на ваш счёт</b>, минуя TapMenu, комиссия СБП —
           всего <b>~0,4%</b>.
         </p>
         <p>
           Оплата идёт через <b>ЮKassa</b>: вы подключаете свой аккаунт ЮKassa, а
-          QRMenu принимает через него платежи в вашем заведении. Возможны два
+          TapMenu принимает через него платежи в вашем заведении. Возможны два
           сценария:
         </p>
         <ul className="list-disc space-y-1 pl-5">
@@ -87,7 +87,7 @@ export default function PaymentsHelpPage() {
         <p>
           Если ваше заведение уже принимает оплату через ЮKassa — переходите
           сразу к <b>«Финальным шагам»</b> ниже (получить ключи → webhook →
-          внести в QRMenu → проверить).
+          внести в TapMenu → проверить).
         </p>
 
         {/* ВАРИАНТ Б */}
@@ -112,7 +112,7 @@ export default function PaymentsHelpPage() {
         <Note>
           Хотя заведение офлайн, гости оплачивают онлайн — через цифровое меню.
           Этот вариант даёт онлайн-приём платежей (ключи API + webhook), которые
-          использует QRMenu.
+          использует TapMenu.
         </Note>
         <Screenshot src="/guide/1.png" caption="Выбор «В онлайн»" />
 
@@ -131,14 +131,14 @@ export default function PaymentsHelpPage() {
           2.3. «Платежи на сайте»: адрес сайта и реквизиты ⭐ (самый важный шаг)
         </p>
         <p>
-          <b>Сначала в QRMenu:</b> заведение → «Настройки» → блок «Юридическая
+          <b>Сначала в TapMenu:</b> заведение → «Настройки» → блок «Юридическая
           информация» → заполните форму (Самозанятый/ИП/ООО), ФИО/наименование,
           ИНН, e-mail, телефон → «Сохранить». Там же скопируйте <b>две готовые
           ссылки</b>.
         </p>
         <Screenshot
           src="/guide/6.png"
-          caption="QRMenu: заполните юр-данные и скопируйте 2 ссылки"
+          caption="TapMenu: заполните юр-данные и скопируйте 2 ссылки"
         />
         <p>
           <b>Теперь на экране ЮKassa</b> вставьте эти ссылки:
@@ -146,12 +146,12 @@ export default function PaymentsHelpPage() {
         <ul className="list-disc space-y-1 pl-5">
           <li>
             <b>Адрес сайта:</b>{" "}
-            <code className="text-[#2563eb]">https://tap-menu.ru/ваш-slug</code>{" "}
+            <code className="text-[#3c6e71]">https://tap-menu.ru/ваш-slug</code>{" "}
             — ваше меню (товары и цены).
           </li>
           <li>
             <b>Ссылка на страницу с реквизитами:</b>{" "}
-            <code className="text-[#2563eb]">
+            <code className="text-[#3c6e71]">
               https://tap-menu.ru/ваш-slug/info
             </code>{" "}
             — там ИНН, оферта, контакты.
@@ -166,7 +166,7 @@ export default function PaymentsHelpPage() {
         </ul>
         <p>→ «Сохранить и продолжить».</p>
         <Note tone="green">
-          Чем QRMenu закрывает чек-лист: товары/цены → меню; оферта → /info;
+          Чем TapMenu закрывает чек-лист: товары/цены → меню; оферта → /info;
           контакты и реквизиты (ИНН) → /info; способ получения заказа → заказ
           подаётся гостю в заведении (в оферте).
         </Note>
@@ -241,7 +241,7 @@ export default function PaymentsHelpPage() {
         <Screenshot src="/guide/8.png" caption="Письмо «Подключили вам СБП»" />
         <Note>
           В письме про СБП будут «требования НСПК» к логотипу. Для оплаты через
-          QRMenu <b>добавлять логотип СБП на сайт не нужно</b>: оплата проходит на
+          TapMenu <b>добавлять логотип СБП на сайт не нужно</b>: оплата проходит на
           странице самой ЮKassa, где значок уже стоит правильно.
         </Note>
 
@@ -279,7 +279,7 @@ export default function PaymentsHelpPage() {
         </p>
         <Screenshot src="/guide/13.png" caption="«Ключи API» → «Выпустить ключ»" />
         <p>
-          Ключ <code className="text-[#2563eb]">live_…</code> появится в окне и
+          Ключ <code className="text-[#3c6e71]">live_…</code> появится в окне и
           будет доступен <b>только один раз</b> — нажмите <b>«Скопировать»</b>{" "}
           (или «Скачать в файле») и сохраните в надёжном месте.
         </p>
@@ -301,7 +301,7 @@ export default function PaymentsHelpPage() {
         <ul className="list-disc space-y-1 pl-5">
           <li>
             <b>URL для уведомлений:</b>{" "}
-            <code className="text-[#2563eb]">
+            <code className="text-[#3c6e71]">
               https://tap-menu.ru/api/payments/webhook
             </code>
           </li>
@@ -319,7 +319,7 @@ export default function PaymentsHelpPage() {
           caption="Форма: URL + галочки payment.succeeded и payment.canceled → Сохранить"
         />
 
-        <H3>3. Внесите ключи в QRMenu</H3>
+        <H3>3. Внесите ключи в TapMenu</H3>
         <p>
           Админка → ваше заведение → «Настройки» → «Онлайн-оплата (ЮKassa)» →
           вставьте Shop ID и Секретный ключ → «Сохранить». Появится «✓
@@ -343,7 +343,7 @@ export default function PaymentsHelpPage() {
           <li>
             <b>Чеки (54-ФЗ).</b> Гостю нужен чек — его формирует ваша ЮKassa: у
             самозанятого через «Мой налог», у ИП/ООО через вашу онлайн-кассу/ОФД.
-            QRMenu чеки не выдаёт.
+            TapMenu чеки не выдаёт.
           </li>
           <li>
             <b>Можно и без онлайн-оплаты.</b> Не подключили ключи — заказы

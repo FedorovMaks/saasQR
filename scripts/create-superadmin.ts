@@ -5,7 +5,7 @@ import { hash } from "bcryptjs";
 const prisma = new PrismaClient();
 
 async function main() {
-  const email = process.env.SUPERADMIN_EMAIL || "superadmin@qrmenu.app";
+  const email = process.env.SUPERADMIN_EMAIL || "superadmin@tap-menu.ru";
   const password = process.env.SUPERADMIN_PASSWORD;
   const name = "Super Admin";
 

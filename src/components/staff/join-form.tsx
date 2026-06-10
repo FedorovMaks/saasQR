@@ -49,7 +49,7 @@ export function JoinForm({
 
   if (success) {
     return (
-      <div className="min-h-screen bg-[#f0f2f8] flex items-center justify-center px-4">
+      <div className="min-h-screen bg-[#f0f0f0] flex items-center justify-center px-4">
         <div className="w-full max-w-sm text-center space-y-6">
           <div className="mx-auto w-20 h-20 rounded-3xl bg-green-50 flex items-center justify-center">
             <CheckCircle2 className="h-10 w-10 text-green-500" />
@@ -62,7 +62,7 @@ export function JoinForm({
           </div>
           <button
             onClick={() => router.push("/login")}
-            className="w-full h-14 rounded-2xl bg-[#2563eb] text-white font-extrabold text-lg shadow-lg shadow-blue-500/20 transition-all hover:shadow-xl active:scale-[0.97]"
+            className="w-full h-14 rounded-2xl bg-[#3c6e71] text-white font-extrabold text-lg shadow-lg shadow-none transition-all hover:shadow-xl active:scale-[0.97]"
           >
             Войти в систему
           </button>
@@ -72,11 +72,11 @@ export function JoinForm({
   }
 
   return (
-    <div className="min-h-screen bg-[#f0f2f8] flex items-center justify-center px-4">
+    <div className="min-h-screen bg-[#f0f0f0] flex items-center justify-center px-4">
       <div className="w-full max-w-sm space-y-8">
         {/* Header */}
         <div className="text-center">
-          <div className="mx-auto w-16 h-16 rounded-3xl bg-[#2563eb] flex items-center justify-center shadow-lg shadow-blue-500/20 mb-4">
+          <div className="mx-auto w-16 h-16 rounded-3xl bg-[#3c6e71] flex items-center justify-center shadow-lg shadow-none mb-4">
             <Store className="h-8 w-8 text-white" />
           </div>
           <h1 className="text-2xl font-black">Присоединиться</h1>
@@ -153,7 +153,7 @@ export function JoinForm({
           <button
             type="submit"
             disabled={loading}
-            className="w-full h-14 rounded-2xl bg-[#2563eb] text-white font-extrabold text-lg shadow-lg shadow-blue-500/20 transition-all hover:shadow-xl active:scale-[0.97] disabled:opacity-50 flex items-center justify-center gap-2"
+            className="w-full h-14 rounded-2xl bg-[#3c6e71] text-white font-extrabold text-lg shadow-lg shadow-none transition-all hover:shadow-xl active:scale-[0.97] disabled:opacity-50 flex items-center justify-center gap-2"
           >
             {loading ? (
               <><Loader2 className="h-5 w-5 animate-spin" /> Регистрация...</>

@@ -221,60 +221,59 @@ export function MenuPage({
   const itemCount = totalItems();
   const total = totalPrice();
 
-  const accent = venue.accentColor || "#2563eb";
+  const accent = venue.accentColor || "#3c6e71";
 
   /* ═══════ Main ═══════ */
   return (
     <div
-      className="flex flex-1 flex-col min-h-screen bg-[#f0f2f8] pb-32"
+      className="flex flex-1 flex-col min-h-screen bg-white pb-32"
       style={{ "--accent": accent, "--accent-shadow": `${accent}40` } as React.CSSProperties}
     >
 
       {/* ── Header ── */}
-      <header className="sticky top-0 z-20 bg-white shadow-[0_2px_16px_rgba(0,0,0,0.06)]">
+      <header className="sticky top-0 z-20 bg-white border-b border-[#e8e8e8]">
         <div className="max-w-2xl mx-auto px-5 py-4 flex items-center gap-4">
           {venue.logoUrl ? (
             <Image
               src={venue.logoUrl}
               alt={venue.name}
-              width={56}
-              height={56}
-              className="rounded-2xl object-cover shrink-0 shadow-sm"
-              style={{ width: 56, height: 56 }}
+              width={48}
+              height={48}
+              className="rounded-sm object-cover shrink-0"
+              style={{ width: 48, height: 48 }}
             />
           ) : (
-            <div className="w-14 h-14 rounded-2xl shrink-0 flex items-center justify-center shadow-lg" style={{ backgroundColor: accent, boxShadow: `0 10px 15px -3px ${accent}33` }}>
-              <span className="text-white font-black text-2xl">
+            <div className="w-12 h-12 rounded-sm shrink-0 flex items-center justify-center" style={{ backgroundColor: accent }}>
+              <span className="text-white font-extrabold text-xl">
                 {venue.name[0]}
               </span>
             </div>
           )}
           <div className="min-w-0 flex-1">
-            <h1 className="font-display font-extrabold text-2xl truncate leading-tight tracking-tight">{venue.name}</h1>
+            <h1 className="font-extrabold text-xl truncate leading-tight text-[#1a1a1a]">{venue.name}</h1>
             {venue.description && (
-              <p className="text-base text-gray-400 truncate font-medium mt-0.5">
+              <p className="text-sm text-[#a0a0a0] truncate mt-0.5">
                 {venue.description}
               </p>
             )}
           </div>
-          {/* Call waiter button */}
           {tableNumber && (
             <button
               onClick={handleCallWaiter}
               disabled={callingWaiter || waiterCalled}
               className={cn(
-                "shrink-0 flex items-center gap-2 rounded-full px-4 py-3 text-sm font-extrabold transition-all active:scale-95 disabled:opacity-70",
+                "shrink-0 flex items-center gap-2 rounded-sm px-4 py-2.5 text-xs font-semibold uppercase tracking-[0.04em] transition-all active:opacity-85 disabled:opacity-70",
                 waiterCalled
-                  ? "bg-green-50 text-green-600"
-                  : "bg-[#f0f2f8] text-gray-600 hover:bg-[#e4e8f2]"
+                  ? "bg-[#eef7f0] text-[#256841] border border-[#256841]"
+                  : "border border-[#d9d9d9] text-[#353535] hover:border-[#c4c4c4]"
               )}
             >
               {callingWaiter ? (
-                <Loader2 className="h-5 w-5 animate-spin" />
+                <Loader2 className="h-4 w-4 animate-spin" />
               ) : waiterCalled ? (
-                <Check className="h-5 w-5" />
+                <Check className="h-4 w-4" />
               ) : (
-                <Bell className="h-5 w-5" />
+                <Bell className="h-4 w-4" />
               )}
               <span className="hidden sm:inline">
                 {waiterCalled ? "Вызван" : "Официант"}
@@ -283,20 +282,20 @@ export function MenuPage({
           )}
         </div>
 
-        {/* Category tabs */}
+        {/* Category tabs — underline style */}
         {venue.categories.length > 1 && (
-          <div className="max-w-2xl mx-auto px-5 pb-4 flex gap-2.5 overflow-x-auto scrollbar-hide">
+          <div className="max-w-2xl mx-auto px-5 flex gap-6 overflow-x-auto scrollbar-hide">
             {venue.categories.map((cat) => (
               <button
                 key={cat.id}
                 onClick={() => scrollToCategory(cat.id)}
                 className={cn(
-                  "shrink-0 px-6 py-3 rounded-full text-base font-extrabold transition-all whitespace-nowrap",
+                  "shrink-0 pb-3 text-xs font-bold uppercase tracking-[0.08em] transition-all whitespace-nowrap border-b-2",
                   activeCategoryId === cat.id
-                    ? "text-white shadow-lg"
-                    : "bg-[#e8ecf4] text-gray-500 active:bg-[#dde3f0]"
+                    ? "border-current"
+                    : "border-transparent text-[#a0a0a0] hover:text-[#353535]"
                 )}
-                style={activeCategoryId === cat.id ? { backgroundColor: accent, boxShadow: `0 10px 15px -3px ${accent}4D` } : undefined}
+                style={activeCategoryId === cat.id ? { color: accent } : undefined}
               >
                 {cat.name}
               </button>
@@ -312,8 +311,8 @@ export function MenuPage({
             key={cat.id}
             ref={(el: HTMLDivElement | null) => { categoryRefs.current[cat.id] = el; }}
           >
-            <h2 className="font-display text-2xl font-semibold mb-5 tracking-tight leading-tight">{cat.name}</h2>
-            <div className="grid grid-cols-2 gap-4">
+            <h2 className="text-xs font-bold uppercase tracking-[0.12em] text-[#7a7a7a] mb-5">{cat.name}</h2>
+            <div className="grid grid-cols-2 gap-px bg-[#e8e8e8]">
               {cat.items.map((item) => {
                 const count = getItemCartCount(item.id);
                 return (
@@ -321,15 +320,14 @@ export function MenuPage({
                     key={item.id}
                     onClick={() => handleItemClick(item)}
                     className={cn(
-                      "relative flex flex-col rounded-[1.25rem] bg-white overflow-hidden transition-all duration-200",
-                      "shadow-[0_2px_12px_rgba(0,0,0,0.06)]",
+                      "relative flex flex-col bg-white overflow-hidden transition-all",
                       item.isStopped
                         ? "opacity-50 cursor-not-allowed"
-                        : "cursor-pointer hover:shadow-[0_8px_30px_rgba(0,0,0,0.10)] hover:-translate-y-1 active:scale-[0.97]"
+                        : "cursor-pointer hover:bg-[#f7f7f7] active:opacity-85"
                     )}
                   >
                     {/* Image */}
-                    <div className="relative aspect-square bg-[#f0f2f8] overflow-hidden">
+                    <div className="relative aspect-square bg-[#f0f0f0] overflow-hidden">
                       {item.imageUrl ? (
                         <Image
                           src={item.imageUrl}
@@ -340,21 +338,17 @@ export function MenuPage({
                         />
                       ) : (
                         <div className="absolute inset-0 flex items-center justify-center">
-                          <div className="w-20 h-20 rounded-3xl bg-white/70 flex items-center justify-center shadow-sm">
-                            <ShoppingBag className="h-9 w-9 text-gray-300" />
-                          </div>
+                          <ShoppingBag className="h-8 w-8 text-[#c4c4c4]" />
                         </div>
                       )}
-                      {/* Cart badge */}
                       {!item.isStopped && count > 0 && (
-                        <div className="absolute top-3 right-3 text-white text-sm font-black rounded-full h-8 w-8 flex items-center justify-center shadow-lg ring-2 ring-white" style={{ backgroundColor: accent }}>
+                        <div className="absolute top-2 right-2 text-white text-xs font-bold rounded-full h-6 w-6 flex items-center justify-center" style={{ backgroundColor: accent }}>
                           {count}
                         </div>
                       )}
-                      {/* Stopped */}
                       {item.isStopped && (
                         <div className="absolute inset-0 bg-white/70 flex items-center justify-center">
-                          <span className="text-base font-bold text-red-500 bg-red-50 rounded-2xl px-5 py-2">
+                          <span className="text-xs font-bold uppercase tracking-[0.04em] text-[#a82828] bg-[#fdf0f0] px-3 py-1">
                             Нет в наличии
                           </span>
                         </div>
@@ -362,21 +356,21 @@ export function MenuPage({
                     </div>
 
                     {/* Info */}
-                    <div className="flex flex-col flex-1 p-4">
-                      <p className="font-extrabold text-[17px] leading-snug line-clamp-2 mb-1">
+                    <div className="flex flex-col flex-1 p-3">
+                      <p className="font-bold text-sm leading-snug line-clamp-2 text-[#1a1a1a] mb-1">
                         {item.name}
                       </p>
                       {item.description && (
-                        <p className="text-sm text-gray-400 line-clamp-2 mb-auto font-medium">
+                        <p className="text-xs text-[#a0a0a0] line-clamp-2 mb-auto">
                           {item.description}
                         </p>
                       )}
-                      <div className="flex items-end justify-between mt-4">
+                      <div className="flex items-end justify-between mt-3">
                         <div>
                           {item.variants.length > 0 && (
-                            <span className="text-sm font-bold text-gray-400 block">от</span>
+                            <span className="text-xs text-[#a0a0a0] block">от</span>
                           )}
-                          <p className="font-black text-xl leading-none">
+                          <p className="font-bold text-lg leading-none text-[#1a1a1a]">
                             {item.variants.length > 0
                               ? formatPrice(Math.min(item.price, ...item.variants.map((v) => v.price)))
                               : formatPrice(item.price)}
@@ -384,7 +378,7 @@ export function MenuPage({
                         </div>
                         {!item.isStopped && (
                           <button
-                            className="flex h-12 w-12 items-center justify-center rounded-full text-white shadow-lg transition-all active:scale-90"
+                            className="flex h-10 w-10 items-center justify-center rounded-sm text-white transition-all active:opacity-85"
                             style={{ backgroundColor: accent }}
                             onClick={(e) => { e.stopPropagation(); handleItemClick(item); }}
                           >
@@ -408,33 +402,33 @@ export function MenuPage({
           onClick={() => { setDetailItem(null); setSelectedVariant(null); }}
         >
           <div
-            className="bg-white w-full max-w-2xl rounded-t-[2rem] shadow-2xl animate-in slide-in-from-bottom duration-300 max-h-[92vh] overflow-y-auto"
+            className="bg-white w-full max-w-2xl animate-in slide-in-from-bottom duration-300 max-h-[92vh] overflow-y-auto"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Product image */}
             {detailItem.imageUrl ? (
-              <div className="relative w-full aspect-[4/3] bg-[#f0f2f8]">
+              <div className="relative w-full aspect-[4/3] bg-[#f0f0f0]">
                 <Image
                   src={detailItem.imageUrl}
                   alt={detailItem.name}
                   fill
-                  className="object-cover rounded-t-[2rem]"
+                  className="object-cover"
                   sizes="(max-width: 700px) 100vw, 672px"
                 />
                 <button
                   onClick={() => { setDetailItem(null); setSelectedVariant(null); }}
-                  className="absolute top-4 right-4 h-10 w-10 rounded-full bg-white/90 backdrop-blur-sm flex items-center justify-center shadow-lg hover:bg-white transition-colors"
+                  className="absolute top-4 right-4 h-9 w-9 rounded-sm bg-white/90 backdrop-blur-sm flex items-center justify-center hover:bg-white transition-colors"
                 >
                   <X className="h-5 w-5 text-gray-600" />
                 </button>
               </div>
             ) : (
               <div className="pt-4 px-7">
-                <div className="w-12 h-1.5 bg-gray-200 rounded-full mx-auto mb-4" />
+                <div className="w-10 h-1 bg-[#d9d9d9] mx-auto mb-4" />
                 <div className="flex justify-end">
                   <button
                     onClick={() => { setDetailItem(null); setSelectedVariant(null); }}
-                    className="h-10 w-10 rounded-full bg-gray-100 flex items-center justify-center hover:bg-gray-200 transition-colors"
+                    className="h-9 w-9 rounded-sm bg-[#f0f0f0] flex items-center justify-center hover:bg-[#e8e8e8] transition-colors"
                   >
                     <X className="h-5 w-5 text-gray-500" />
                   </button>
@@ -445,9 +439,9 @@ export function MenuPage({
             <div className="px-7 pb-8 pt-5 space-y-5">
               {/* Name + price */}
               <div>
-                <h3 className="font-display font-extrabold text-2xl leading-tight tracking-tight">{detailItem.name}</h3>
+                <h3 className="font-bold text-xl leading-tight text-[#1a1a1a]">{detailItem.name}</h3>
                 {!detailItem.variants.length && (
-                  <p className="font-black text-2xl mt-1" style={{ color: accent }}>
+                  <p className="font-bold text-xl mt-1" style={{ color: accent }}>
                     {formatPrice(detailItem.price)}
                   </p>
                 )}
@@ -455,16 +449,15 @@ export function MenuPage({
 
               {/* Description */}
               {detailItem.description && (
-                <p className="text-base text-gray-500 font-medium leading-relaxed">
+                <p className="text-sm text-[#7a7a7a] leading-relaxed">
                   {detailItem.description}
                 </p>
               )}
 
-              {/* Composition */}
               {detailItem.composition && (
-                <div className="rounded-2xl bg-[#f0f2f8] px-5 py-4">
-                  <p className="text-xs font-bold text-gray-400 uppercase tracking-wide mb-1.5">Состав</p>
-                  <p className="text-sm text-gray-600 font-medium leading-relaxed">
+                <div className="border border-[#e8e8e8] px-5 py-4">
+                  <p className="text-xs font-bold uppercase tracking-[0.08em] text-[#a0a0a0] mb-1.5">Состав</p>
+                  <p className="text-sm text-[#353535] leading-relaxed">
                     {detailItem.composition}
                   </p>
                 </div>
@@ -473,7 +466,7 @@ export function MenuPage({
               {/* КБЖУ */}
               {(detailItem.calories != null || detailItem.proteins != null || detailItem.fats != null || detailItem.carbs != null) && (
                 <div>
-                  <p className="text-xs font-bold text-gray-400 uppercase tracking-wide mb-2">На 100 г / 100 мл</p>
+                  <p className="text-xs font-bold uppercase tracking-[0.08em] text-[#a0a0a0] mb-2">На 100 г / 100 мл</p>
                   <div className="grid grid-cols-4 gap-2">
                     {[
                       { label: "Ккал", value: detailItem.calories, unit: "" },
@@ -483,10 +476,10 @@ export function MenuPage({
                     ].map((n) => (
                       <div
                         key={n.label}
-                        className="rounded-2xl bg-[#f0f2f8] p-3 text-center"
+                        className="border border-[#e8e8e8] p-3 text-center"
                       >
-                        <p className="text-xs font-bold text-gray-400">{n.label}</p>
-                        <p className="text-lg font-black mt-0.5">
+                        <p className="text-[10px] font-bold uppercase tracking-[0.04em] text-[#a0a0a0]">{n.label}</p>
+                        <p className="text-base font-bold mt-0.5 text-[#1a1a1a]">
                           {n.value != null ? `${n.value}` : "—"}
                           {n.value != null && n.unit && (
                             <span className="text-xs font-bold text-gray-400 ml-0.5">{n.unit}</span>
@@ -501,22 +494,22 @@ export function MenuPage({
               {/* Variants */}
               {detailItem.variants.length > 0 && (
                 <div className="space-y-3">
-                  <p className="text-sm font-bold text-gray-400 uppercase tracking-wide">Выберите размер</p>
+                  <p className="text-xs font-bold uppercase tracking-[0.08em] text-[#a0a0a0]">Выберите размер</p>
                   <div className="space-y-2.5">
                     {detailItem.variants.map((v) => (
                       <button
                         key={v.id}
                         onClick={() => setSelectedVariant(v)}
                         className={cn(
-                          "flex w-full items-center justify-between rounded-2xl p-5 transition-all active:scale-[0.98]",
+                          "flex w-full items-center justify-between border p-4 transition-all active:opacity-85",
                           selectedVariant?.id === v.id
-                            ? "ring-2"
-                            : "bg-[#f0f2f8] hover:bg-[#e4e8f2]"
+                            ? "border-2"
+                            : "border-[#e8e8e8] hover:border-[#c4c4c4]"
                         )}
                         style={selectedVariant?.id === v.id ? { backgroundColor: `${accent}15`, ringColor: accent, borderColor: accent, outlineColor: accent, "--tw-ring-color": accent } as React.CSSProperties : undefined}
                       >
-                        <span className="font-extrabold text-lg">{v.label}</span>
-                        <span className="font-black text-xl">{formatPrice(v.price)}</span>
+                        <span className="font-semibold text-sm text-[#1a1a1a]">{v.label}</span>
+                        <span className="font-bold text-lg text-[#1a1a1a]">{formatPrice(v.price)}</span>
                       </button>
                     ))}
                   </div>
@@ -526,10 +519,10 @@ export function MenuPage({
               {/* Add to cart button */}
               <button
                 onClick={handleAddFromDetail}
-                className="w-full h-16 rounded-full text-white font-extrabold text-xl shadow-xl transition-all hover:shadow-2xl active:scale-[0.97] flex items-center justify-center gap-2"
+                className="w-full h-14 rounded-sm text-white text-sm font-semibold uppercase tracking-[0.04em] transition-all active:opacity-85 flex items-center justify-center gap-2"
                 style={{ backgroundColor: accent }}
               >
-                <Plus className="h-6 w-6" strokeWidth={2.5} />
+                <Plus className="h-5 w-5" strokeWidth={2.5} />
                 Добавить · {formatPrice(
                   selectedVariant?.price ?? detailItem.price
                 )}
@@ -544,17 +537,17 @@ export function MenuPage({
         <button
           onClick={() => setOrdersOpen(true)}
           className={cn(
-            "fixed z-40 right-5 flex items-center gap-2 rounded-full px-5 py-3 shadow-lg transition-all active:scale-95",
+            "fixed z-40 right-5 flex items-center gap-2 rounded-sm px-4 py-2.5 transition-all active:opacity-85",
             activeOrders.length > 0
-              ? "bg-green-500 text-white shadow-green-500/25"
-              : "bg-white text-gray-600 shadow-black/10",
+              ? "bg-[#256841] text-white"
+              : "bg-white text-[#353535] border border-[#d9d9d9]",
             itemCount > 0 ? "bottom-28" : "bottom-6"
           )}
         >
           <ClipboardList className="h-5 w-5" />
-          <span className="font-extrabold text-sm">Мои заказы</span>
+          <span className="text-xs font-semibold uppercase tracking-[0.04em]">Мои заказы</span>
           {activeOrders.length > 0 && (
-            <span className="flex h-6 w-6 items-center justify-center rounded-full bg-white text-xs font-black text-green-600">
+            <span className="flex h-5 w-5 items-center justify-center rounded-full bg-white text-[10px] font-bold text-[#256841]">
               {activeOrders.length}
             </span>
           )}
@@ -566,19 +559,19 @@ export function MenuPage({
         <div className="fixed bottom-6 left-0 right-0 z-40 px-5">
           <button
             onClick={() => setCartOpen(true)}
-            className="mx-auto flex w-full max-w-2xl items-center justify-between rounded-full px-7 py-5 text-white shadow-2xl transition-all active:scale-[0.97]"
-            style={{ backgroundColor: accent, boxShadow: `0 25px 50px -12px ${accent}4D` }}
+            className="mx-auto flex w-full max-w-2xl items-center justify-between rounded-sm px-6 py-4 text-white transition-all active:opacity-85"
+            style={{ backgroundColor: accent }}
           >
             <div className="flex items-center gap-3">
               <div className="relative">
-                <ShoppingBag className="h-7 w-7" />
-                <span className="absolute -top-2 -right-2.5 flex h-6 w-6 items-center justify-center rounded-full bg-white text-xs font-black" style={{ color: accent }}>
+                <ShoppingBag className="h-6 w-6" />
+                <span className="absolute -top-1.5 -right-2 flex h-5 w-5 items-center justify-center rounded-full bg-white text-[10px] font-bold" style={{ color: accent }}>
                   {itemCount}
                 </span>
               </div>
-              <span className="font-extrabold text-lg">Корзина</span>
+              <span className="text-sm font-semibold uppercase tracking-[0.04em]">Корзина</span>
             </div>
-            <span className="font-black text-2xl">{formatPrice(total)}</span>
+            <span className="font-bold text-xl">{formatPrice(total)}</span>
           </button>
         </div>
       )}
@@ -590,62 +583,61 @@ export function MenuPage({
           onClick={() => setCartOpen(false)}
         >
           <div
-            className="absolute bottom-0 left-0 right-0 bg-white rounded-t-[2rem] max-h-[88vh] overflow-y-auto shadow-2xl animate-in slide-in-from-bottom duration-300"
+            className="absolute bottom-0 left-0 right-0 bg-white max-h-[88vh] overflow-y-auto animate-in slide-in-from-bottom duration-300"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="sticky top-0 bg-white pt-4 pb-5 px-6 rounded-t-[2rem] z-10">
-              <div className="w-12 h-1.5 bg-gray-200 rounded-full mx-auto mb-5" />
+            <div className="sticky top-0 bg-white pt-4 pb-5 px-6 z-10 border-b border-[#e8e8e8]">
+              <div className="w-10 h-1 bg-[#d9d9d9] mx-auto mb-5" />
               <div className="flex items-center justify-between">
-                <h2 className="font-display text-2xl font-extrabold tracking-tight">
+                <h2 className="text-sm font-bold uppercase tracking-[0.12em] text-[#1a1a1a]">
                   Корзина
-                  <span className="ml-2 text-base font-bold text-gray-400 font-sans">{itemCount} шт.</span>
+                  <span className="ml-2 text-xs font-medium normal-case tracking-normal text-[#a0a0a0]">{itemCount} шт.</span>
                 </h2>
                 <button
                   onClick={() => setCartOpen(false)}
-                  className="h-10 w-10 rounded-full bg-gray-100 flex items-center justify-center hover:bg-gray-200 transition-colors"
+                  className="h-9 w-9 rounded-sm bg-[#f0f0f0] flex items-center justify-center hover:bg-[#e8e8e8] transition-colors"
                 >
-                  <X className="h-5 w-5 text-gray-500" />
+                  <X className="h-4 w-4 text-[#7a7a7a]" />
                 </button>
               </div>
             </div>
 
-            <div className="px-6 pb-8 space-y-4 max-w-2xl mx-auto">
+            <div className="px-6 pb-8 space-y-3 max-w-2xl mx-auto">
               {cartItems.map((item) => {
                 const key = item.variantId ? `${item.menuItemId}:${item.variantId}` : item.menuItemId;
                 return (
-                  <div key={key} className="flex items-center gap-4 rounded-2xl bg-[#f0f2f8] p-4">
+                  <div key={key} className="flex items-center gap-4 border-b border-[#e8e8e8] pb-3">
                     <div className="flex-1 min-w-0">
-                      <p className="font-extrabold text-[17px]">
+                      <p className="font-medium text-sm text-[#1a1a1a]">
                         {item.name}
                         {item.variantLabel && (
-                          <span className="text-gray-400 font-bold"> · {item.variantLabel}</span>
+                          <span className="text-[#a0a0a0]"> · {item.variantLabel}</span>
                         )}
                       </p>
-                      <p className="text-base font-black mt-1" style={{ color: accent }}>
+                      <p className="text-sm font-bold mt-0.5" style={{ color: accent }}>
                         {formatPrice(item.price * item.quantity)}
                       </p>
                     </div>
-                    {/* Stepper */}
-                    <div className="flex items-center shrink-0 bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+                    <div className="flex items-center shrink-0 border border-[#d9d9d9] overflow-hidden">
                       <button
                         onClick={() => updateQuantity(item.menuItemId, item.quantity - 1, item.variantId)}
-                        className="flex h-11 w-11 items-center justify-center hover:bg-gray-50 transition-colors"
+                        className="flex h-9 w-9 items-center justify-center hover:bg-[#f7f7f7] transition-colors"
                       >
-                        <Minus className="h-4 w-4 text-gray-500" />
+                        <Minus className="h-3.5 w-3.5 text-[#7a7a7a]" />
                       </button>
-                      <span className="w-10 text-center font-black text-base">{item.quantity}</span>
+                      <span className="w-8 text-center font-bold text-sm text-[#1a1a1a]">{item.quantity}</span>
                       <button
                         onClick={() => updateQuantity(item.menuItemId, item.quantity + 1, item.variantId)}
-                        className="flex h-11 w-11 items-center justify-center hover:bg-gray-50 transition-colors"
+                        className="flex h-9 w-9 items-center justify-center hover:bg-[#f7f7f7] transition-colors"
                       >
-                        <Plus className="h-4 w-4 text-gray-500" />
+                        <Plus className="h-3.5 w-3.5 text-[#7a7a7a]" />
                       </button>
                     </div>
                     <button
                       onClick={() => removeItem(item.menuItemId, item.variantId)}
-                      className="shrink-0 h-10 w-10 rounded-full flex items-center justify-center hover:bg-red-50 transition-colors group"
+                      className="shrink-0 h-8 w-8 rounded-sm flex items-center justify-center hover:bg-[#fdf0f0] transition-colors group"
                     >
-                      <X className="h-5 w-5 text-gray-300 group-hover:text-red-500 transition-colors" />
+                      <X className="h-4 w-4 text-[#c4c4c4] group-hover:text-[#a82828] transition-colors" />
                     </button>
                   </div>
                 );
@@ -654,18 +646,18 @@ export function MenuPage({
               {/* Fields */}
               <div className="space-y-4 pt-2">
                 <div>
-                  <label className="text-base font-bold text-gray-400 mb-2 block">Столик</label>
+                  <label className="text-xs font-bold uppercase tracking-[0.08em] text-[#a0a0a0] mb-2 block">Столик</label>
                   <input
                     value={tableNumber}
                     onChange={(e) => setTableNumber(e.target.value)}
                     placeholder="Номер столика"
                     disabled={!!initialTable}
-                    className="w-full h-14 rounded-2xl border-0 bg-[#f0f2f8] px-5 text-base font-bold placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500/30 transition-all disabled:opacity-50"
+                    className="w-full h-12 border-b border-[#d9d9d9] bg-transparent px-0 text-sm text-[#1a1a1a] placeholder:text-[#c4c4c4] focus:outline-none focus:border-[#3c6e71] transition-colors disabled:opacity-50"
                   />
                 </div>
                 <div>
-                  <label className="text-base font-bold text-gray-400 mb-2 flex items-center gap-2">
-                    <MessageSquare className="h-4 w-4" />
+                  <label className="text-xs font-bold uppercase tracking-[0.08em] text-[#a0a0a0] mb-2 flex items-center gap-2">
+                    <MessageSquare className="h-3.5 w-3.5" />
                     Комментарий
                   </label>
                   <textarea
@@ -673,31 +665,30 @@ export function MenuPage({
                     onChange={(e) => setComment(e.target.value)}
                     placeholder="Без сахара, с собой..."
                     rows={2}
-                    className="w-full rounded-2xl border-0 bg-[#f0f2f8] px-5 py-4 text-base font-bold placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500/30 transition-all resize-none"
+                    className="w-full border-b border-[#d9d9d9] bg-transparent px-0 py-2 text-sm text-[#1a1a1a] placeholder:text-[#c4c4c4] focus:outline-none focus:border-[#3c6e71] transition-colors resize-none"
                   />
                 </div>
               </div>
 
               {/* Total */}
-              <div className="pt-4 flex items-center justify-between">
-                <span className="text-xl font-black">Итого</span>
-                <span className="text-3xl font-black" style={{ color: accent }}>{formatPrice(total)}</span>
+              <div className="pt-4 flex items-center justify-between border-t border-[#e8e8e8]">
+                <span className="text-sm font-bold uppercase tracking-[0.08em] text-[#1a1a1a]">Итого</span>
+                <span className="text-2xl font-bold" style={{ color: accent }}>{formatPrice(total)}</span>
               </div>
 
-              {/* Submit */}
               {!tableNumber.trim() && (
-                <p className="text-sm text-red-500 font-semibold text-center">
+                <p className="text-xs text-[#a82828] text-center">
                   Укажите номер столика для оформления заказа
                 </p>
               )}
               <button
-                className="w-full h-16 rounded-full text-white font-extrabold text-xl shadow-xl transition-all hover:shadow-2xl active:scale-[0.97] disabled:opacity-50 disabled:shadow-none flex items-center justify-center gap-2"
+                className="w-full h-14 rounded-sm text-white text-sm font-semibold uppercase tracking-[0.04em] transition-all active:opacity-85 disabled:opacity-50 flex items-center justify-center gap-2"
                 style={{ backgroundColor: accent }}
                 onClick={handleOrder}
                 disabled={ordering || !tableNumber.trim()}
               >
                 {ordering ? (
-                  <><Loader2 className="h-6 w-6 animate-spin" /> Оформляем...</>
+                  <><Loader2 className="h-5 w-5 animate-spin" /> Оформляем...</>
                 ) : (
                   <>Оформить заказ · {formatPrice(total)}</>
                 )}
@@ -713,28 +704,28 @@ export function MenuPage({
           onClick={() => setOrdersOpen(false)}
         >
           <div
-            className="absolute bottom-0 left-0 right-0 bg-white rounded-t-[2rem] shadow-2xl max-h-[80vh] overflow-y-auto animate-in slide-in-from-bottom duration-300"
+            className="absolute bottom-0 left-0 right-0 bg-white max-h-[80vh] overflow-y-auto animate-in slide-in-from-bottom duration-300"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="sticky top-0 bg-white z-10 px-7 pt-5 pb-3 border-b border-gray-100">
-              <div className="w-12 h-1.5 bg-gray-200 rounded-full mx-auto mb-5" />
+            <div className="sticky top-0 bg-white z-10 px-6 pt-5 pb-3 border-b border-[#e8e8e8]">
+              <div className="w-10 h-1 bg-[#d9d9d9] mx-auto mb-5" />
               <div className="flex items-center justify-between">
-                <h3 className="font-display font-extrabold text-2xl flex items-center gap-2 tracking-tight">
-                  <ClipboardList className="h-6 w-6" style={{ color: accent }} />
+                <h3 className="text-sm font-bold uppercase tracking-[0.12em] text-[#1a1a1a] flex items-center gap-2">
+                  <ClipboardList className="h-4 w-4" style={{ color: accent }} />
                   Мои заказы
                 </h3>
                 <button
                   onClick={() => setOrdersOpen(false)}
-                  className="h-10 w-10 rounded-full bg-gray-100 flex items-center justify-center hover:bg-gray-200 transition-colors"
+                  className="h-9 w-9 rounded-sm bg-[#f0f0f0] flex items-center justify-center hover:bg-[#e8e8e8] transition-colors"
                 >
-                  <X className="h-5 w-5 text-gray-500" />
+                  <X className="h-4 w-4 text-[#7a7a7a]" />
                 </button>
               </div>
             </div>
 
-            <div className="px-7 py-5 space-y-3">
+            <div className="px-6 py-5 space-y-3">
               {myOrders.length === 0 ? (
-                <p className="text-center text-gray-400 font-semibold py-8">
+                <p className="text-center text-[#a0a0a0] text-sm py-8">
                   У вас пока нет заказов
                 </p>
               ) : (
@@ -754,14 +745,14 @@ export function MenuPage({
       {/* Watermark for BASIC plan */}
       {showWatermark && (
         <div className="text-center py-4 mt-4">
-          <span className="text-xs text-gray-300 font-medium">
+          <span className="text-[10px] uppercase tracking-[0.08em] text-[#c4c4c4]">
             Работает на{" "}
             <a
               href="/"
               target="_blank"
-              className="text-gray-400 hover:text-gray-600 transition-colors"
+              className="text-[#a0a0a0] hover:text-[#353535] transition-colors"
             >
-              QRMenu
+              TapMenu
             </a>
           </span>
         </div>
@@ -775,26 +766,26 @@ export function MenuPage({
 const ORDER_STATUS_MAP: Record<string, { label: string; color: string; bgColor: string; icon: React.ReactNode }> = {
   NEW: {
     label: "Отправлен",
-    color: "text-blue-600",
-    bgColor: "bg-blue-50",
+    color: "text-[#284b63]",
+    bgColor: "bg-[#edf2f6]",
     icon: <Clock className="h-4 w-4" />,
   },
   ACCEPTED: {
     label: "Принят",
-    color: "text-green-600",
-    bgColor: "bg-green-50",
+    color: "text-[#256841]",
+    bgColor: "bg-[#eef7f0]",
     icon: <CheckCircle2 className="h-4 w-4" />,
   },
   DELIVERED: {
     label: "Отдан",
-    color: "text-gray-500",
-    bgColor: "bg-gray-100",
+    color: "text-[#7a7a7a]",
+    bgColor: "bg-[#f0f0f0]",
     icon: <Truck className="h-4 w-4" />,
   },
   CANCELLED: {
     label: "Отменён",
-    color: "text-red-500",
-    bgColor: "bg-red-50",
+    color: "text-[#a82828]",
+    bgColor: "bg-[#fdf0f0]",
     icon: <XCircle className="h-4 w-4" />,
   },
 };
@@ -857,28 +848,28 @@ function GuestOrderCard({
 
   return (
     <div className={cn(
-      "rounded-2xl p-5 transition-all",
-      isActive ? "bg-white shadow-[0_2px_12px_rgba(0,0,0,0.06)]" : "bg-gray-50"
+      "border p-4 transition-all",
+      isActive ? "border-[#d9d9d9] bg-white" : "border-[#e8e8e8] bg-[#f7f7f7]"
     )}>
       <div className="flex items-center justify-between mb-3">
         <span className={cn(
-          "inline-flex items-center gap-1.5 rounded-xl px-3 py-1.5 text-sm font-bold",
+          "inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-bold uppercase tracking-[0.04em]",
           info.bgColor, info.color
         )}>
           {isActive && (
             <span className="relative flex h-2 w-2">
               <span className={cn("animate-ping absolute inline-flex h-full w-full rounded-full opacity-75",
-                status === "NEW" ? "bg-blue-400" : "bg-green-400"
+                status === "NEW" ? "bg-[#4a7291]" : "bg-[#2e7d4f]"
               )} />
               <span className={cn("relative inline-flex rounded-full h-2 w-2",
-                status === "NEW" ? "bg-blue-500" : "bg-green-500"
+                status === "NEW" ? "bg-[#284b63]" : "bg-[#256841]"
               )} />
             </span>
           )}
           {info.icon}
           {info.label}
         </span>
-        <span className="text-gray-400 font-medium text-sm">
+        <span className="text-[#a0a0a0] text-xs">
           {new Date(order.createdAt).toLocaleTimeString("ru-RU", { hour: "2-digit", minute: "2-digit" })}
         </span>
       </div>
@@ -886,10 +877,10 @@ function GuestOrderCard({
         <div className="mb-3 space-y-1">
           {order.items.map((item, i) => (
             <div key={i} className="flex items-center justify-between text-sm">
-              <span className="font-bold text-gray-700 truncate mr-3">
+              <span className="font-medium text-[#353535] truncate mr-3">
                 {item.name}{item.variantLabel ? ` (${item.variantLabel})` : ""}
               </span>
-              <span className="text-gray-400 font-semibold shrink-0">× {item.quantity}</span>
+              <span className="text-[#a0a0a0] text-xs shrink-0">× {item.quantity}</span>
             </div>
           ))}
         </div>

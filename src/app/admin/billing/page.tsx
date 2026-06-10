@@ -52,29 +52,28 @@ export default async function BillingPage() {
     <div className="space-y-8 max-w-5xl">
       {/* Header */}
       <div>
-        <h1 className="text-3xl font-black">Тарифы и подписка</h1>
-        <p className="text-gray-400 font-semibold mt-1">
+        <h1 className="text-2xl font-extrabold uppercase tracking-[0.12em] text-[#1a1a1a]">Тарифы и подписка</h1>
+        <p className="text-sm text-[#7a7a7a] mt-1">
           Выберите тариф под ваши задачи
         </p>
       </div>
 
-      {/* Payment processing banner (after returning from YooKassa) */}
       <Suspense fallback={null}>
         <PaymentProcessingBanner />
       </Suspense>
 
       {/* Trial banner */}
       {usage.isOnTrial && usage.trialEndsAt && (
-        <div className="rounded-2xl bg-gradient-to-r from-[#2563eb] to-[#7c3aed] p-5 text-white">
+        <div className="border-2 border-[#3c6e71] bg-[#eef6f6] p-5">
           <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-white/20">
-              <Sparkles className="h-5 w-5" />
+            <div className="flex h-10 w-10 items-center justify-center rounded-sm bg-[#3c6e71]">
+              <Sparkles className="h-5 w-5 text-white" />
             </div>
             <div>
-              <p className="font-extrabold text-lg">
+              <p className="font-bold text-sm uppercase tracking-[0.04em] text-[#1a1a1a]">
                 Пробный период — тариф «Про»
               </p>
-              <p className="text-white/80 font-semibold text-sm">
+              <p className="text-[#7a7a7a] text-xs">
                 Осталось {daysLeft(usage.trialEndsAt)} дней · до{" "}
                 {formatDate(usage.trialEndsAt)}
               </p>
@@ -84,27 +83,27 @@ export default async function BillingPage() {
       )}
 
       {/* Current plan card */}
-      <div className="rounded-3xl bg-white p-6 shadow-[0_2px_12px_rgba(0,0,0,0.06)]">
+      <div className="border border-[#d9d9d9] bg-white p-6">
         <div className="flex items-center gap-3 mb-5">
-          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#2563eb]/10 text-[#2563eb]">
+          <div className="flex h-10 w-10 items-center justify-center rounded-sm bg-[#eef6f6] text-[#3c6e71]">
             {currentPlan === "PRO" ? (
-              <Crown className="h-6 w-6" />
+              <Crown className="h-5 w-5" />
             ) : currentPlan === "BUSINESS" ? (
-              <Sparkles className="h-6 w-6" />
+              <Sparkles className="h-5 w-5" />
             ) : (
-              <Zap className="h-6 w-6" />
+              <Zap className="h-5 w-5" />
             )}
           </div>
           <div>
-            <h2 className="text-xl font-black flex items-center gap-2">
+            <h2 className="text-base font-bold text-[#1a1a1a] flex items-center gap-2">
               Тариф «{config.label}»
               {currentPlan !== "BASIC" && (
-                <span className="inline-flex items-center rounded-xl bg-[#2563eb]/10 px-3 py-1 text-xs font-bold text-[#2563eb]">
+                <span className="inline-flex items-center rounded-full bg-[#eef6f6] px-2 py-0.5 text-[10px] font-bold uppercase tracking-[0.04em] text-[#3c6e71]">
                   {config.label}
                 </span>
               )}
             </h2>
-            <p className="text-sm text-gray-400 font-semibold">
+            <p className="text-xs text-[#7a7a7a]">
               {formatRubles(config.monthlyPrice)}/мес
               {usage.planExpiresAt && !usage.isOnTrial &&
                 ` · активен до ${formatDate(usage.planExpiresAt)}`}
@@ -123,9 +122,9 @@ export default async function BillingPage() {
           {usage.usage.venueDetails.map((v) => (
             <div key={v.id} className="pl-6">
               <div className="flex items-center gap-2 mb-2">
-                <span className="text-sm font-bold text-gray-500">{v.name}</span>
-                <span className="text-xs text-gray-300">·</span>
-                <span className="text-xs text-gray-400 font-medium">
+                <span className="text-sm font-medium text-[#353535]">{v.name}</span>
+                <span className="text-xs text-[#c4c4c4]">·</span>
+                <span className="text-xs text-[#a0a0a0]">
                   {v.items} позиций · {v.categories} категорий · {v.tables} столиков
                 </span>
               </div>
@@ -144,36 +143,34 @@ export default async function BillingPage() {
 
       {/* Trial CTA */}
       {currentPlan === "BASIC" && !usage.isOnTrial && !trialUsed && (
-        <div className="rounded-3xl bg-gradient-to-br from-[#eef2ff] to-white p-6 border border-blue-100">
+        <div className="border-2 border-[#3c6e71] bg-[#eef6f6] p-6">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div className="flex items-center gap-4">
-              <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-[#2563eb] text-white shadow-lg shadow-blue-500/20 shrink-0">
-                <Sparkles className="h-7 w-7" />
+              <div className="flex h-12 w-12 items-center justify-center rounded-sm bg-[#3c6e71] text-white shrink-0">
+                <Sparkles className="h-6 w-6" />
               </div>
               <div>
-                <h3 className="text-lg font-black">
+                <h3 className="text-sm font-bold uppercase tracking-[0.04em] text-[#1a1a1a]">
                   {TRIAL_CONFIG.label}
                 </h3>
-                <p className="text-sm text-gray-400 font-semibold">
+                <p className="text-xs text-[#7a7a7a]">
                   Полный доступ ко всем функциям на {TRIAL_CONFIG.durationDays} дней
                 </p>
               </div>
             </div>
             <TrialButton
               priceRub={TRIAL_CONFIG.price}
-              className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl bg-[#2563eb] px-6 text-sm font-extrabold text-white shadow-lg shadow-blue-500/20 transition-all hover:shadow-xl active:scale-[0.97] disabled:opacity-70 shrink-0"
+              className="inline-flex h-10 items-center justify-center gap-2 rounded-sm bg-[#3c6e71] px-6 text-sm font-semibold uppercase tracking-[0.04em] text-white transition-all hover:bg-[#325d5f] active:opacity-85 disabled:opacity-70 shrink-0"
             />
           </div>
         </div>
       )}
 
-      {/* Plans comparison — clickable */}
       <PlansGrid plans={PLANS} currentPlan={currentPlan} isActive={subActive} />
 
-      {/* Watermark note for basic */}
       {currentPlan === "BASIC" && (
-        <div className="rounded-2xl bg-amber-50 border border-amber-100 px-5 py-4 text-sm text-amber-700 font-semibold">
-          На тарифе «Базовый» в меню гостя отображается watermark «Работает на QRMenu». Перейдите на «Бизнес» или «Про» для удаления.
+        <div className="border border-[#d4a83a] bg-[#fef8ec] px-5 py-4 text-sm text-[#9a7209]">
+          На тарифе «Базовый» в меню гостя отображается watermark «Работает на TapMenu». Перейдите на «Бизнес» или «Про» для удаления.
         </div>
       )}
 
@@ -199,30 +196,30 @@ function UsageBar({
   return (
     <div>
       <div className="flex items-center justify-between mb-1.5">
-        <div className="flex items-center gap-2 text-sm font-bold text-gray-500">
+        <div className="flex items-center gap-2 text-sm font-medium text-[#353535]">
           {icon}
           {label}
         </div>
         <span
           className={`text-sm font-bold ${
             isAtLimit
-              ? "text-red-500"
+              ? "text-[#a82828]"
               : isNearLimit
-                ? "text-amber-500"
-                : "text-gray-500"
+                ? "text-[#9a7209]"
+                : "text-[#353535]"
           }`}
         >
           {current} / {max}
         </span>
       </div>
-      <div className="h-2 rounded-full bg-[#f0f2f8] overflow-hidden">
+      <div className="h-1.5 bg-[#f0f0f0] overflow-hidden">
         <div
-          className={`h-full rounded-full transition-all ${
+          className={`h-full transition-all ${
             isAtLimit
-              ? "bg-red-500"
+              ? "bg-[#a82828]"
               : isNearLimit
-                ? "bg-amber-400"
-                : "bg-[#2563eb]"
+                ? "bg-[#d4a83a]"
+                : "bg-[#3c6e71]"
           }`}
           style={{ width: `${pct}%` }}
         />

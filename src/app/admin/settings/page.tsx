@@ -33,7 +33,7 @@ function SectionCard({
   return (
     <div className="rounded-3xl bg-white p-6 shadow-[0_2px_12px_rgba(0,0,0,0.06)]">
       <div className="flex items-center gap-3 mb-5">
-        <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-[#2563eb]/10 text-[#2563eb]">
+        <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-[#3c6e71]/10 text-[#3c6e71]">
           <Icon className="h-5 w-5" />
         </div>
         <h2 className="text-lg font-black">{title}</h2>
@@ -66,7 +66,7 @@ function PasswordInput({
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
         disabled={disabled}
-        className="w-full h-12 rounded-2xl border-0 bg-[#f0f2f8] px-4 pr-12 text-sm font-bold placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500/30 disabled:opacity-50"
+        className="w-full h-12 rounded-2xl border-0 bg-[#f0f0f0] px-4 pr-12 text-sm font-bold placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500/30 disabled:opacity-50"
       />
       <button
         type="button"
@@ -251,13 +251,13 @@ export default function SettingsPage() {
               onChange={(e) => setName(e.target.value)}
               placeholder="Ваше имя"
               disabled={nameLoading}
-              className="w-full h-12 rounded-2xl border-0 bg-[#f0f2f8] px-4 text-sm font-bold placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500/30 disabled:opacity-50"
+              className="w-full h-12 rounded-2xl border-0 bg-[#f0f0f0] px-4 text-sm font-bold placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500/30 disabled:opacity-50"
             />
           </div>
           <button
             type="submit"
             disabled={nameLoading || !name.trim() || name === profile?.name}
-            className="h-10 px-6 rounded-xl bg-[#2563eb] text-sm font-extrabold text-white transition-all hover:shadow-lg active:scale-[0.97] disabled:opacity-50 disabled:shadow-none"
+            className="h-10 px-6 rounded-xl bg-[#3c6e71] text-sm font-extrabold text-white transition-all hover:shadow-lg active:scale-[0.97] disabled:opacity-50 disabled:shadow-none"
           >
             {nameLoading ? "Сохранение..." : "Сохранить"}
           </button>
@@ -320,7 +320,7 @@ export default function SettingsPage() {
               !newPassword ||
               !confirmPassword
             }
-            className="h-10 px-6 rounded-xl bg-[#2563eb] text-sm font-extrabold text-white transition-all hover:shadow-lg active:scale-[0.97] disabled:opacity-50 disabled:shadow-none"
+            className="h-10 px-6 rounded-xl bg-[#3c6e71] text-sm font-extrabold text-white transition-all hover:shadow-lg active:scale-[0.97] disabled:opacity-50 disabled:shadow-none"
           >
             {passwordLoading ? "Сохранение..." : "Изменить пароль"}
           </button>
@@ -350,7 +350,7 @@ export default function SettingsPage() {
               onChange={(e) => setNewEmail(e.target.value)}
               placeholder="новый@email.com"
               disabled={emailLoading}
-              className="w-full h-12 rounded-2xl border-0 bg-[#f0f2f8] px-4 text-sm font-bold placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500/30 disabled:opacity-50"
+              className="w-full h-12 rounded-2xl border-0 bg-[#f0f0f0] px-4 text-sm font-bold placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500/30 disabled:opacity-50"
             />
           </div>
           <div>
@@ -375,7 +375,7 @@ export default function SettingsPage() {
           <button
             type="submit"
             disabled={emailLoading || !newEmail || !emailPassword}
-            className="h-10 px-6 rounded-xl bg-[#2563eb] text-sm font-extrabold text-white transition-all hover:shadow-lg active:scale-[0.97] disabled:opacity-50 disabled:shadow-none"
+            className="h-10 px-6 rounded-xl bg-[#3c6e71] text-sm font-extrabold text-white transition-all hover:shadow-lg active:scale-[0.97] disabled:opacity-50 disabled:shadow-none"
           >
             {emailLoading ? "Сохранение..." : "Изменить email"}
           </button>
@@ -452,7 +452,7 @@ export default function SettingsPage() {
                   setDeletePassword("");
                 }}
                 disabled={deleteLoading}
-                className="h-10 px-6 rounded-xl bg-[#f0f2f8] text-sm font-extrabold text-gray-600 hover:bg-gray-200 transition-all"
+                className="h-10 px-6 rounded-xl bg-[#f0f0f0] text-sm font-extrabold text-gray-600 hover:bg-gray-200 transition-all"
               >
                 Отмена
               </button>

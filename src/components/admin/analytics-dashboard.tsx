@@ -90,13 +90,13 @@ export function AnalyticsDashboard({ venue }: { venue: Venue }) {
       <div className="flex items-center gap-3">
         <Link
           href="/admin"
-          className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-[#f0f2f8] text-gray-500 hover:bg-[#e4e8f2] transition-colors"
+          className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-[#f0f0f0] text-gray-500 hover:bg-[#e4e8f2] transition-colors"
         >
           <ArrowLeft className="h-4 w-4" />
         </Link>
         <div>
           <h1 className="text-xl font-black flex items-center gap-2">
-            <BarChart3 className="h-5 w-5 text-[#2563eb]" />
+            <BarChart3 className="h-5 w-5 text-[#3c6e71]" />
             Аналитика — {venue.name}
           </h1>
         </div>
@@ -110,8 +110,8 @@ export function AnalyticsDashboard({ venue }: { venue: Venue }) {
             onClick={() => setPeriod(p.key)}
             className={`px-5 py-2.5 rounded-2xl text-sm font-extrabold transition-all ${
               period === p.key
-                ? "bg-[#2563eb] text-white shadow-md shadow-blue-500/20"
-                : "bg-[#f0f2f8] text-gray-500 hover:bg-[#e4e8f2]"
+                ? "bg-[#3c6e71] text-white shadow-md shadow-none"
+                : "bg-[#f0f0f0] text-gray-500 hover:bg-[#e4e8f2]"
             }`}
           >
             {p.label}
@@ -121,7 +121,7 @@ export function AnalyticsDashboard({ venue }: { venue: Venue }) {
 
       {loading ? (
         <div className="flex items-center justify-center py-20">
-          <Loader2 className="h-8 w-8 animate-spin text-[#2563eb]" />
+          <Loader2 className="h-8 w-8 animate-spin text-[#3c6e71]" />
         </div>
       ) : data ? (
         <div className="space-y-5">
@@ -139,8 +139,8 @@ export function AnalyticsDashboard({ venue }: { venue: Venue }) {
 
             <div className="min-w-0 rounded-3xl bg-white p-3 sm:p-5 shadow-[0_2px_12px_rgba(0,0,0,0.06)]">
               <div className="flex items-center gap-1.5 sm:gap-2 mb-2 sm:mb-3">
-                <div className="h-7 w-7 sm:h-9 sm:w-9 rounded-xl sm:rounded-2xl bg-blue-50 flex items-center justify-center shrink-0">
-                  <ShoppingBag className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-[#2563eb]" />
+                <div className="h-7 w-7 sm:h-9 sm:w-9 rounded-xl sm:rounded-2xl bg-[#eef6f6] flex items-center justify-center shrink-0">
+                  <ShoppingBag className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-[#3c6e71]" />
                 </div>
                 <span className="text-xs sm:text-sm font-bold text-gray-400 truncate">Заказы</span>
               </div>
@@ -190,7 +190,7 @@ export function AnalyticsDashboard({ venue }: { venue: Venue }) {
                           >
                             {/* Tooltip */}
                             <div className="absolute -top-1 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity text-center pointer-events-none whitespace-nowrap z-10">
-                              <p className="text-xs font-black text-[#2563eb]">
+                              <p className="text-xs font-black text-[#3c6e71]">
                                 {formatPrice(point.revenue)}
                               </p>
                               <p className="text-[10px] font-bold text-gray-400">
@@ -199,7 +199,7 @@ export function AnalyticsDashboard({ venue }: { venue: Venue }) {
                             </div>
                             {/* Bar */}
                             <div
-                              className="w-full rounded-t-lg bg-[#2563eb]/80 hover:bg-[#2563eb] transition-all cursor-pointer"
+                              className="w-full rounded-t-lg bg-[#3c6e71]/80 hover:bg-[#3c6e71] transition-all cursor-pointer"
                               style={{ height: barH, minHeight: 3 }}
                             />
                           </div>
@@ -259,7 +259,7 @@ export function AnalyticsDashboard({ venue }: { venue: Venue }) {
                           </span>
                         </span>
                       </div>
-                      <div className="h-2 rounded-full bg-[#f0f2f8] overflow-hidden">
+                      <div className="h-2 rounded-full bg-[#f0f0f0] overflow-hidden">
                         <div
                           className={`h-full rounded-full transition-all ${
                             item.rank === 1
@@ -268,7 +268,7 @@ export function AnalyticsDashboard({ venue }: { venue: Venue }) {
                               ? "bg-amber-300"
                               : item.rank === 3
                               ? "bg-amber-200"
-                              : "bg-[#2563eb]/30"
+                              : "bg-[#3c6e71]/30"
                           }`}
                           style={{ width: `${barWidth}%` }}
                         />
@@ -283,8 +283,8 @@ export function AnalyticsDashboard({ venue }: { venue: Venue }) {
           {/* Empty state */}
           {data.orderCount === 0 && (
             <div className="rounded-3xl bg-white p-12 text-center shadow-[0_2px_12px_rgba(0,0,0,0.06)]">
-              <div className="mx-auto w-16 h-16 rounded-3xl bg-blue-50 flex items-center justify-center mb-4">
-                <BarChart3 className="h-8 w-8 text-[#2563eb]" />
+              <div className="mx-auto w-16 h-16 rounded-3xl bg-[#eef6f6] flex items-center justify-center mb-4">
+                <BarChart3 className="h-8 w-8 text-[#3c6e71]" />
               </div>
               <h3 className="text-lg font-black">Нет данных</h3>
               <p className="text-sm text-gray-400 font-semibold mt-1">

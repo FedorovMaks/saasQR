@@ -565,7 +565,7 @@ export function MenuItemList({ venueId, category, onUpdate }: MenuItemListProps)
                   disabled={saving}
                   className={cn(
                     "relative inline-flex h-5 w-9 shrink-0 items-center rounded-full transition-colors disabled:opacity-50",
-                    formHasNutrition ? "bg-[#2563eb]" : "bg-gray-300"
+                    formHasNutrition ? "bg-[#3c6e71]" : "bg-gray-300"
                   )}
                 >
                   <span

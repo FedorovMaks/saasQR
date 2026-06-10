@@ -4,9 +4,9 @@ import { LegalShell, Requisites } from "@/components/legal/legal-shell";
 import { COMPANY, LEGAL_UPDATED } from "@/lib/legal";
 
 export const metadata: Metadata = {
-  title: "Публичная оферта — QRMenu",
+  title: "Публичная оферта — TapMenu",
   description:
-    "Публичная оферта на оказание услуг сервиса QRMenu (tap-menu.ru).",
+    "Публичная оферта на оказание услуг сервиса TapMenu (tap-menu.ru).",
 };
 
 export default function OfferPage() {
@@ -41,7 +41,7 @@ export default function OfferPage() {
         <li>
           <b>Тариф</b> — набор функций, лимитов и стоимости, опубликованный в
           разделе{" "}
-          <Link href="/pricing" className="text-[#2563eb] hover:underline">
+          <Link href="/pricing" className="text-[#3c6e71] hover:underline">
             «Тарифы»
           </Link>
           .
@@ -61,7 +61,7 @@ export default function OfferPage() {
         3.1. Акцептом настоящей оферты является регистрация в Сервисе и/или
         оплата тарифа. С момента акцепта договор считается заключённым. <br />
         3.2. Акцептуя оферту, Заказчик подтверждает согласие с её условиями и с{" "}
-        <Link href="/privacy" className="text-[#2563eb] hover:underline">
+        <Link href="/privacy" className="text-[#3c6e71] hover:underline">
           Политикой конфиденциальности
         </Link>
         .
@@ -121,7 +121,7 @@ export default function OfferPage() {
       </h2>
       <p>
         Обработка персональных данных осуществляется в соответствии с{" "}
-        <Link href="/privacy" className="text-[#2563eb] hover:underline">
+        <Link href="/privacy" className="text-[#3c6e71] hover:underline">
           Политикой конфиденциальности
         </Link>{" "}
         и Федеральным законом № 152-ФЗ «О персональных данных».

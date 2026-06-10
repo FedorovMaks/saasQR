@@ -69,7 +69,7 @@ export async function createPayment(options: {
         value: amountValue,
         currency,
       },
-      // СБП только — приём оплаты заказов в QRMenu идёт по СБП
+      // СБП только — приём оплаты заказов в TapMenu идёт по СБП
       payment_method_data: { type: "sbp" },
       confirmation: {
         type: "redirect",

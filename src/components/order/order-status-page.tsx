@@ -46,7 +46,7 @@ const STATUS_MAP: Record<
     description: "Ожидайте — заведение скоро примет ваш заказ",
     icon: <Clock className="h-8 w-8" />,
     color: "text-blue-500",
-    bgColor: "bg-blue-50",
+    bgColor: "bg-[#eef6f6]",
   },
   ACCEPTED: {
     label: "Заказ принят!",
@@ -152,7 +152,7 @@ export function OrderStatusPage({
   const paymentInfo = PAYMENT_MAP[paymentStatus] || PAYMENT_MAP.UNPAID;
 
   return (
-    <div className="min-h-screen bg-[#f0f2f8] flex items-start justify-center px-4 py-8">
+    <div className="min-h-screen bg-[#f0f0f0] flex items-start justify-center px-4 py-8">
       <div className="w-full max-w-md space-y-5">
         {/* Header */}
         <div className="text-center">
@@ -181,7 +181,7 @@ export function OrderStatusPage({
               </p>
             </div>
             {initialOrder.tableNumber && (
-              <div className="rounded-2xl bg-[#f0f2f8] px-4 py-2">
+              <div className="rounded-2xl bg-[#f0f0f0] px-4 py-2">
                 <p className="text-xs text-gray-400 font-medium">Столик</p>
                 <p className="text-lg font-black text-center">
                   {initialOrder.tableNumber}
@@ -198,7 +198,7 @@ export function OrderStatusPage({
                   status === "NEW" ? "bg-blue-400" : status === "ACCEPTED" ? "bg-green-400" : status === "PREPARING" ? "bg-orange-400" : "bg-emerald-400"
                 }`} />
                 <span className={`relative inline-flex rounded-full h-3 w-3 ${
-                  status === "NEW" ? "bg-blue-500" : status === "ACCEPTED" ? "bg-green-500" : status === "PREPARING" ? "bg-orange-500" : "bg-emerald-500"
+                  status === "NEW" ? "bg-[#eef6f6]0" : status === "ACCEPTED" ? "bg-green-500" : status === "PREPARING" ? "bg-orange-500" : "bg-emerald-500"
                 }`} />
               </span>
               <span className={`text-sm font-bold ${statusInfo.color}`}>
@@ -238,7 +238,7 @@ export function OrderStatusPage({
                 className="flex items-center justify-between text-sm"
               >
                 <span className="font-semibold">
-                  <span className="text-[#2563eb] font-bold">
+                  <span className="text-[#3c6e71] font-bold">
                     {item.quantity}×
                   </span>{" "}
                   {item.itemName}
@@ -272,7 +272,7 @@ export function OrderStatusPage({
         {/* Back to menu */}
         <Link
           href={`/${venue.slug}`}
-          className="flex h-14 w-full items-center justify-center rounded-2xl bg-[#2563eb] text-base font-extrabold text-white shadow-lg shadow-blue-500/20 transition-all hover:shadow-xl active:scale-[0.97]"
+          className="flex h-14 w-full items-center justify-center rounded-2xl bg-[#3c6e71] text-base font-extrabold text-white shadow-lg shadow-none transition-all hover:shadow-xl active:scale-[0.97]"
         >
           Вернуться в меню
         </Link>

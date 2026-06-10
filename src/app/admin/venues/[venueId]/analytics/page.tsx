@@ -41,14 +41,14 @@ export default async function AnalyticsPage({
           <div className="flex items-center gap-3 justify-center">
             <Link
               href="/admin"
-              className="inline-flex h-11 items-center gap-2 rounded-2xl bg-[#f0f2f8] px-5 text-sm font-extrabold text-gray-600 hover:bg-[#e4e8f2] transition-all"
+              className="inline-flex h-11 items-center gap-2 rounded-2xl bg-[#f0f0f0] px-5 text-sm font-extrabold text-gray-600 hover:bg-[#e4e8f2] transition-all"
             >
               <ArrowLeft className="h-4 w-4" />
               Назад
             </Link>
             <Link
               href="/admin/billing"
-              className="inline-flex h-11 items-center gap-2 rounded-2xl bg-[#2563eb] px-5 text-sm font-extrabold text-white shadow-md shadow-blue-500/15 hover:shadow-lg transition-all"
+              className="inline-flex h-11 items-center gap-2 rounded-2xl bg-[#3c6e71] px-5 text-sm font-extrabold text-white shadow-md shadow-none hover:shadow-lg transition-all"
             >
               <Crown className="h-4 w-4" />
               Улучшить тариф

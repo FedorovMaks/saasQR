@@ -70,7 +70,7 @@ export default async function PublicMenuPage({
   const ownerSub = await hasActiveSubscription(venue.ownerId);
   if (!ownerSub.active) {
     return (
-      <div className="min-h-screen bg-[#f0f2f8] flex items-center justify-center px-6">
+      <div className="min-h-screen bg-[#f0f0f0] flex items-center justify-center px-6">
         <div className="max-w-sm w-full rounded-3xl bg-white p-8 text-center shadow-[0_2px_12px_rgba(0,0,0,0.06)]">
           <div className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-3xl bg-amber-50">
             <svg className="h-8 w-8 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>

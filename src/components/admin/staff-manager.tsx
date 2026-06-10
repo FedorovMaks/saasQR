@@ -151,7 +151,7 @@ export function StaffManager({ venueId }: { venueId: string }) {
       <button
         onClick={createInvite}
         disabled={creating}
-        className="w-full flex items-center justify-center gap-2 h-14 rounded-2xl bg-[#2563eb] text-white font-extrabold text-base shadow-lg shadow-blue-500/20 transition-all hover:shadow-xl active:scale-[0.97] disabled:opacity-50"
+        className="w-full flex items-center justify-center gap-2 h-14 rounded-2xl bg-[#3c6e71] text-white font-extrabold text-base shadow-lg shadow-none transition-all hover:shadow-xl active:scale-[0.97] disabled:opacity-50"
       >
         {creating ? (
           <Loader2 className="h-5 w-5 animate-spin" />
@@ -168,15 +168,15 @@ export function StaffManager({ venueId }: { venueId: string }) {
             Ссылка-приглашение (7 дней)
           </p>
           <div className="flex items-center gap-3">
-            <div className="flex-1 flex items-center gap-2 rounded-xl bg-[#f0f2f8] px-4 py-3 min-w-0">
-              <Link2 className="h-4 w-4 text-[#2563eb] shrink-0" />
+            <div className="flex-1 flex items-center gap-2 rounded-xl bg-[#f0f0f0] px-4 py-3 min-w-0">
+              <Link2 className="h-4 w-4 text-[#3c6e71] shrink-0" />
               <p className="text-sm text-gray-600 font-medium truncate">
                 {inviteUrl}
               </p>
             </div>
             <button
               onClick={copyLink}
-              className="shrink-0 h-12 w-12 rounded-2xl bg-[#2563eb] text-white flex items-center justify-center shadow-md shadow-blue-500/15 transition-all hover:shadow-lg active:scale-95"
+              className="shrink-0 h-12 w-12 rounded-2xl bg-[#3c6e71] text-white flex items-center justify-center shadow-md shadow-none transition-all hover:shadow-lg active:scale-95"
             >
               {copied ? (
                 <Check className="h-5 w-5" />
@@ -191,11 +191,11 @@ export function StaffManager({ venueId }: { venueId: string }) {
       {/* Staff list */}
       {loading ? (
         <div className="flex justify-center py-12">
-          <Loader2 className="h-6 w-6 animate-spin text-[#2563eb]" />
+          <Loader2 className="h-6 w-6 animate-spin text-[#3c6e71]" />
         </div>
       ) : staff.length === 0 ? (
         <div className="rounded-3xl bg-white p-12 text-center shadow-[0_2px_12px_rgba(0,0,0,0.06)]">
-          <div className="mx-auto w-16 h-16 rounded-3xl bg-[#f0f2f8] flex items-center justify-center mb-4">
+          <div className="mx-auto w-16 h-16 rounded-3xl bg-[#f0f0f0] flex items-center justify-center mb-4">
             <Users className="h-8 w-8 text-gray-400" />
           </div>
           <h3 className="text-lg font-black text-gray-700">Нет сотрудников</h3>
@@ -215,8 +215,8 @@ export function StaffManager({ venueId }: { venueId: string }) {
             >
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-4">
-                  <div className="h-11 w-11 rounded-full bg-[#2563eb]/10 flex items-center justify-center shrink-0">
-                    <span className="text-sm font-black text-[#2563eb]">
+                  <div className="h-11 w-11 rounded-full bg-[#3c6e71]/10 flex items-center justify-center shrink-0">
+                    <span className="text-sm font-black text-[#3c6e71]">
                       {(s.user.name || s.user.email)[0].toUpperCase()}
                     </span>
                   </div>
@@ -233,7 +233,7 @@ export function StaffManager({ venueId }: { venueId: string }) {
                   <button
                     onClick={() => resetPassword(s.id)}
                     disabled={resetting === s.id}
-                    className="h-10 w-10 rounded-xl bg-[#f0f2f8] flex items-center justify-center text-gray-400 hover:bg-blue-50 hover:text-[#2563eb] transition-colors"
+                    className="h-10 w-10 rounded-xl bg-[#f0f0f0] flex items-center justify-center text-gray-400 hover:bg-[#eef6f6] hover:text-[#3c6e71] transition-colors"
                     title="Сбросить пароль"
                   >
                     {resetting === s.id ? (
@@ -245,7 +245,7 @@ export function StaffManager({ venueId }: { venueId: string }) {
                   <button
                     onClick={() => removeStaff(s.id)}
                     disabled={removing === s.id}
-                    className="h-10 w-10 rounded-xl bg-[#f0f2f8] flex items-center justify-center text-gray-400 hover:bg-red-50 hover:text-red-500 transition-colors"
+                    className="h-10 w-10 rounded-xl bg-[#f0f0f0] flex items-center justify-center text-gray-400 hover:bg-red-50 hover:text-red-500 transition-colors"
                     title="Удалить сотрудника"
                   >
                     {removing === s.id ? (

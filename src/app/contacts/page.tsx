@@ -4,9 +4,9 @@ import { LegalShell, Requisites } from "@/components/legal/legal-shell";
 import { COMPANY } from "@/lib/legal";
 
 export const metadata: Metadata = {
-  title: "Контакты и реквизиты — QRMenu",
+  title: "Контакты и реквизиты — TapMenu",
   description:
-    "Контактная информация и реквизиты сервиса QRMenu (tap-menu.ru).",
+    "Контактная информация и реквизиты сервиса TapMenu (tap-menu.ru).",
 };
 
 export default function ContactsPage() {
@@ -23,9 +23,9 @@ export default function ContactsPage() {
       <div className="flex flex-col gap-4 sm:flex-row">
         <a
           href={`mailto:${COMPANY.email}`}
-          className="flex flex-1 items-center gap-4 rounded-2xl border border-gray-100 p-5 transition-colors hover:border-blue-200"
+          className="flex flex-1 items-center gap-4 rounded-2xl border border-gray-100 p-5 transition-colors hover:border-[#a9d1d3]"
         >
-          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-blue-50 text-[#2563eb]">
+          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-[#eef6f6] text-[#3c6e71]">
             <Mail className="h-5 w-5" />
           </div>
           <div className="min-w-0">
@@ -38,7 +38,7 @@ export default function ContactsPage() {
 
         <a
           href={`tel:${COMPANY.phoneHref}`}
-          className="flex flex-1 items-center gap-4 rounded-2xl border border-gray-100 p-5 transition-colors hover:border-blue-200"
+          className="flex flex-1 items-center gap-4 rounded-2xl border border-gray-100 p-5 transition-colors hover:border-[#a9d1d3]"
         >
           <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-green-50 text-green-600">
             <Phone className="h-5 w-5" />

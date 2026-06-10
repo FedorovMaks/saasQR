@@ -3,10 +3,10 @@ import { QrCode, ShoppingBag, Bell, Smartphone, ArrowRight, Zap } from "lucide-r
 import { COMPANY } from "@/lib/legal";
 
 const footerLinks = [
-  { href: "/pricing", label: "Тарифы" },
-  { href: "/offer", label: "Оферта" },
-  { href: "/privacy", label: "Конфиденциальность" },
-  { href: "/contacts", label: "Контакты" },
+  { href: "/pricing", label: "ТАРИФЫ" },
+  { href: "/offer", label: "ОФЕРТА" },
+  { href: "/privacy", label: "КОНФИДЕНЦИАЛЬНОСТЬ" },
+  { href: "/contacts", label: "КОНТАКТЫ" },
 ];
 
 const features = [
@@ -20,37 +20,35 @@ export default function Home() {
   return (
     <div className="flex flex-1 flex-col bg-white">
       {/* Hero */}
-      <section className="relative overflow-hidden bg-gradient-to-b from-[#eef2ff] via-white to-white">
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[700px] h-[700px] rounded-full bg-blue-500/[0.05] blur-[120px]" />
-
-        <div className="relative mx-auto max-w-3xl px-6 pt-24 pb-28 sm:pt-32 sm:pb-36 text-center">
-          <div className="inline-flex items-center gap-2.5 rounded-full bg-blue-500/10 px-6 py-2.5 text-base font-extrabold text-[#2563eb] mb-10">
-            <Zap className="h-5 w-5" />
+      <section className="relative border-b border-[#e8e8e8]">
+        <div className="mx-auto max-w-[1120px] px-5 sm:px-10 pt-24 pb-28 sm:pt-32 sm:pb-36">
+          <div className="inline-flex items-center gap-2.5 rounded-full border border-[#d9d9d9] px-5 py-2 text-xs font-bold uppercase tracking-[0.08em] text-[#3c6e71] mb-10">
+            <Zap className="h-4 w-4" />
             Попробуйте 7 дней за 1₽
           </div>
 
-          <h1 className="font-display text-4xl sm:text-6xl font-extrabold tracking-tight leading-[1.08]">
+          <h1 className="text-4xl sm:text-[52px] font-extrabold uppercase tracking-[0.12em] leading-[1.1] text-[#1a1a1a]">
             Цифровое меню
             <br />
-            <span className="text-[#2563eb]">для вашего заведения</span>
+            <span className="text-[#3c6e71]">для вашего заведения</span>
           </h1>
 
-          <p className="mt-8 text-xl sm:text-2xl text-gray-400 max-w-xl mx-auto leading-relaxed font-semibold">
+          <p className="mt-8 text-lg sm:text-xl text-[#7a7a7a] max-w-xl leading-relaxed">
             Создайте меню за 10 минут, распечатайте QR-код — и принимайте заказы
             прямо на ваш экран.
           </p>
 
-          <div className="mt-12 flex flex-col sm:flex-row gap-4 justify-center">
+          <div className="mt-12 flex flex-col sm:flex-row gap-3">
             <Link
               href="/register"
-              className="inline-flex h-16 items-center justify-center rounded-full bg-[#2563eb] px-12 text-xl font-extrabold text-white shadow-xl shadow-blue-500/25 transition-all hover:shadow-2xl hover:shadow-blue-500/35 hover:-translate-y-1 active:translate-y-0 active:scale-[0.98]"
+              className="inline-flex h-14 items-center justify-center rounded-sm bg-[#3c6e71] px-10 text-sm font-semibold uppercase tracking-[0.04em] text-white transition-all hover:bg-[#325d5f] active:opacity-85"
             >
               Начать бесплатно
-              <ArrowRight className="ml-3 h-6 w-6" />
+              <ArrowRight className="ml-3 h-5 w-5" />
             </Link>
             <Link
               href="/login"
-              className="inline-flex h-16 items-center justify-center rounded-full bg-white border-2 border-gray-200 px-12 text-xl font-extrabold text-gray-700 shadow-sm transition-all hover:border-blue-200 hover:text-[#2563eb] hover:-translate-y-1 active:translate-y-0"
+              className="inline-flex h-14 items-center justify-center rounded-sm border border-[#d9d9d9] px-10 text-sm font-semibold uppercase tracking-[0.04em] text-[#353535] transition-all hover:border-[#c4c4c4]"
             >
               Войти
             </Link>
@@ -59,64 +57,65 @@ export default function Home() {
       </section>
 
       {/* Features */}
-      <section className="mx-auto max-w-4xl px-6 py-24">
-        <div className="text-center mb-16">
-          <h2 className="font-display text-3xl sm:text-4xl font-extrabold tracking-tight">Всё что нужно для общепита</h2>
-          <p className="mt-5 text-gray-400 text-xl font-semibold max-w-md mx-auto">
+      <section className="mx-auto max-w-[1120px] px-5 sm:px-10 py-24">
+        <div className="mb-16">
+          <h2 className="text-2xl sm:text-[32px] font-bold uppercase tracking-[0.12em] text-[#1a1a1a]">Всё что нужно для общепита</h2>
+          <p className="mt-4 text-[#7a7a7a] text-base max-w-md">
             Зарегистрируйтесь, добавьте меню — гости уже могут заказывать.
           </p>
         </div>
-        <div className="grid gap-5 sm:grid-cols-2">
+        <div className="grid gap-px sm:grid-cols-2 bg-[#d9d9d9] border border-[#d9d9d9]">
           {features.map((f) => (
             <div
               key={f.title}
-              className="group rounded-3xl bg-[#f0f2f8] p-8 transition-all hover:bg-white hover:shadow-[0_8px_40px_rgba(37,99,235,0.08)] hover:-translate-y-1"
+              className="bg-white p-8 transition-all hover:bg-[#f7f7f7]"
             >
-              <div className="mb-5 inline-flex rounded-2xl bg-blue-500/10 p-4 text-[#2563eb] group-hover:bg-[#2563eb] group-hover:text-white transition-all">
-                <f.icon className="h-7 w-7" />
+              <div className="mb-5 inline-flex h-12 w-12 items-center justify-center rounded-sm bg-[#eef6f6] text-[#3c6e71]">
+                <f.icon className="h-6 w-6" />
               </div>
-              <h3 className="text-xl font-black mb-2">{f.title}</h3>
-              <p className="text-base text-gray-400 leading-relaxed font-semibold">{f.desc}</p>
+              <h3 className="text-sm font-bold uppercase tracking-[0.12em] text-[#1a1a1a] mb-2">{f.title}</h3>
+              <p className="text-sm text-[#7a7a7a] leading-relaxed">{f.desc}</p>
             </div>
           ))}
         </div>
       </section>
 
       {/* CTA */}
-      <section className="mx-auto max-w-3xl px-6 pb-24">
-        <div className="rounded-3xl bg-[#2563eb] p-12 sm:p-20 text-center text-white shadow-2xl shadow-blue-500/25">
-          <h2 className="font-display text-3xl sm:text-4xl font-extrabold tracking-tight">Готовы попробовать?</h2>
-          <p className="mt-5 text-blue-100 text-xl font-semibold max-w-sm mx-auto">
+      <section className="mx-auto max-w-[1120px] px-5 sm:px-10 pb-24">
+        <div className="bg-[#1a1a1a] p-12 sm:p-20 text-white">
+          <h2 className="text-2xl sm:text-[32px] font-bold uppercase tracking-[0.12em]">Готовы попробовать?</h2>
+          <p className="mt-4 text-[#a0a0a0] text-base max-w-sm">
             Регистрация за 30 секунд. Начните принимать заказы уже сегодня.
           </p>
           <Link
             href="/register"
-            className="mt-12 inline-flex h-16 items-center justify-center rounded-full bg-white px-12 text-xl font-extrabold text-[#2563eb] shadow-lg transition-all hover:shadow-xl hover:-translate-y-1 active:scale-[0.98]"
+            className="mt-10 inline-flex h-14 items-center justify-center rounded-sm bg-[#3c6e71] px-10 text-sm font-semibold uppercase tracking-[0.04em] text-white transition-all hover:bg-[#4f8e91] active:opacity-85"
           >
             Создать меню
-            <ArrowRight className="ml-3 h-6 w-6" />
+            <ArrowRight className="ml-3 h-5 w-5" />
           </Link>
         </div>
       </section>
+
       {/* Footer */}
-      <footer className="border-t border-gray-100 py-10">
-        <div className="mx-auto max-w-4xl px-6">
-          <nav className="flex flex-wrap justify-center gap-x-6 gap-y-2">
+      <footer className="border-t border-[#e8e8e8] py-10">
+        <div className="mx-auto max-w-[1120px] px-5 sm:px-10">
+          <nav className="flex flex-wrap justify-center gap-x-8 gap-y-2">
             {footerLinks.map((l) => (
               <Link
                 key={l.href}
                 href={l.href}
-                className="text-sm font-bold text-gray-400 transition-colors hover:text-[#2563eb]"
+                className="text-xs font-bold uppercase tracking-[0.08em] text-[#a0a0a0] transition-colors hover:text-[#3c6e71]"
               >
                 {l.label}
               </Link>
             ))}
           </nav>
           <div className="mt-5 flex items-center justify-center gap-2">
-            <span className="text-center text-xs font-medium text-gray-300">
+            <span className="text-center text-xs text-[#c4c4c4]">
               © {new Date().getFullYear()} {COMPANY.brand} · {COMPANY.legalName} · ИНН {COMPANY.inn}
             </span>
-            <Link href="/superadmin" className="text-[10px] text-gray-200 transition-colors hover:text-gray-400">
+            <Link href="/superadmin" className="text-[10px] text-[#d9d9d9] transition-colors hover:text-[#a0a0a0]">
               SA
             </Link>
           </div>

@@ -13,7 +13,7 @@ import { ImageUpload } from "@/components/admin/image-upload";
 import { SITE_URL } from "@/lib/config";
 
 const PRESET_COLORS = [
-  "#2563eb", "#dc2626", "#16a34a", "#7c3aed", "#ea580c",
+  "#3c6e71", "#dc2626", "#16a34a", "#7c3aed", "#ea580c",
   "#db2777", "#0d9488", "#d97706", "#1e1e1e",
 ];
 
@@ -60,8 +60,8 @@ export function VenueForm({ venue, userPlan = "BASIC", isExtraVenue = false, ext
   const [description, setDescription] = useState(venue?.description || "");
   const [address, setAddress] = useState(venue?.address || "");
   const [logoUrl, setLogoUrl] = useState(venue?.logoUrl || "");
-  const [accentColor, setAccentColor] = useState(venue?.accentColor || "#2563eb");
-  const [hexInput, setHexInput] = useState(venue?.accentColor || "#2563eb");
+  const [accentColor, setAccentColor] = useState(venue?.accentColor || "#3c6e71");
+  const [hexInput, setHexInput] = useState(venue?.accentColor || "#3c6e71");
   const [hue, setHue] = useState(220); // default blue
   const [yookassaShopId, setYookassaShopId] = useState(venue?.yookassaShopId || "");
   const [yookassaSecretKey, setYookassaSecretKey] = useState(venue?.yookassaSecretKey || "");
@@ -218,8 +218,8 @@ export function VenueForm({ venue, userPlan = "BASIC", isExtraVenue = false, ext
       <form onSubmit={onSubmit}>
         <CardContent className="space-y-4">
           {isExtraVenue && extraVenuePrice && (
-            <div className="rounded-xl bg-blue-50 border border-blue-100 p-4 text-sm">
-              <p className="font-bold text-[#2563eb]">
+            <div className="rounded-xl bg-[#eef6f6] border border-[#d4e8e9] p-4 text-sm">
+              <p className="font-bold text-[#3c6e71]">
                 Доп. заведение — {extraVenuePrice.toLocaleString("ru-RU")} ₽/мес
               </p>
               <p className="text-gray-500 mt-1">
@@ -352,7 +352,7 @@ export function VenueForm({ venue, userPlan = "BASIC", isExtraVenue = false, ext
                   <Input
                     value={hexInput}
                     onChange={(e) => handleHexInputChange(e.target.value)}
-                    placeholder="#2563eb"
+                    placeholder="#3c6e71"
                     className="w-32 font-mono"
                     maxLength={7}
                   />
@@ -385,7 +385,7 @@ export function VenueForm({ venue, userPlan = "BASIC", isExtraVenue = false, ext
                 </p>
                 <a
                   href="/admin/billing"
-                  className="text-sm font-bold text-[#2563eb] hover:underline mt-1 inline-block"
+                  className="text-sm font-bold text-[#3c6e71] hover:underline mt-1 inline-block"
                 >
                   Перейти к тарифам
                 </a>
@@ -459,7 +459,7 @@ export function VenueForm({ venue, userPlan = "BASIC", isExtraVenue = false, ext
                   href="/admin/help/payments"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="mt-2 inline-flex items-center gap-1.5 text-xs font-bold text-[#2563eb] hover:underline"
+                  className="mt-2 inline-flex items-center gap-1.5 text-xs font-bold text-[#3c6e71] hover:underline"
                 >
                   📘 Как подключить оплату — пошаговая инструкция →
                 </a>
@@ -538,8 +538,8 @@ export function VenueForm({ venue, userPlan = "BASIC", isExtraVenue = false, ext
                 </div>
               </div>
 
-              <div className="rounded-xl bg-blue-50 p-3 space-y-2.5">
-                <p className="text-xs font-bold text-[#2563eb]">
+              <div className="rounded-xl bg-[#eef6f6] p-3 space-y-2.5">
+                <p className="text-xs font-bold text-[#3c6e71]">
                   Готовые ссылки для ЮKassa:
                 </p>
                 <CopyableUrl label="Адрес сайта" url={`${SITE_URL}/${venue.slug}`} />
@@ -605,7 +605,7 @@ function CopyableUrl({ label, url }: { label: string; url: string }) {
             toast.error("Не удалось скопировать");
           }
         }}
-        className="shrink-0 inline-flex h-8 w-8 items-center justify-center rounded-lg bg-white text-[#2563eb] transition-colors hover:bg-blue-100"
+        className="shrink-0 inline-flex h-8 w-8 items-center justify-center rounded-lg bg-white text-[#3c6e71] transition-colors hover:bg-blue-100"
       >
         {copied ? (
           <Check className="h-4 w-4 text-green-500" />

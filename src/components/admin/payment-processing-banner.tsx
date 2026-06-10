@@ -67,10 +67,10 @@ export function PaymentProcessingBanner() {
   }
 
   return (
-    <div className="rounded-2xl bg-blue-50 border border-blue-200 px-5 py-4 flex items-center gap-3">
-      <Loader2 className="h-5 w-5 text-[#2563eb] shrink-0 animate-spin" />
+    <div className="rounded-2xl bg-[#eef6f6] border border-[#a9d1d3] px-5 py-4 flex items-center gap-3">
+      <Loader2 className="h-5 w-5 text-[#3c6e71] shrink-0 animate-spin" />
       <div>
-        <p className="font-extrabold text-[#2563eb]">Оплата обрабатывается…</p>
+        <p className="font-extrabold text-[#3c6e71]">Оплата обрабатывается…</p>
         <p className="text-sm text-blue-500/80 font-semibold">
           Подтверждение СБП может занять несколько секунд. Страница обновится
           автоматически.
