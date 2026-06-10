@@ -1,14 +1,21 @@
 import type { Metadata, Viewport } from "next";
-import { Nunito } from "next/font/google";
+import { Manrope, Unbounded } from "next/font/google";
 import { SessionProvider } from "@/components/providers/session-provider";
 import { ServiceWorkerRegister } from "@/components/pwa/sw-register";
 import { InstallPrompt } from "@/components/pwa/install-prompt";
 import "./globals.css";
 
-const nunito = Nunito({
-  variable: "--font-nunito",
+const manrope = Manrope({
+  variable: "--font-manrope",
   subsets: ["latin", "cyrillic"],
-  weight: ["400", "500", "600", "700", "800", "900"],
+  weight: ["400", "500", "600", "700", "800"],
+});
+
+// Display font — bold geometric, used for venue name & section headings
+const unbounded = Unbounded({
+  variable: "--font-unbounded",
+  subsets: ["latin", "cyrillic"],
+  weight: ["500", "600", "700", "800"],
 });
 
 export const metadata: Metadata = {
@@ -44,8 +51,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="ru" className={`${nunito.variable} h-full antialiased`}>
-      <body className="min-h-full flex flex-col" style={{ fontFamily: "var(--font-nunito), system-ui, sans-serif" }}>
+    <html lang="ru" className={`${manrope.variable} ${unbounded.variable} h-full antialiased`}>
+      <body className="min-h-full flex flex-col" style={{ fontFamily: "var(--font-manrope), system-ui, sans-serif" }}>
         <SessionProvider>
           <ServiceWorkerRegister />
           {children}

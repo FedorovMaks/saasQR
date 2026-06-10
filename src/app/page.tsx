@@ -29,7 +29,7 @@ export default function Home() {
             Попробуйте 7 дней за 1₽
           </div>
 
-          <h1 className="text-5xl sm:text-7xl font-black tracking-tight leading-[1.05]">
+          <h1 className="font-display text-4xl sm:text-6xl font-extrabold tracking-tight leading-[1.08]">
             Цифровое меню
             <br />
             <span className="text-[#2563eb]">для вашего заведения</span>
@@ -43,14 +43,14 @@ export default function Home() {
           <div className="mt-12 flex flex-col sm:flex-row gap-4 justify-center">
             <Link
               href="/register"
-              className="inline-flex h-16 items-center justify-center rounded-2xl bg-[#2563eb] px-12 text-xl font-extrabold text-white shadow-xl shadow-blue-500/25 transition-all hover:shadow-2xl hover:shadow-blue-500/35 hover:-translate-y-1 active:translate-y-0 active:scale-[0.98]"
+              className="inline-flex h-16 items-center justify-center rounded-full bg-[#2563eb] px-12 text-xl font-extrabold text-white shadow-xl shadow-blue-500/25 transition-all hover:shadow-2xl hover:shadow-blue-500/35 hover:-translate-y-1 active:translate-y-0 active:scale-[0.98]"
             >
               Начать бесплатно
               <ArrowRight className="ml-3 h-6 w-6" />
             </Link>
             <Link
               href="/login"
-              className="inline-flex h-16 items-center justify-center rounded-2xl bg-white border-2 border-gray-200 px-12 text-xl font-extrabold text-gray-700 shadow-sm transition-all hover:border-blue-200 hover:text-[#2563eb] hover:-translate-y-1 active:translate-y-0"
+              className="inline-flex h-16 items-center justify-center rounded-full bg-white border-2 border-gray-200 px-12 text-xl font-extrabold text-gray-700 shadow-sm transition-all hover:border-blue-200 hover:text-[#2563eb] hover:-translate-y-1 active:translate-y-0"
             >
               Войти
             </Link>
@@ -61,7 +61,7 @@ export default function Home() {
       {/* Features */}
       <section className="mx-auto max-w-4xl px-6 py-24">
         <div className="text-center mb-16">
-          <h2 className="text-4xl sm:text-5xl font-black">Всё что нужно для общепита</h2>
+          <h2 className="font-display text-3xl sm:text-4xl font-extrabold tracking-tight">Всё что нужно для общепита</h2>
           <p className="mt-5 text-gray-400 text-xl font-semibold max-w-md mx-auto">
             Зарегистрируйтесь, добавьте меню — гости уже могут заказывать.
           </p>
@@ -85,13 +85,13 @@ export default function Home() {
       {/* CTA */}
       <section className="mx-auto max-w-3xl px-6 pb-24">
         <div className="rounded-3xl bg-[#2563eb] p-12 sm:p-20 text-center text-white shadow-2xl shadow-blue-500/25">
-          <h2 className="text-4xl sm:text-5xl font-black">Готовы попробовать?</h2>
+          <h2 className="font-display text-3xl sm:text-4xl font-extrabold tracking-tight">Готовы попробовать?</h2>
           <p className="mt-5 text-blue-100 text-xl font-semibold max-w-sm mx-auto">
             Регистрация за 30 секунд. Начните принимать заказы уже сегодня.
           </p>
           <Link
             href="/register"
-            className="mt-12 inline-flex h-16 items-center justify-center rounded-2xl bg-white px-12 text-xl font-extrabold text-[#2563eb] shadow-lg transition-all hover:shadow-xl hover:-translate-y-1 active:scale-[0.98]"
+            className="mt-12 inline-flex h-16 items-center justify-center rounded-full bg-white px-12 text-xl font-extrabold text-[#2563eb] shadow-lg transition-all hover:shadow-xl hover:-translate-y-1 active:scale-[0.98]"
           >
             Создать меню
             <ArrowRight className="ml-3 h-6 w-6" />

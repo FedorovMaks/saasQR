@@ -250,7 +250,7 @@ export function MenuPage({
             </div>
           )}
           <div className="min-w-0 flex-1">
-            <h1 className="font-black text-2xl truncate leading-tight">{venue.name}</h1>
+            <h1 className="font-display font-extrabold text-2xl truncate leading-tight tracking-tight">{venue.name}</h1>
             {venue.description && (
               <p className="text-base text-gray-400 truncate font-medium mt-0.5">
                 {venue.description}
@@ -263,7 +263,7 @@ export function MenuPage({
               onClick={handleCallWaiter}
               disabled={callingWaiter || waiterCalled}
               className={cn(
-                "shrink-0 flex items-center gap-2 rounded-2xl px-4 py-3 text-sm font-extrabold transition-all active:scale-95 disabled:opacity-70",
+                "shrink-0 flex items-center gap-2 rounded-full px-4 py-3 text-sm font-extrabold transition-all active:scale-95 disabled:opacity-70",
                 waiterCalled
                   ? "bg-green-50 text-green-600"
                   : "bg-[#f0f2f8] text-gray-600 hover:bg-[#e4e8f2]"
@@ -291,7 +291,7 @@ export function MenuPage({
                 key={cat.id}
                 onClick={() => scrollToCategory(cat.id)}
                 className={cn(
-                  "shrink-0 px-6 py-3 rounded-2xl text-base font-extrabold transition-all whitespace-nowrap",
+                  "shrink-0 px-6 py-3 rounded-full text-base font-extrabold transition-all whitespace-nowrap",
                   activeCategoryId === cat.id
                     ? "text-white shadow-lg"
                     : "bg-[#e8ecf4] text-gray-500 active:bg-[#dde3f0]"
@@ -312,7 +312,7 @@ export function MenuPage({
             key={cat.id}
             ref={(el: HTMLDivElement | null) => { categoryRefs.current[cat.id] = el; }}
           >
-            <h2 className="text-3xl font-black mb-5">{cat.name}</h2>
+            <h2 className="font-display text-2xl font-semibold mb-5 tracking-tight leading-tight">{cat.name}</h2>
             <div className="grid grid-cols-2 gap-4">
               {cat.items.map((item) => {
                 const count = getItemCartCount(item.id);
@@ -384,7 +384,7 @@ export function MenuPage({
                         </div>
                         {!item.isStopped && (
                           <button
-                            className="flex h-12 w-12 items-center justify-center rounded-2xl text-white shadow-lg transition-all active:scale-90"
+                            className="flex h-12 w-12 items-center justify-center rounded-full text-white shadow-lg transition-all active:scale-90"
                             style={{ backgroundColor: accent }}
                             onClick={(e) => { e.stopPropagation(); handleItemClick(item); }}
                           >
@@ -445,7 +445,7 @@ export function MenuPage({
             <div className="px-7 pb-8 pt-5 space-y-5">
               {/* Name + price */}
               <div>
-                <h3 className="font-black text-2xl leading-tight">{detailItem.name}</h3>
+                <h3 className="font-display font-extrabold text-2xl leading-tight tracking-tight">{detailItem.name}</h3>
                 {!detailItem.variants.length && (
                   <p className="font-black text-2xl mt-1" style={{ color: accent }}>
                     {formatPrice(detailItem.price)}
@@ -526,7 +526,7 @@ export function MenuPage({
               {/* Add to cart button */}
               <button
                 onClick={handleAddFromDetail}
-                className="w-full h-16 rounded-2xl text-white font-extrabold text-xl shadow-xl transition-all hover:shadow-2xl active:scale-[0.97] flex items-center justify-center gap-2"
+                className="w-full h-16 rounded-full text-white font-extrabold text-xl shadow-xl transition-all hover:shadow-2xl active:scale-[0.97] flex items-center justify-center gap-2"
                 style={{ backgroundColor: accent }}
               >
                 <Plus className="h-6 w-6" strokeWidth={2.5} />
@@ -544,7 +544,7 @@ export function MenuPage({
         <button
           onClick={() => setOrdersOpen(true)}
           className={cn(
-            "fixed z-40 right-5 flex items-center gap-2 rounded-2xl px-5 py-3 shadow-lg transition-all active:scale-95",
+            "fixed z-40 right-5 flex items-center gap-2 rounded-full px-5 py-3 shadow-lg transition-all active:scale-95",
             activeOrders.length > 0
               ? "bg-green-500 text-white shadow-green-500/25"
               : "bg-white text-gray-600 shadow-black/10",
@@ -566,7 +566,7 @@ export function MenuPage({
         <div className="fixed bottom-6 left-0 right-0 z-40 px-5">
           <button
             onClick={() => setCartOpen(true)}
-            className="mx-auto flex w-full max-w-2xl items-center justify-between rounded-2xl px-7 py-5 text-white shadow-2xl transition-all active:scale-[0.97]"
+            className="mx-auto flex w-full max-w-2xl items-center justify-between rounded-full px-7 py-5 text-white shadow-2xl transition-all active:scale-[0.97]"
             style={{ backgroundColor: accent, boxShadow: `0 25px 50px -12px ${accent}4D` }}
           >
             <div className="flex items-center gap-3">
@@ -596,9 +596,9 @@ export function MenuPage({
             <div className="sticky top-0 bg-white pt-4 pb-5 px-6 rounded-t-[2rem] z-10">
               <div className="w-12 h-1.5 bg-gray-200 rounded-full mx-auto mb-5" />
               <div className="flex items-center justify-between">
-                <h2 className="text-2xl font-black">
+                <h2 className="font-display text-2xl font-extrabold tracking-tight">
                   Корзина
-                  <span className="ml-2 text-base font-bold text-gray-400">{itemCount} шт.</span>
+                  <span className="ml-2 text-base font-bold text-gray-400 font-sans">{itemCount} шт.</span>
                 </h2>
                 <button
                   onClick={() => setCartOpen(false)}
@@ -691,7 +691,7 @@ export function MenuPage({
                 </p>
               )}
               <button
-                className="w-full h-16 rounded-2xl text-white font-extrabold text-xl shadow-xl transition-all hover:shadow-2xl active:scale-[0.97] disabled:opacity-50 disabled:shadow-none flex items-center justify-center gap-2"
+                className="w-full h-16 rounded-full text-white font-extrabold text-xl shadow-xl transition-all hover:shadow-2xl active:scale-[0.97] disabled:opacity-50 disabled:shadow-none flex items-center justify-center gap-2"
                 style={{ backgroundColor: accent }}
                 onClick={handleOrder}
                 disabled={ordering || !tableNumber.trim()}
@@ -719,7 +719,7 @@ export function MenuPage({
             <div className="sticky top-0 bg-white z-10 px-7 pt-5 pb-3 border-b border-gray-100">
               <div className="w-12 h-1.5 bg-gray-200 rounded-full mx-auto mb-5" />
               <div className="flex items-center justify-between">
-                <h3 className="font-black text-2xl flex items-center gap-2">
+                <h3 className="font-display font-extrabold text-2xl flex items-center gap-2 tracking-tight">
                   <ClipboardList className="h-6 w-6" style={{ color: accent }} />
                   Мои заказы
                 </h3>
