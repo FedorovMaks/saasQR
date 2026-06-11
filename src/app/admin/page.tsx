@@ -65,7 +65,7 @@ export default async function AdminPage() {
               <Sparkles className="h-6 w-6 text-[#3c6e71]" />
             </div>
             <div>
-              <h2 className="text-xl font-bold uppercase tracking-[0.12em] text-[#1a1a1a]">Попробуйте «Про» за {TRIAL_CONFIG.price}₽</h2>
+              <h2 className="text-xl font-bold uppercase tracking-[0.12em] text-[#1a1a1a]">Попробуйте «Бизнес» за {TRIAL_CONFIG.price}₽</h2>
               <p className="text-sm text-[#7a7a7a]">
                 {TRIAL_CONFIG.durationDays} дней полного доступа ко всем функциям
               </p>

@@ -75,7 +75,7 @@ export default function PricingPage() {
       <div className="flex items-center gap-3 border border-[#3c6e71] bg-[#eef6f6] p-4 text-[#3c6e71]">
         <Zap className="h-4 w-4 shrink-0" />
         <p className="text-sm font-semibold">
-          Пробный период: 7 дней за 1&nbsp;₽ на тарифе «Про». Предоставляется
+          Пробный период: 7 дней за 1&nbsp;₽ на тарифе «Бизнес». Предоставляется
           один раз.
         </p>
       </div>

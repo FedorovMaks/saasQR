@@ -75,8 +75,8 @@ export const PLANS: Record<Plan, PlanConfig> = {
 export const TRIAL_CONFIG = {
   durationDays: 7,
   price: 1, // рублей
-  plan: "PRO" as Plan,
-  label: "7 дней за 1₽ на тарифе «Про»",
+  plan: "BUSINESS" as Plan,
+  label: "7 дней за 1₽ на тарифе «Бизнес»",
 };
 
 // Грейс-период после истечения подписки: всё работает как обычно 1 день.
@@ -117,7 +117,7 @@ export function getEffectivePlan(user: {
 export type BillingPeriod = "monthly" | "yearly";
 
 /**
- * Активировать пробный период (1₽ / 7 дней PRO). Триал — строго один раз.
+ * Активировать пробный период (1₽ / 7 дней BUSINESS). Триал — строго один раз.
  */
 export async function activateTrial(userId: string) {
   const now = Date.now();

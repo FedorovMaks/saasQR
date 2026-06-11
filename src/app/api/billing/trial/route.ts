@@ -72,7 +72,7 @@ export async function POST(req: Request) {
       shopId: creds.shopId,
       secretKey: creds.secretKey,
       amount: TRIAL_CONFIG.price * 100,
-      description: `Пробный период «Про» — ${TRIAL_CONFIG.durationDays} дней`,
+      description: `Пробный период «Бизнес» — ${TRIAL_CONFIG.durationDays} дней`,
       returnUrl,
       idempotencyKey: `trial-${user.id}-${record.id}`,
       metadata: {

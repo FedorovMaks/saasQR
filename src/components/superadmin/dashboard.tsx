@@ -343,7 +343,7 @@ export function SuperAdminDashboard({ stats }: { stats: Stats }) {
                   className="px-4 py-2 rounded-xl text-sm font-bold bg-purple-900/50 text-purple-400 hover:bg-purple-900 transition-all disabled:opacity-50 flex items-center gap-2"
                 >
                   <Sparkles className="h-3.5 w-3.5" />
-                  Активировать триал (7 дней PRO)
+                  Активировать триал (7 дней Бизнес)
                 </button>
               )}
               {u.trialEndsAt && (

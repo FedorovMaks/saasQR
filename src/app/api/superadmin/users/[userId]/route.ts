@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { requireSuperAdmin } from "@/lib/superadmin-guard";
 import { prisma } from "@/lib/prisma";
+import { TRIAL_CONFIG } from "@/lib/plans";
 import { z } from "zod";
 
 // GET — detailed user info for troubleshooting
@@ -104,9 +105,10 @@ export async function PATCH(
     data.emailVerified = result.data.emailVerified;
   }
   if (result.data.activateTrial) {
-    data.plan = "PRO";
-    data.trialEndsAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
-    data.planExpiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
+    const trialMs = TRIAL_CONFIG.durationDays * 24 * 60 * 60 * 1000;
+    data.plan = TRIAL_CONFIG.plan;
+    data.trialEndsAt = new Date(Date.now() + trialMs);
+    data.planExpiresAt = new Date(Date.now() + trialMs);
   }
 
   const updated = await prisma.user.update({
