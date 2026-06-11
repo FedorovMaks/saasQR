@@ -1,11 +1,16 @@
 import "dotenv/config";
+import { randomBytes } from "crypto";
 import { PrismaClient } from "../src/generated/prisma/client";
 import { hash } from "bcryptjs";
 
 const prisma = new PrismaClient();
 
 async function main() {
-  const hashedPassword = await hash("password123", 12);
+  // Never hardcode a demo password in the (public) repo. Use SEED_DEMO_PASSWORD
+  // if provided, otherwise generate a random one and print it once below.
+  const demoPassword =
+    process.env.SEED_DEMO_PASSWORD || randomBytes(12).toString("base64url");
+  const hashedPassword = await hash(demoPassword, 12);
 
   const user = await prisma.user.upsert({
     where: { email: "demo@tap-menu.ru" },
@@ -93,7 +98,7 @@ async function main() {
   }
 
   console.log("Seed completed successfully");
-  console.log(`  User: ${user.email} / password123`);
+  console.log(`  User: ${user.email} / ${demoPassword}`);
   console.log(`  Venue: ${venue.name} (/${venue.slug})`);
 }
 
