@@ -10,8 +10,8 @@ export function PushToggle() {
 
   if (state === "loading") {
     return (
-      <button disabled className="inline-flex h-11 items-center gap-2 rounded-2xl bg-[#f0f0f0] px-5 text-sm font-extrabold text-gray-400">
-        <Loader2 className="h-4 w-4 animate-spin" />
+      <button disabled className="inline-flex h-9 items-center gap-2 rounded-sm border border-[#d9d9d9] px-4 text-xs font-semibold uppercase tracking-[0.04em] text-[#a0a0a0]">
+        <Loader2 className="h-3.5 w-3.5 animate-spin" />
       </button>
     );
   }
@@ -23,16 +23,16 @@ export function PushToggle() {
       <div className="space-y-2">
         <button
           onClick={() => setShowHelp(!showHelp)}
-          className="inline-flex h-11 items-center gap-2 rounded-2xl bg-amber-50 px-5 text-sm font-extrabold text-amber-600 transition-all hover:bg-amber-100 active:scale-[0.97]"
+          className="inline-flex h-9 items-center gap-2 rounded-sm border border-[#d4a83a] bg-[#fef8ec] px-4 text-xs font-semibold uppercase tracking-[0.04em] text-[#9a7209] transition-all hover:bg-[#f5ebd0] active:opacity-85"
         >
-          <Info className="h-4 w-4" />
-          Уведомления недоступны
+          <Info className="h-3.5 w-3.5" />
+          Недоступно
         </button>
         {showHelp && (
-          <div className="rounded-2xl bg-amber-50 border border-amber-100 p-4 text-sm text-amber-700 relative">
+          <div className="border border-[#d4a83a] bg-[#fef8ec] p-4 text-sm text-[#9a7209] relative">
             <button
               onClick={() => setShowHelp(false)}
-              className="absolute top-2 right-2 text-amber-400 hover:text-amber-600"
+              className="absolute top-2 right-2 text-[#d4a83a] hover:text-[#9a7209]"
             >
               <X className="h-4 w-4" />
             </button>
@@ -59,9 +59,9 @@ export function PushToggle() {
 
   if (state === "denied") {
     return (
-      <div className="inline-flex h-11 items-center gap-2 rounded-2xl bg-red-50 px-5 text-sm font-bold text-red-500">
-        <BellOff className="h-4 w-4" />
-        Уведомления заблокированы
+      <div className="inline-flex h-9 items-center gap-2 rounded-sm border border-[#e8b4b4] bg-[#fdf0f0] px-4 text-xs font-bold uppercase tracking-[0.04em] text-[#a82828]">
+        <BellOff className="h-3.5 w-3.5" />
+        Заблокир.
       </div>
     );
   }
@@ -72,11 +72,10 @@ export function PushToggle() {
         onClick={() => {
           if (confirm("Отключить уведомления о новых заказах?")) unsubscribe();
         }}
-        className="inline-flex h-11 items-center gap-2 rounded-2xl bg-green-50 px-5 text-sm font-extrabold text-green-600 transition-all hover:bg-green-100 active:scale-[0.97]"
+        className="inline-flex h-9 items-center gap-2 rounded-sm border border-[#b3d9c0] bg-[#eef7f0] px-4 text-xs font-semibold uppercase tracking-[0.04em] text-[#256841] transition-all hover:bg-[#ddf0e2] active:opacity-85"
       >
-        <BellRing className="h-4 w-4" />
-        Уведомления включены
-        <span className="ml-1 text-xs font-bold text-green-500/70">· отключить</span>
+        <BellRing className="h-3.5 w-3.5" />
+        Увед. вкл.
       </button>
     );
   }
@@ -85,9 +84,9 @@ export function PushToggle() {
   return (
     <button
       onClick={subscribe}
-      className="inline-flex h-11 items-center gap-2 rounded-2xl bg-[#3c6e71] px-5 text-sm font-extrabold text-white shadow-md shadow-none transition-all hover:shadow-lg active:scale-[0.97]"
+      className="inline-flex h-9 items-center gap-2 rounded-sm bg-[#3c6e71] px-4 text-xs font-semibold uppercase tracking-[0.04em] text-white transition-all hover:bg-[#325d5f] active:opacity-85"
     >
-      <Bell className="h-4 w-4" />
+      <Bell className="h-3.5 w-3.5" />
       Включить уведомления
     </button>
   );

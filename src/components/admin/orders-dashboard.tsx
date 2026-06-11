@@ -124,7 +124,6 @@ export function OrdersDashboard({
     setWaiterCalls((prev) => prev.filter((c) => c.tableNumber !== tableNumber));
   }
 
-  // Handle new order events (sound + toast)
   const handleOrderEvent = useCallback(
     (event: {
       type: string;
@@ -169,7 +168,6 @@ export function OrdersDashboard({
     [playSound]
   );
 
-  // Full refresh from server on every poll — guarantees status is always correct
   const handleOrdersRefresh = useCallback((freshOrders: OrderFromAPI[]) => {
     setOrders(freshOrders as Order[]);
   }, []);
@@ -181,15 +179,12 @@ export function OrdersDashboard({
     initialOrders.map((o) => ({ id: o.id }))
   );
 
-  // Refresh "time ago" every 30s
   const [, setTick] = useState(0);
   useEffect(() => {
     const interval = setInterval(() => setTick((t) => t + 1), 30000);
     return () => clearInterval(interval);
   }, []);
 
-  // Unlock audio on first user interaction so in-app beep works on iOS
-  // (iOS keeps AudioContext suspended until a gesture resumes it)
   useEffect(() => {
     const handler = () => unlockAudio();
     window.addEventListener("touchstart", handler, { once: true });
@@ -200,7 +195,6 @@ export function OrdersDashboard({
     };
   }, []);
 
-  // Update order status
   const updateStatus = async (orderId: string, newStatus: string) => {
     setUpdatingOrder(orderId);
     try {
@@ -225,13 +219,11 @@ export function OrdersDashboard({
     }
   };
 
-  // Filter orders
   const filtered =
     statusFilter === "ALL"
       ? orders
       : orders.filter((o) => o.status === statusFilter);
 
-  // Counts per status
   const counts: Record<string, number> = {};
   for (const o of orders) {
     counts[o.status] = (counts[o.status] || 0) + 1;
@@ -239,52 +231,40 @@ export function OrdersDashboard({
   const newCount = counts["NEW"] || 0;
 
   return (
-    <div className="space-y-5">
-      {/* Header */}
-      <div className="space-y-3">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3 min-w-0">
-            {!isWaiter && (
-              <Link
-                href="/admin"
-                className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-sm border border-[#d9d9d9] text-[#7a7a7a] hover:border-[#c4c4c4] transition-colors"
-              >
-                <ArrowLeft className="h-4 w-4" />
-              </Link>
-            )}
-            <div className="min-w-0">
-              <h1 className="text-xl font-extrabold flex items-center gap-2 text-[#1a1a1a]">
-                <span className="truncate">Заказы — {venue.name}</span>
-                {newCount > 0 && (
-                  <span className="inline-flex items-center gap-1.5 rounded-full bg-[#eef6f6] border border-[#a9d1d3] px-3 py-1 text-xs font-bold text-[#3c6e71] animate-pulse shrink-0">
-                    {newCount} новых
-                  </span>
-                )}
-              </h1>
-              <p className="text-sm text-[#7a7a7a]">
-                Сегодня: {orders.length} заказов ·{" "}
-                {formatPrice(orders.reduce((s, o) => s + o.totalAmount, 0))}
-              </p>
-            </div>
-          </div>
+    <div className="space-y-4">
+      {/* Header — single row: back + title + push toggle + menu link */}
+      <div className="flex items-start justify-between gap-3">
+        <div className="flex items-center gap-3 min-w-0">
           {!isWaiter && (
             <Link
-              href={`/${venue.slug}`}
-              target="_blank"
-              className="hidden sm:inline-flex h-10 items-center gap-2 rounded-sm border border-[#d9d9d9] px-4 text-xs font-semibold uppercase tracking-[0.04em] text-[#353535] hover:border-[#c4c4c4] transition-colors shrink-0"
+              href="/admin"
+              className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-sm border border-[#d9d9d9] text-[#7a7a7a] hover:border-[#c4c4c4] transition-colors"
             >
-              <ExternalLink className="h-3.5 w-3.5" />
-              Меню
+              <ArrowLeft className="h-4 w-4" />
             </Link>
           )}
+          <div className="min-w-0">
+            <h1 className="text-lg font-extrabold flex items-center gap-2 text-[#1a1a1a]">
+              <span className="truncate">Заказы — {venue.name}</span>
+              {newCount > 0 && (
+                <span className="inline-flex items-center rounded-full bg-[#eef6f6] border border-[#a9d1d3] px-2.5 py-0.5 text-[11px] font-bold text-[#3c6e71] animate-pulse shrink-0">
+                  {newCount} новых
+                </span>
+              )}
+            </h1>
+            <p className="text-xs text-[#7a7a7a]">
+              Сегодня: {orders.length} заказов ·{" "}
+              {formatPrice(orders.reduce((s, o) => s + o.totalAmount, 0))}
+            </p>
+          </div>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 shrink-0">
           <PushToggle />
           {!isWaiter && (
             <Link
               href={`/${venue.slug}`}
               target="_blank"
-              className="sm:hidden inline-flex h-10 items-center gap-2 rounded-sm border border-[#d9d9d9] px-5 text-xs font-semibold uppercase tracking-[0.04em] text-[#353535] hover:border-[#c4c4c4] transition-colors"
+              className="inline-flex h-9 items-center gap-2 rounded-sm border border-[#d9d9d9] px-4 text-xs font-semibold uppercase tracking-[0.04em] text-[#353535] hover:border-[#c4c4c4] transition-colors"
             >
               <ExternalLink className="h-3.5 w-3.5" />
               Меню
@@ -299,24 +279,24 @@ export function OrdersDashboard({
           {waiterCalls.map((call) => (
             <div
               key={call.tableNumber}
-              className="flex items-center justify-between border-2 border-[#d4a83a] bg-[#fef8ec] px-5 py-4 animate-in slide-in-from-top duration-300"
+              className="flex items-center justify-between border-2 border-[#d4a83a] bg-[#fef8ec] px-4 py-3 animate-in slide-in-from-top duration-300"
             >
               <div className="flex items-center gap-3">
-                <div className="h-10 w-10 rounded-sm bg-[#f5ebd0] flex items-center justify-center">
-                  <Bell className="h-5 w-5 text-[#9a7209] animate-bounce" />
+                <div className="h-9 w-9 rounded-sm bg-[#f5ebd0] flex items-center justify-center">
+                  <Bell className="h-4 w-4 text-[#9a7209] animate-bounce" />
                 </div>
                 <div>
-                  <p className="font-bold text-[#1a1a1a]">
+                  <p className="font-bold text-sm text-[#1a1a1a]">
                     Столик {call.tableNumber} вызывает официанта
                   </p>
-                  <p className="text-xs text-[#9a7209] font-medium">
+                  <p className="text-xs text-[#9a7209]">
                     {new Date(call.timestamp).toLocaleTimeString("ru-RU", { hour: "2-digit", minute: "2-digit" })}
                   </p>
                 </div>
               </div>
               <button
                 onClick={() => dismissWaiterCall(call.tableNumber)}
-                className="h-10 px-4 rounded-sm bg-[#d4a83a] text-white font-semibold text-xs uppercase tracking-[0.04em] hover:bg-[#b8922e] transition-colors active:opacity-85"
+                className="h-9 px-4 rounded-sm bg-[#d4a83a] text-white font-semibold text-xs uppercase tracking-[0.04em] hover:bg-[#b8922e] transition-colors active:opacity-85"
               >
                 Ок
               </button>
@@ -325,7 +305,7 @@ export function OrdersDashboard({
         </div>
       )}
 
-      {/* Status filter tabs */}
+      {/* Filter tabs — counts inline */}
       <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
         {FILTER_TABS.map((tab) => {
           const count =
@@ -341,16 +321,13 @@ export function OrdersDashboard({
                   : "border border-[#d9d9d9] text-[#353535] hover:border-[#c4c4c4]"
               }`}
             >
-              {tab.label}
-              {count > 0 && (
-                <span className="ml-1.5 text-xs opacity-70">({count})</span>
-              )}
+              {tab.label}{count > 0 ? ` ${count}` : ""}
             </button>
           );
         })}
       </div>
 
-      {/* Orders list */}
+      {/* Orders grid */}
       {filtered.length === 0 ? (
         <div className="border-2 border-dashed border-[#d9d9d9] flex flex-col items-center justify-center py-16 text-center">
           <div className="rounded-sm bg-[#eef6f6] p-5 mb-5">
@@ -393,8 +370,6 @@ function OrderCard({
 }) {
   const config = STATUS_CONFIG[order.status] || STATUS_CONFIG.NEW;
   const nextStatuses = STATUS_FLOW[order.status] || [];
-  // Block accepting/forwarding an order while its online payment is pending,
-  // so a waiter can't accept it before the guest has paid.
   const awaitingPayment = order.paymentStatus === "PENDING";
 
   return (
@@ -402,56 +377,56 @@ function OrderCard({
       className={`border transition-all overflow-hidden ${
         isNew
           ? "border-2 border-[#3c6e71] bg-[#f9fcfc]"
-          : "border-[#d9d9d9] bg-white hover:bg-[#f7f7f7]"
+          : "border-[#d9d9d9] bg-white"
       } ${
         order.status === "DELIVERED" || order.status === "CANCELLED"
           ? "opacity-60"
           : ""
       }`}
     >
-      <div className="p-5 space-y-0">
+      {/* Header row */}
+      <div className="px-4 pt-4 pb-0">
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2.5">
-            <span className="text-xl font-extrabold text-[#1a1a1a]">#{order.orderNumber}</span>
+          <div className="flex items-center gap-2">
+            <span className="text-lg font-extrabold text-[#1a1a1a]">#{order.orderNumber}</span>
             {order.tableNumber && (
-              <span className="inline-flex items-center rounded-full border border-[#d9d9d9] px-3 py-0.5 text-xs font-medium text-[#353535]">
+              <span className="inline-flex items-center rounded-full border border-[#d9d9d9] px-2.5 py-0.5 text-[11px] font-medium text-[#353535]">
                 Стол {order.tableNumber}
               </span>
             )}
           </div>
           <span
-            className={`${config.bgColor} ${config.color} border inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs font-bold`}
+            className={`${config.bgColor} ${config.color} border inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[11px] font-bold uppercase tracking-[0.04em]`}
           >
             {config.icon}
             {config.label}
           </span>
         </div>
-        <div className="flex items-center gap-1 text-xs text-[#a0a0a0] pt-1">
+        <p className="flex items-center gap-1 text-[11px] text-[#a0a0a0] mt-0.5">
           <Clock className="h-3 w-3" />
           {formatTime(order.createdAt)} · {timeAgo(order.createdAt)}
-        </div>
+        </p>
       </div>
 
-      <div className="px-5 pb-5 space-y-3">
-        {/* Items */}
-        <div className="space-y-1.5 bg-[#f7f7f7] border border-[#e8e8e8] p-3">
+      {/* Body */}
+      <div className="px-4 pb-4 pt-3 space-y-3">
+        {/* Items — plain list, no background */}
+        <div className="space-y-1">
           {order.items.map((item) => (
             <div
               key={item.id}
               className="flex items-center justify-between text-sm"
             >
-              <span>
+              <span className="text-[#353535]">
                 <span className="font-bold text-[#3c6e71]">
                   {item.quantity}×
                 </span>{" "}
                 {item.itemName}
                 {item.variantLabel && (
-                  <span className="text-[#a0a0a0] text-xs ml-1">
-                    ({item.variantLabel})
-                  </span>
+                  <span className="text-[#a0a0a0] text-xs"> ({item.variantLabel})</span>
                 )}
               </span>
-              <span className="text-[#a0a0a0] text-xs">
+              <span className="text-[#7a7a7a] text-xs shrink-0 ml-2">
                 {formatPrice(item.priceAtOrder * item.quantity)}
               </span>
             </div>
@@ -465,31 +440,29 @@ function OrderCard({
           </div>
         )}
 
-        <div className="border-t border-[#e8e8e8]" />
-
-        {/* Total + payment status */}
-        <div className="flex items-center justify-between font-semibold">
+        {/* Total row */}
+        <div className="flex items-center justify-between pt-2 border-t border-[#e8e8e8]">
           <div className="flex items-center gap-2">
-            <span className="text-[#1a1a1a]">Итого</span>
+            <span className="text-sm font-bold text-[#1a1a1a]">Итого</span>
             {order.paymentStatus === "PAID" && (
-              <span className="inline-flex items-center px-2 py-0.5 text-xs font-bold text-[#256841] bg-[#eef7f0] border border-[#b3d9c0]">
+              <span className="inline-flex items-center px-2 py-0.5 text-[10px] font-bold uppercase tracking-[0.04em] text-[#256841] bg-[#eef7f0] border border-[#b3d9c0]">
                 Оплачен
               </span>
             )}
             {order.paymentStatus === "PENDING" && (
-              <span className="inline-flex items-center px-2 py-0.5 text-xs font-bold text-[#9a7209] bg-[#fef8ec] border border-[#d4a83a]">
-                Ожидает оплаты
+              <span className="inline-flex items-center px-2 py-0.5 text-[10px] font-bold uppercase tracking-[0.04em] text-[#9a7209] bg-[#fef8ec] border border-[#d4a83a]">
+                Ожидает
               </span>
             )}
           </div>
-          <span className="text-lg font-bold text-[#1a1a1a]">{formatPrice(order.totalAmount)}</span>
+          <span className="text-base font-extrabold text-[#1a1a1a]">{formatPrice(order.totalAmount)}</span>
         </div>
 
         {/* Action buttons */}
         {nextStatuses.length > 0 && (
           <div className="space-y-2">
             {awaitingPayment && (
-              <p className="flex items-center gap-1 text-xs font-semibold text-[#9a7209]">
+              <p className="flex items-center gap-1 text-[11px] font-semibold text-[#9a7209]">
                 <Clock className="h-3 w-3" />
                 Ожидает оплаты — приём заблокирован
               </p>
@@ -502,7 +475,7 @@ function OrderCard({
                 return (
                   <button
                     key={s}
-                    className={`flex-1 h-10 rounded-sm text-xs font-semibold uppercase tracking-[0.04em] transition-all active:opacity-85 disabled:opacity-50 flex items-center justify-center gap-1.5 ${
+                    className={`flex-1 h-9 rounded-sm text-xs font-semibold uppercase tracking-[0.04em] transition-all active:opacity-85 disabled:opacity-50 flex items-center justify-center gap-1.5 ${
                       isCancelled
                         ? "border border-[#e8b4b4] text-[#a82828] bg-[#fdf0f0] hover:bg-[#fbe4e4]"
                         : "bg-[#3c6e71] text-white hover:bg-[#325d5f]"
