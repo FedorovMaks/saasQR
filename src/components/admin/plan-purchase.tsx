@@ -87,10 +87,12 @@ export function PlansGrid({
   plans,
   currentPlan,
   isActive,
+  canRenew,
 }: {
   plans: Record<Plan, PlanConfig>;
   currentPlan: Plan;
   isActive: boolean;
+  canRenew?: boolean;
 }) {
   const [period, setPeriod] = useState<Period>("monthly");
   const [loadingPlan, setLoadingPlan] = useState<Plan | null>(null);
@@ -225,10 +227,25 @@ export function PlansGrid({
                 )}
               </ul>
 
-              {isCurrentPlan ? (
+              {isCurrentPlan && !canRenew ? (
                 <div className="flex h-12 items-center justify-center rounded-2xl bg-[#f0f0f0] text-sm font-extrabold text-gray-400">
                   Текущий тариф
                 </div>
+              ) : isCurrentPlan && canRenew ? (
+                <button
+                  onClick={() => buy(planKey)}
+                  disabled={isLoading}
+                  className="flex h-12 w-full items-center justify-center gap-2 rounded-2xl text-sm font-extrabold transition-all active:scale-[0.98] disabled:opacity-70 bg-[#3c6e71] text-white hover:bg-[#325d5f]"
+                >
+                  {isLoading ? (
+                    <>
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                      Переход к оплате...
+                    </>
+                  ) : (
+                    "Продлить подписку"
+                  )}
+                </button>
               ) : (
                 <button
                   onClick={() => buy(planKey)}

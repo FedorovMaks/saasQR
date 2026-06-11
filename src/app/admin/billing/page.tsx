@@ -50,6 +50,14 @@ export default async function BillingPage() {
   const sub = await hasActiveSubscription(session.user.id);
   const subActive = sub.active;
 
+  const canRenew = (() => {
+    if (!usage.planExpiresAt || currentPlan === "BASIC") return false;
+    const expiresMs = new Date(usage.planExpiresAt).getTime();
+    const now = Date.now();
+    const sevenDays = 7 * 24 * 60 * 60 * 1000;
+    return expiresMs < now || (expiresMs - now) < sevenDays;
+  })();
+
   return (
     <div className="space-y-8 max-w-5xl">
       {/* Header */}
@@ -168,7 +176,7 @@ export default async function BillingPage() {
         </div>
       )}
 
-      <PlansGrid plans={PLANS} currentPlan={currentPlan} isActive={subActive} />
+      <PlansGrid plans={PLANS} currentPlan={currentPlan} isActive={subActive} canRenew={canRenew} />
 
       {currentPlan === "BASIC" && (
         <div className="border border-[#d4a83a] bg-[#fef8ec] px-5 py-4 text-sm text-[#9a7209]">
