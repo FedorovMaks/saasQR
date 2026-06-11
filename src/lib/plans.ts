@@ -129,6 +129,7 @@ export async function activateTrial(userId: string) {
       trialEndsAt: ends,
       planExpiresAt: ends,
       trialUsed: true,
+      expiryEmailSent: null,
     },
   });
   return ends;
@@ -166,8 +167,8 @@ export async function activatePlan(
     data: {
       plan,
       planExpiresAt: expires,
-      // триал больше не активен после покупки тарифа
       trialEndsAt: null,
+      expiryEmailSent: null,
     },
   });
   return expires;

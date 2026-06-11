@@ -28,6 +28,7 @@ model User {
   trialUsed      Boolean   @default(false)
   emailVerified  Boolean   @default(false)
   isSuperAdmin   Boolean   @default(false)
+  expiryEmailSent String?  @map("expiry_email_sent")
   createdAt      DateTime  @default(now())
   updatedAt      DateTime  @updatedAt
 
