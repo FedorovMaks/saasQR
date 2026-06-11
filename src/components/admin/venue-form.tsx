@@ -62,7 +62,7 @@ export function VenueForm({ venue, userPlan = "BASIC", isExtraVenue = false, ext
   const [logoUrl, setLogoUrl] = useState(venue?.logoUrl || "");
   const [accentColor, setAccentColor] = useState(venue?.accentColor || "#3c6e71");
   const [hexInput, setHexInput] = useState(venue?.accentColor || "#3c6e71");
-  const [hue, setHue] = useState(220); // default blue
+  const [hue, setHue] = useState(173);
   const [yookassaShopId, setYookassaShopId] = useState(venue?.yookassaShopId || "");
   const [yookassaSecretKey, setYookassaSecretKey] = useState(venue?.yookassaSecretKey || "");
   // Anti-autofill: keep the payment-key fields read-only until the user
