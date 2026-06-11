@@ -5,10 +5,6 @@ import Link from "next/link";
 import { useSession } from "next-auth/react";
 import { useOrderStream, useSound, unlockAudio, type OrderFromAPI } from "@/hooks/use-orders";
 import { formatPrice } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Separator } from "@/components/ui/separator";
 import { PushToggle } from "@/components/admin/push-toggle";
 import {
   ArrowLeft,
@@ -54,26 +50,26 @@ const STATUS_CONFIG: Record<
 > = {
   NEW: {
     label: "Новый",
-    color: "text-blue-700",
+    color: "text-[#284b63]",
     bgColor: "bg-[#eef6f6] border-[#a9d1d3]",
     icon: <Bell className="h-3.5 w-3.5" />,
   },
   ACCEPTED: {
     label: "Принят",
-    color: "text-green-700",
-    bgColor: "bg-green-50 border-green-200",
+    color: "text-[#256841]",
+    bgColor: "bg-[#eef7f0] border-[#b3d9c0]",
     icon: <CheckCircle2 className="h-3.5 w-3.5" />,
   },
   DELIVERED: {
     label: "Отдан",
-    color: "text-gray-500",
-    bgColor: "bg-gray-50 border-gray-200",
+    color: "text-[#7a7a7a]",
+    bgColor: "bg-[#f0f0f0] border-[#d9d9d9]",
     icon: <Truck className="h-3.5 w-3.5" />,
   },
   CANCELLED: {
     label: "Отменён",
-    color: "text-red-600",
-    bgColor: "bg-red-50 border-red-200",
+    color: "text-[#a82828]",
+    bgColor: "bg-[#fdf0f0] border-[#e8b4b4]",
     icon: <XCircle className="h-3.5 w-3.5" />,
   },
 };
@@ -248,50 +244,47 @@ export function OrdersDashboard({
       <div className="space-y-3">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3 min-w-0">
-            {/* Back button — only for owners (waiters have nowhere to go back to) */}
             {!isWaiter && (
               <Link
                 href="/admin"
-                className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#f0f0f0] text-gray-500 hover:bg-[#e4e8f2] transition-colors"
+                className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-sm border border-[#d9d9d9] text-[#7a7a7a] hover:border-[#c4c4c4] transition-colors"
               >
                 <ArrowLeft className="h-4 w-4" />
               </Link>
             )}
             <div className="min-w-0">
-              <h1 className="text-xl font-bold flex items-center gap-2">
+              <h1 className="text-xl font-extrabold flex items-center gap-2 text-[#1a1a1a]">
                 <span className="truncate">Заказы — {venue.name}</span>
                 {newCount > 0 && (
-                  <Badge className="bg-primary/10 text-primary border-primary/20 animate-pulse rounded-lg shrink-0">
+                  <span className="inline-flex items-center gap-1.5 rounded-full bg-[#eef6f6] border border-[#a9d1d3] px-3 py-1 text-xs font-bold text-[#3c6e71] animate-pulse shrink-0">
                     {newCount} новых
-                  </Badge>
+                  </span>
                 )}
               </h1>
-              <p className="text-sm text-muted-foreground">
+              <p className="text-sm text-[#7a7a7a]">
                 Сегодня: {orders.length} заказов ·{" "}
                 {formatPrice(orders.reduce((s, o) => s + o.totalAmount, 0))}
               </p>
             </div>
           </div>
-          {/* Menu link — only for owners */}
           {!isWaiter && (
             <Link
               href={`/${venue.slug}`}
               target="_blank"
-              className="hidden sm:inline-flex h-10 items-center gap-2 rounded-xl bg-[#f0f0f0] px-4 text-sm font-extrabold text-gray-600 hover:bg-[#e4e8f2] transition-colors shrink-0"
+              className="hidden sm:inline-flex h-10 items-center gap-2 rounded-sm border border-[#d9d9d9] px-4 text-xs font-semibold uppercase tracking-[0.04em] text-[#353535] hover:border-[#c4c4c4] transition-colors shrink-0"
             >
               <ExternalLink className="h-3.5 w-3.5" />
               Меню
             </Link>
           )}
         </div>
-        {/* Push toggle — always visible, full width on mobile */}
         <div className="flex items-center gap-2">
           <PushToggle />
           {!isWaiter && (
             <Link
               href={`/${venue.slug}`}
               target="_blank"
-              className="sm:hidden inline-flex h-11 items-center gap-2 rounded-2xl bg-[#f0f0f0] px-5 text-sm font-extrabold text-gray-600 hover:bg-[#e4e8f2] transition-colors"
+              className="sm:hidden inline-flex h-10 items-center gap-2 rounded-sm border border-[#d9d9d9] px-5 text-xs font-semibold uppercase tracking-[0.04em] text-[#353535] hover:border-[#c4c4c4] transition-colors"
             >
               <ExternalLink className="h-3.5 w-3.5" />
               Меню
@@ -306,24 +299,24 @@ export function OrdersDashboard({
           {waiterCalls.map((call) => (
             <div
               key={call.tableNumber}
-              className="flex items-center justify-between rounded-2xl bg-amber-50 border border-amber-200 px-5 py-4 animate-in slide-in-from-top duration-300"
+              className="flex items-center justify-between border-2 border-[#d4a83a] bg-[#fef8ec] px-5 py-4 animate-in slide-in-from-top duration-300"
             >
               <div className="flex items-center gap-3">
-                <div className="h-10 w-10 rounded-xl bg-amber-100 flex items-center justify-center">
-                  <Bell className="h-5 w-5 text-amber-600 animate-bounce" />
+                <div className="h-10 w-10 rounded-sm bg-[#f5ebd0] flex items-center justify-center">
+                  <Bell className="h-5 w-5 text-[#9a7209] animate-bounce" />
                 </div>
                 <div>
-                  <p className="font-extrabold text-amber-800">
+                  <p className="font-bold text-[#1a1a1a]">
                     Столик {call.tableNumber} вызывает официанта
                   </p>
-                  <p className="text-xs text-amber-600 font-medium">
+                  <p className="text-xs text-[#9a7209] font-medium">
                     {new Date(call.timestamp).toLocaleTimeString("ru-RU", { hour: "2-digit", minute: "2-digit" })}
                   </p>
                 </div>
               </div>
               <button
                 onClick={() => dismissWaiterCall(call.tableNumber)}
-                className="h-10 px-4 rounded-xl bg-amber-200 text-amber-800 font-extrabold text-sm hover:bg-amber-300 transition-colors active:scale-95"
+                className="h-10 px-4 rounded-sm bg-[#d4a83a] text-white font-semibold text-xs uppercase tracking-[0.04em] hover:bg-[#b8922e] transition-colors active:opacity-85"
               >
                 Ок
               </button>
@@ -333,42 +326,43 @@ export function OrdersDashboard({
       )}
 
       {/* Status filter tabs */}
-      <div className="flex gap-1.5 overflow-x-auto pb-1 scrollbar-hide">
+      <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
         {FILTER_TABS.map((tab) => {
           const count =
             tab.key === "ALL" ? orders.length : counts[tab.key] || 0;
+          const isActive = statusFilter === tab.key;
           return (
-            <Button
+            <button
               key={tab.key}
-              variant={statusFilter === tab.key ? "default" : "outline"}
-              size="sm"
               onClick={() => setStatusFilter(tab.key)}
-              className="shrink-0 rounded-xl"
+              className={`shrink-0 h-9 px-4 text-xs font-semibold uppercase tracking-[0.04em] rounded-sm transition-all ${
+                isActive
+                  ? "bg-[#3c6e71] text-white"
+                  : "border border-[#d9d9d9] text-[#353535] hover:border-[#c4c4c4]"
+              }`}
             >
               {tab.label}
               {count > 0 && (
                 <span className="ml-1.5 text-xs opacity-70">({count})</span>
               )}
-            </Button>
+            </button>
           );
         })}
       </div>
 
       {/* Orders list */}
       {filtered.length === 0 ? (
-        <Card className="border-dashed border-2">
-          <CardContent className="flex flex-col items-center justify-center py-16 text-center">
-            <div className="rounded-2xl bg-primary/10 p-5 mb-5">
-              <ClipboardList className="h-10 w-10 text-primary" />
-            </div>
-            <h3 className="text-lg font-semibold">Нет заказов</h3>
-            <p className="text-sm text-muted-foreground mt-1">
-              {statusFilter === "ALL"
-                ? "Заказы за сегодня появятся здесь"
-                : "Нет заказов с таким статусом"}
-            </p>
-          </CardContent>
-        </Card>
+        <div className="border-2 border-dashed border-[#d9d9d9] flex flex-col items-center justify-center py-16 text-center">
+          <div className="rounded-sm bg-[#eef6f6] p-5 mb-5">
+            <ClipboardList className="h-10 w-10 text-[#3c6e71]" />
+          </div>
+          <h3 className="text-sm font-bold uppercase tracking-[0.12em] text-[#1a1a1a]">Нет заказов</h3>
+          <p className="text-sm text-[#7a7a7a] mt-1">
+            {statusFilter === "ALL"
+              ? "Заказы за сегодня появятся здесь"
+              : "Нет заказов с таким статусом"}
+          </p>
+        </div>
       ) : (
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
           {filtered.map((order) => (
@@ -404,63 +398,60 @@ function OrderCard({
   const awaitingPayment = order.paymentStatus === "PENDING";
 
   return (
-    <Card
-      className={`transition-all overflow-hidden ${
+    <div
+      className={`border transition-all overflow-hidden ${
         isNew
-          ? "ring-2 ring-primary/40 shadow-lg shadow-primary/10"
-          : "hover:shadow-md"
+          ? "border-2 border-[#3c6e71] bg-[#f9fcfc]"
+          : "border-[#d9d9d9] bg-white hover:bg-[#f7f7f7]"
       } ${
         order.status === "DELIVERED" || order.status === "CANCELLED"
           ? "opacity-60"
           : ""
       }`}
     >
-      <CardHeader className="pb-2 space-y-0">
+      <div className="p-5 space-y-0">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2.5">
-            <span className="text-xl font-bold">#{order.orderNumber}</span>
+            <span className="text-xl font-extrabold text-[#1a1a1a]">#{order.orderNumber}</span>
             {order.tableNumber && (
-              <Badge
-                variant="outline"
-                className="text-xs rounded-lg font-medium"
-              >
+              <span className="inline-flex items-center rounded-full border border-[#d9d9d9] px-3 py-0.5 text-xs font-medium text-[#353535]">
                 Стол {order.tableNumber}
-              </Badge>
+              </span>
             )}
           </div>
-          <Badge
-            className={`${config.bgColor} ${config.color} border flex items-center gap-1 rounded-lg font-medium`}
+          <span
+            className={`${config.bgColor} ${config.color} border inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs font-bold`}
           >
             {config.icon}
             {config.label}
-          </Badge>
+          </span>
         </div>
-        <div className="flex items-center gap-1 text-xs text-muted-foreground pt-1">
+        <div className="flex items-center gap-1 text-xs text-[#a0a0a0] pt-1">
           <Clock className="h-3 w-3" />
           {formatTime(order.createdAt)} · {timeAgo(order.createdAt)}
         </div>
-      </CardHeader>
+      </div>
 
-      <CardContent className="space-y-3">
+      <div className="px-5 pb-5 space-y-3">
         {/* Items */}
-        <div className="space-y-1.5 rounded-xl bg-secondary/50 p-3">
+        <div className="space-y-1.5 bg-[#f7f7f7] border border-[#e8e8e8] p-3">
           {order.items.map((item) => (
             <div
               key={item.id}
               className="flex items-center justify-between text-sm"
             >
               <span>
-                <span className="font-semibold text-primary">
+                <span className="font-bold text-[#3c6e71]">
                   {item.quantity}×
                 </span>{" "}
                 {item.itemName}
                 {item.variantLabel && (
-                  <span className="text-muted-foreground text-xs ml-1">
+                  <span className="text-[#a0a0a0] text-xs ml-1">
                     ({item.variantLabel})
                   </span>
                 )}
               </span>
-              <span className="text-muted-foreground text-xs">
+              <span className="text-[#a0a0a0] text-xs">
                 {formatPrice(item.priceAtOrder * item.quantity)}
               </span>
             </div>
@@ -469,36 +460,36 @@ function OrderCard({
 
         {/* Comment */}
         {order.comment && (
-          <div className="rounded-xl bg-amber-50 border border-amber-200/50 px-3 py-2 text-sm text-amber-800">
+          <div className="border border-[#d4a83a] bg-[#fef8ec] px-3 py-2 text-sm text-[#9a7209]">
             {order.comment}
           </div>
         )}
 
-        <Separator />
+        <div className="border-t border-[#e8e8e8]" />
 
         {/* Total + payment status */}
         <div className="flex items-center justify-between font-semibold">
           <div className="flex items-center gap-2">
-            <span>Итого</span>
+            <span className="text-[#1a1a1a]">Итого</span>
             {order.paymentStatus === "PAID" && (
-              <span className="inline-flex items-center rounded-md bg-green-50 px-2 py-0.5 text-xs font-bold text-green-600 border border-green-200">
+              <span className="inline-flex items-center px-2 py-0.5 text-xs font-bold text-[#256841] bg-[#eef7f0] border border-[#b3d9c0]">
                 Оплачен
               </span>
             )}
             {order.paymentStatus === "PENDING" && (
-              <span className="inline-flex items-center rounded-md bg-amber-50 px-2 py-0.5 text-xs font-bold text-amber-600 border border-amber-200">
+              <span className="inline-flex items-center px-2 py-0.5 text-xs font-bold text-[#9a7209] bg-[#fef8ec] border border-[#d4a83a]">
                 Ожидает оплаты
               </span>
             )}
           </div>
-          <span className="text-lg">{formatPrice(order.totalAmount)}</span>
+          <span className="text-lg font-bold text-[#1a1a1a]">{formatPrice(order.totalAmount)}</span>
         </div>
 
         {/* Action buttons */}
         {nextStatuses.length > 0 && (
           <div className="space-y-2">
             {awaitingPayment && (
-              <p className="flex items-center gap-1 text-xs font-semibold text-amber-600">
+              <p className="flex items-center gap-1 text-xs font-semibold text-[#9a7209]">
                 <Clock className="h-3 w-3" />
                 Ожидает оплаты — приём заблокирован
               </p>
@@ -507,30 +498,27 @@ function OrderCard({
               {nextStatuses.map((s) => {
                 const sConfig = STATUS_CONFIG[s];
                 const isCancelled = s === "CANCELLED";
-                // While awaiting payment, allow only «Отменить»
                 const blocked = awaitingPayment && !isCancelled;
                 return (
-                  <Button
+                  <button
                     key={s}
-                    size="sm"
-                    variant={isCancelled ? "outline" : "default"}
-                    className={`flex-1 rounded-xl ${
+                    className={`flex-1 h-10 rounded-sm text-xs font-semibold uppercase tracking-[0.04em] transition-all active:opacity-85 disabled:opacity-50 flex items-center justify-center gap-1.5 ${
                       isCancelled
-                        ? "text-destructive hover:text-destructive border-destructive/20"
-                        : "shadow-md shadow-primary/15"
+                        ? "border border-[#e8b4b4] text-[#a82828] bg-[#fdf0f0] hover:bg-[#fbe4e4]"
+                        : "bg-[#3c6e71] text-white hover:bg-[#325d5f]"
                     }`}
                     disabled={isUpdating || blocked}
                     onClick={() => onUpdateStatus(order.id, s)}
                   >
                     {sConfig?.icon}
-                    <span className="ml-1">{sConfig?.label || s}</span>
-                  </Button>
+                    <span>{sConfig?.label || s}</span>
+                  </button>
                 );
               })}
             </div>
           </div>
         )}
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 }

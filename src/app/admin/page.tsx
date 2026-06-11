@@ -204,11 +204,11 @@ export default async function AdminPage() {
           </Link>
         </div>
       ) : (
-        <div className="grid gap-px sm:grid-cols-2 bg-[#d9d9d9] border border-[#d9d9d9]">
+        <div className="grid gap-4 sm:grid-cols-2">
           {venues.map((venue) => (
             <div
               key={venue.id}
-              className="bg-white p-6 transition-all hover:bg-[#f7f7f7]"
+              className="border border-[#d9d9d9] bg-white p-6 transition-all hover:bg-[#f7f7f7]"
             >
               {/* Title row */}
               <div className="flex items-start justify-between mb-3">

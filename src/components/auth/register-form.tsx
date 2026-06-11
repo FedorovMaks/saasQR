@@ -88,7 +88,7 @@ export function RegisterForm() {
           <input
             id="name" name="name" type="text"
             placeholder="Ваше имя" required minLength={2} disabled={loading}
-            className="w-full h-12 border-b border-[#d9d9d9] bg-transparent px-0 text-sm text-[#1a1a1a] placeholder:text-[#c4c4c4] focus:outline-none focus:border-[#3c6e71] transition-colors disabled:opacity-50"
+            className="w-full h-12 border border-[#d9d9d9] bg-[#f7f9fa] px-4 text-sm text-[#1a1a1a] placeholder:text-[#c4c4c4] focus:outline-none focus:border-[#3c6e71] focus:bg-white transition-colors disabled:opacity-50"
           />
         </div>
 
@@ -97,7 +97,7 @@ export function RegisterForm() {
           <input
             id="email" name="email" type="email"
             placeholder="mail@example.com" required disabled={loading}
-            className="w-full h-12 border-b border-[#d9d9d9] bg-transparent px-0 text-sm text-[#1a1a1a] placeholder:text-[#c4c4c4] focus:outline-none focus:border-[#3c6e71] transition-colors disabled:opacity-50"
+            className="w-full h-12 border border-[#d9d9d9] bg-[#f7f9fa] px-4 text-sm text-[#1a1a1a] placeholder:text-[#c4c4c4] focus:outline-none focus:border-[#3c6e71] focus:bg-white transition-colors disabled:opacity-50"
           />
         </div>
 
@@ -107,12 +107,12 @@ export function RegisterForm() {
             <input
               id="password" name="password" type={showPassword ? "text" : "password"}
               placeholder="Минимум 6 символов" required minLength={6} disabled={loading}
-              className="w-full h-12 border-b border-[#d9d9d9] bg-transparent px-0 pr-10 text-sm text-[#1a1a1a] placeholder:text-[#c4c4c4] focus:outline-none focus:border-[#3c6e71] transition-colors disabled:opacity-50"
+              className="w-full h-12 border border-[#d9d9d9] bg-[#f7f9fa] px-4 pr-10 text-sm text-[#1a1a1a] placeholder:text-[#c4c4c4] focus:outline-none focus:border-[#3c6e71] focus:bg-white transition-colors disabled:opacity-50"
             />
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-0 top-1/2 -translate-y-1/2 text-[#a0a0a0] hover:text-[#353535] transition-colors"
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-[#a0a0a0] hover:text-[#353535] transition-colors"
               tabIndex={-1}
             >
               {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}

@@ -312,7 +312,7 @@ export function MenuPage({
             ref={(el: HTMLDivElement | null) => { categoryRefs.current[cat.id] = el; }}
           >
             <h2 className="text-xs font-bold uppercase tracking-[0.12em] text-[#7a7a7a] mb-5">{cat.name}</h2>
-            <div className="grid grid-cols-2 gap-px bg-[#e8e8e8]">
+            <div className="grid grid-cols-2 gap-3">
               {cat.items.map((item) => {
                 const count = getItemCartCount(item.id);
                 return (
@@ -320,7 +320,7 @@ export function MenuPage({
                     key={item.id}
                     onClick={() => handleItemClick(item)}
                     className={cn(
-                      "relative flex flex-col bg-white overflow-hidden transition-all",
+                      "relative flex flex-col bg-white overflow-hidden transition-all border border-[#e8e8e8]",
                       item.isStopped
                         ? "opacity-50 cursor-not-allowed"
                         : "cursor-pointer hover:bg-[#f7f7f7] active:opacity-85"
