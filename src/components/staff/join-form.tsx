@@ -127,9 +127,9 @@ export function JoinForm({
                 type={showPassword ? "text" : "password"}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                placeholder="Минимум 6 символов"
+                placeholder="Минимум 8 символов"
                 required
-                minLength={6}
+                minLength={8}
                 disabled={loading}
                 className="w-full h-14 rounded-2xl border-0 bg-white px-5 pr-14 text-base font-bold placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500/30 shadow-[0_2px_12px_rgba(0,0,0,0.06)] transition-all disabled:opacity-50"
               />

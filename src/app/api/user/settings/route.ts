@@ -39,7 +39,7 @@ const updateNameSchema = z.object({
 const changePasswordSchema = z.object({
   action: z.literal("change_password"),
   currentPassword: z.string().min(1, "Введите текущий пароль"),
-  newPassword: z.string().min(6, "Новый пароль должен содержать минимум 6 символов"),
+  newPassword: z.string().min(8, "Новый пароль должен содержать минимум 8 символов"),
 });
 
 // PATCH — change email

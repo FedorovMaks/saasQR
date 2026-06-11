@@ -55,13 +55,20 @@ export function rateLimit(
 
 /**
  * Extract client IP from request headers.
+ *
+ * Prefer `x-real-ip` (set by our nginx reverse proxy to the actual TCP peer —
+ * a client cannot forge it through the proxy). Only fall back to the LAST entry
+ * of `x-forwarded-for` (the hop our proxy appended); the FIRST entry is
+ * client-supplied and trivially spoofable to bypass per-IP rate limits.
  */
 export function getClientIP(req: Request): string {
+  const realIp = req.headers.get("x-real-ip");
+  if (realIp) return realIp.trim();
+
   const forwarded = req.headers.get("x-forwarded-for");
   if (forwarded) {
-    return forwarded.split(",")[0].trim();
+    const parts = forwarded.split(",").map((p) => p.trim()).filter(Boolean);
+    if (parts.length > 0) return parts[parts.length - 1];
   }
-  const realIp = req.headers.get("x-real-ip");
-  if (realIp) return realIp;
   return "unknown";
 }

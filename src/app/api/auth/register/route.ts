@@ -3,10 +3,22 @@ import { hash } from "bcryptjs";
 import { prisma } from "@/lib/prisma";
 import { registerSchema } from "@/lib/validators";
 import { sendVerificationEmail } from "@/lib/email";
+import { rateLimit, getClientIP } from "@/lib/rate-limit";
 import crypto from "crypto";
 
 export async function POST(req: Request) {
   try {
+    // Rate limit: max 5 registrations per IP per hour — blocks mass fake
+    // sign-ups that would spam verification emails and burn Resend quota.
+    const ip = getClientIP(req);
+    const limit = rateLimit(`register:${ip}`, 5, 60 * 60 * 1000);
+    if (!limit.allowed) {
+      return NextResponse.json(
+        { error: "Слишком много попыток регистрации. Попробуйте позже." },
+        { status: 429 }
+      );
+    }
+
     const body = await req.json();
     const result = registerSchema.safeParse(body);
 

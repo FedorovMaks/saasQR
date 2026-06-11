@@ -293,7 +293,7 @@ export default function SettingsPage() {
               id="newPassword"
               value={newPassword}
               onChange={setNewPassword}
-              placeholder="Минимум 6 символов"
+              placeholder="Минимум 8 символов"
               disabled={passwordLoading}
             />
           </div>

@@ -10,8 +10,13 @@ import {
 const CRON_SECRET = process.env.CRON_SECRET;
 
 export async function GET(req: Request) {
+  // Fail-closed: if no secret is configured, the endpoint is disabled entirely
+  // rather than left open to anyone who can trigger email sends.
+  if (!CRON_SECRET) {
+    return NextResponse.json({ error: "Cron not configured" }, { status: 503 });
+  }
   const authHeader = req.headers.get("authorization");
-  if (CRON_SECRET && authHeader !== `Bearer ${CRON_SECRET}`) {
+  if (authHeader !== `Bearer ${CRON_SECRET}`) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
