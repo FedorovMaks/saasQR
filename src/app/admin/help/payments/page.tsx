@@ -3,14 +3,14 @@ import { ArrowLeft } from "lucide-react";
 
 function Screenshot({ src, caption }: { src: string; caption: string }) {
   return (
-    <figure className="rounded-2xl border border-gray-200 bg-gray-50 p-2">
+    <figure className="border border-[#d9d9d9] bg-[#f7f7f7] p-2">
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         src={src}
         alt={caption}
-        className="mx-auto block max-w-full rounded-lg"
+        className="mx-auto block max-w-full"
       />
-      <figcaption className="px-2 pb-1 pt-2 text-center text-xs font-semibold text-gray-400">
+      <figcaption className="px-2 pb-1 pt-2 text-center text-xs font-semibold text-[#a0a0a0]">
         {caption}
       </figcaption>
     </figure>
@@ -25,23 +25,23 @@ function Note({
   tone?: "blue" | "amber" | "green";
 }) {
   const tones = {
-    blue: "bg-[#eef6f6] text-blue-700",
-    amber: "bg-amber-50 text-amber-700",
-    green: "bg-green-50 text-green-700",
+    blue: "bg-[#eef6f6] border-[#a9d1d3] text-[#325d5f]",
+    amber: "bg-[#fef8ec] border-[#d4a83a] text-[#9a7209]",
+    green: "bg-[#eef7f0] border-[#b3d9c0] text-[#256841]",
   };
   return (
-    <div className={`rounded-2xl px-4 py-3 text-sm font-medium ${tones[tone]}`}>
+    <div className={`border px-4 py-3 text-sm font-medium ${tones[tone]}`}>
       {children}
     </div>
   );
 }
 
 function H2({ children }: { children: React.ReactNode }) {
-  return <h2 className="pt-4 text-2xl font-black text-gray-900">{children}</h2>;
+  return <h2 className="pt-4 text-2xl font-extrabold text-[#1a1a1a]">{children}</h2>;
 }
 
 function H3({ children }: { children: React.ReactNode }) {
-  return <h3 className="pt-2 text-lg font-black text-gray-900">{children}</h3>;
+  return <h3 className="pt-2 text-lg font-extrabold text-[#1a1a1a]">{children}</h3>;
 }
 
 export default function PaymentsHelpPage() {
@@ -49,17 +49,17 @@ export default function PaymentsHelpPage() {
     <div className="mx-auto max-w-3xl">
       <Link
         href="/admin"
-        className="mb-6 inline-flex items-center gap-2 text-sm font-bold text-gray-400 transition-colors hover:text-[#3c6e71]"
+        className="mb-6 inline-flex items-center gap-2 text-sm font-bold text-[#a0a0a0] transition-colors hover:text-[#3c6e71]"
       >
         <ArrowLeft className="h-4 w-4" />
         В админку
       </Link>
 
-      <h1 className="text-3xl font-black tracking-tight">
+      <h1 className="text-2xl font-extrabold uppercase tracking-[0.12em] text-[#1a1a1a]">
         Как подключить онлайн-оплату от гостей
       </h1>
 
-      <div className="mt-6 space-y-4 text-[15px] leading-relaxed text-gray-600">
+      <div className="mt-6 space-y-4 text-[15px] leading-relaxed text-[#353535]">
         <p>
           Гость сканирует QR, собирает заказ и оплачивает прямо со смартфона
           <b> через СБП</b> — без карты, по кнопке в приложении банка. Деньги
@@ -102,7 +102,7 @@ export default function PaymentsHelpPage() {
 
         <H3>Шаг 2. Анкета подключения</H3>
 
-        <p className="font-bold text-gray-800">
+        <p className="font-bold text-[#1a1a1a]">
           2.1. «Где вы ведёте свой бизнес?»
         </p>
         <p>
@@ -116,7 +116,7 @@ export default function PaymentsHelpPage() {
         </Note>
         <Screenshot src="/guide/1.png" caption="Выбор «В онлайн»" />
 
-        <p className="font-bold text-gray-800">
+        <p className="font-bold text-[#1a1a1a]">
           2.2. «Как планируете принимать платежи?»
         </p>
         <p>
@@ -127,7 +127,7 @@ export default function PaymentsHelpPage() {
           на оплату, бот, мобильное SDK) — не наш случай.
         </Note>
 
-        <p className="font-bold text-gray-800">
+        <p className="font-bold text-[#1a1a1a]">
           2.3. «Платежи на сайте»: адрес сайта и реквизиты ⭐ (самый важный шаг)
         </p>
         <p>
@@ -175,7 +175,7 @@ export default function PaymentsHelpPage() {
           caption="ЮKassa: «Адрес сайта» и «Ссылка на реквизиты»"
         />
 
-        <p className="font-bold text-gray-800">2.4. «Данные о бизнесе»</p>
+        <p className="font-bold text-[#1a1a1a]">2.4. «Данные о бизнесе»</p>
         <ul className="list-disc space-y-1 pl-5">
           <li>
             <b>Цель деятельности:</b> оставьте «Получение прибыли от реализации
@@ -196,7 +196,7 @@ export default function PaymentsHelpPage() {
           caption="Цель деятельности + БИК и номер счёта"
         />
 
-        <p className="font-bold text-gray-800">2.5. «Паспортные данные»</p>
+        <p className="font-bold text-[#1a1a1a]">2.5. «Паспортные данные»</p>
         <p>
           Заполните как в паспорте: ФИО, гражданство, адрес регистрации, индекс.
           Загрузите цветной снимок паспорта (разворот с фото; цветное, чёткое,
@@ -204,7 +204,7 @@ export default function PaymentsHelpPage() {
         </p>
         <Screenshot src="/guide/4.png" caption="Паспортные данные + загрузка скана" />
 
-        <p className="font-bold text-gray-800">
+        <p className="font-bold text-[#1a1a1a]">
           2.6. «Проверьте данные перед отправкой»
         </p>
         <p>
@@ -260,7 +260,7 @@ export default function PaymentsHelpPage() {
 
         {/* ФИНАЛЬНЫЕ ШАГИ */}
         <H2>✅ Финальные шаги (для обоих вариантов)</H2>
-        <p className="text-sm text-gray-500">
+        <p className="text-sm text-[#7a7a7a]">
           Эти шаги выполняются, когда в кабинете ЮKassa доступен раздел
           «Интеграция» (для нового аккаунта — после проверки договора из Шага 5).
         </p>
