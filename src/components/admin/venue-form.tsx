@@ -50,9 +50,10 @@ interface VenueFormProps {
   userPlan?: string;
   isExtraVenue?: boolean;
   extraVenuePrice?: number;
+  copyableVenues?: { id: string; name: string }[];
 }
 
-export function VenueForm({ venue, userPlan = "BASIC", isExtraVenue = false, extraVenuePrice }: VenueFormProps) {
+export function VenueForm({ venue, userPlan = "BASIC", isExtraVenue = false, extraVenuePrice, copyableVenues = [] }: VenueFormProps) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [name, setName] = useState(venue?.name || "");
@@ -74,6 +75,7 @@ export function VenueForm({ venue, userPlan = "BASIC", isExtraVenue = false, ext
   const [legalOgrn, setLegalOgrn] = useState(venue?.legalOgrn || "");
   const [legalEmail, setLegalEmail] = useState(venue?.legalEmail || "");
   const [legalPhone, setLegalPhone] = useState(venue?.legalPhone || "");
+  const [copyMenuFromVenueId, setCopyMenuFromVenueId] = useState("");
   const [slugManuallyEdited, setSlugManuallyEdited] = useState(!!venue);
   const [slugStatus, setSlugStatus] = useState<
     "idle" | "checking" | "available" | "taken"
@@ -167,7 +169,10 @@ export function VenueForm({ venue, userPlan = "BASIC", isExtraVenue = false, ext
         const res = await fetch("/api/billing/extra-venue", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ venue: venuePayload }),
+          body: JSON.stringify({
+            venue: venuePayload,
+            copyMenuFromVenueId: copyMenuFromVenueId || undefined,
+          }),
         });
         const data = await res.json();
         if (!res.ok) {
@@ -185,10 +190,15 @@ export function VenueForm({ venue, userPlan = "BASIC", isExtraVenue = false, ext
       const url = venue ? `/api/venues/${venue.id}` : "/api/venues";
       const method = venue ? "PATCH" : "POST";
 
+      const createPayload =
+        !venue && copyMenuFromVenueId
+          ? { ...venuePayload, copyMenuFromVenueId }
+          : venuePayload;
+
       const res = await fetch(url, {
         method,
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(venuePayload),
+        body: JSON.stringify(createPayload),
       });
 
       const data = await res.json();
@@ -300,6 +310,33 @@ export function VenueForm({ venue, userPlan = "BASIC", isExtraVenue = false, ext
               disabled={loading}
             />
           </div>
+
+          {/* Перенос меню из другого заведения — только при создании */}
+          {!venue && copyableVenues.length > 0 && (
+            <div className="space-y-2 rounded-xl bg-[#eef6f6] border border-[#d4e8e9] p-4">
+              <Label htmlFor="copyMenu" className="flex items-center gap-2">
+                <Copy className="h-4 w-4 text-[#3c6e71]" />
+                Перенести меню
+              </Label>
+              <select
+                id="copyMenu"
+                value={copyMenuFromVenueId}
+                onChange={(e) => setCopyMenuFromVenueId(e.target.value)}
+                disabled={loading}
+                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                <option value="">Не переносить — создать пустое меню</option>
+                {copyableVenues.map((v) => (
+                  <option key={v.id} value={v.id}>
+                    Скопировать из «{v.name}»
+                  </option>
+                ))}
+              </select>
+              <p className="text-xs text-[#3c6e71]/80">
+                Категории, позиции и варианты будут скопированы в новое заведение. Заказы и настройки оплаты не переносятся.
+              </p>
+            </div>
+          )}
 
           <div className="space-y-2">
             <Label>Логотип</Label>

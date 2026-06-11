@@ -59,6 +59,8 @@ export async function POST(req: Request) {
   }
 
   const venueData = parsed.data.venue;
+  const copyMenuFromVenueId =
+    typeof body.copyMenuFromVenueId === "string" ? body.copyMenuFromVenueId : null;
 
   const existingVenue = await prisma.venue.findUnique({
     where: { slug: venueData.slug },
@@ -94,7 +96,7 @@ export async function POST(req: Request) {
       type: "EXTRA_VENUE",
       plan: limitCheck.plan!,
       status: "pending",
-      venueData: venueData as object,
+      venueData: { ...venueData, copyMenuFromVenueId } as object,
     },
   });
 

@@ -12,12 +12,23 @@ export default async function NewVenuePage() {
   const subscription = await hasActiveSubscription(session.user.id);
   if (!subscription.active) redirect("/admin");
 
-  const [user, limitCheck] = await Promise.all([
+  const [user, limitCheck, ownedVenues] = await Promise.all([
     prisma.user.findUnique({
       where: { id: session.user.id },
       select: { plan: true },
     }),
     checkVenueLimit(session.user.id),
+    prisma.venue.findMany({
+      where: { ownerId: session.user.id, isActive: true },
+      orderBy: { createdAt: "asc" },
+      select: {
+        id: true,
+        name: true,
+        _count: {
+          select: { categories: { where: { isActive: true } } },
+        },
+      },
+    }),
   ]);
 
   if (!limitCheck.allowed) redirect("/admin");
@@ -25,12 +36,18 @@ export default async function NewVenuePage() {
   const isExtra = "isExtra" in limitCheck && limitCheck.isExtra;
   const extraPrice = isExtra ? limitCheck.extraPrice : undefined;
 
+  // Заведения, из которых можно перенести меню (есть хотя бы одна категория)
+  const copyableVenues = ownedVenues
+    .filter((v) => v._count.categories > 0)
+    .map((v) => ({ id: v.id, name: v.name }));
+
   return (
     <div className="max-w-2xl">
       <VenueForm
         userPlan={user?.plan || "BASIC"}
         isExtraVenue={isExtra || false}
         extraVenuePrice={extraPrice}
+        copyableVenues={copyableVenues}
       />
     </div>
   );

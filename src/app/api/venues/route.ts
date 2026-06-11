@@ -4,6 +4,7 @@ import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { venueSchema } from "@/lib/validators";
 import { checkVenueLimit, hasActiveSubscription } from "@/lib/plans";
+import { copyMenu } from "@/lib/copy-menu";
 
 export async function GET() {
   const session = await getServerSession(authOptions);
@@ -89,6 +90,16 @@ export async function POST(req: Request) {
         ownerId: session.user.id,
       },
     });
+
+    // Опционально: перенести меню из другого заведения пользователя
+    const copyFrom = typeof body.copyMenuFromVenueId === "string" ? body.copyMenuFromVenueId : null;
+    if (copyFrom) {
+      try {
+        await copyMenu(copyFrom, venue.id, session.user.id);
+      } catch {
+        // Заведение уже создано — не валим запрос из-за ошибки копирования
+      }
+    }
 
     return NextResponse.json(venue, { status: 201 });
   } catch {

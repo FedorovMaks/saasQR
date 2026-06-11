@@ -8,6 +8,7 @@ import {
 } from "@/lib/yookassa";
 import { emitOrderEvent } from "@/lib/order-events";
 import { sendPushToVenueTeam } from "@/lib/push-notify";
+import { copyMenu } from "@/lib/copy-menu";
 import {
   activateTrial,
   activatePlan,
@@ -314,6 +315,7 @@ async function handleExtraVenuePayment(
     address?: string;
     logoUrl?: string;
     accentColor?: string;
+    copyMenuFromVenueId?: string | null;
   } | null;
 
   if (!venueData) return;
@@ -331,7 +333,7 @@ async function handleExtraVenuePayment(
   });
 
   if (!existing) {
-    await prisma.venue.create({
+    const newVenue = await prisma.venue.create({
       data: {
         name: venueData.name,
         slug: venueData.slug,
@@ -342,5 +344,14 @@ async function handleExtraVenuePayment(
         ownerId: record.userId,
       },
     });
+
+    // Опционально: перенести меню из другого заведения пользователя
+    if (venueData.copyMenuFromVenueId) {
+      try {
+        await copyMenu(venueData.copyMenuFromVenueId, newVenue.id, record.userId);
+      } catch {
+        // Заведение создано — ошибку копирования глотаем
+      }
+    }
   }
 }
