@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { getUserPlanUsage, PLANS, TRIAL_CONFIG, formatRubles, hasActiveSubscription } from "@/lib/plans";
