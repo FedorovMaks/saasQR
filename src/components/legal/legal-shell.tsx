@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { QrCode } from "lucide-react";
 import { COMPANY } from "@/lib/legal";
 
 const FOOTER_LINKS = [
@@ -24,8 +23,8 @@ export function LegalShell({
       <header className="border-b border-gray-100">
         <div className="mx-auto flex h-16 max-w-3xl items-center justify-between px-5 sm:px-6">
           <Link href="/" className="flex items-center gap-3">
-            <div className="flex h-9 w-9 items-center justify-center rounded-2xl bg-[#3c6e71] text-white shadow-lg shadow-none">
-              <QrCode className="h-5 w-5" />
+            <div className="flex h-9 w-9 items-center justify-center rounded-sm bg-[#3c6e71] text-white text-xs font-extrabold tracking-tight">
+              TM
             </div>
             <span className="text-lg font-black">{COMPANY.brand}</span>
           </Link>

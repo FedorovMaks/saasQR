@@ -6,7 +6,6 @@ import { signOut, useSession } from "next-auth/react";
 import { cn } from "@/lib/utils";
 import {
   Store,
-  QrCode,
   Settings,
   LogOut,
   ChevronDown,
@@ -238,8 +237,8 @@ function UserMenu() {
 function Logo() {
   return (
     <Link href="/admin" className="flex items-center gap-3">
-      <div className="flex h-8 w-8 items-center justify-center rounded-sm bg-[#3c6e71] text-white">
-        <QrCode className="h-4 w-4" />
+      <div className="flex h-8 w-8 items-center justify-center rounded-sm bg-[#3c6e71] text-white text-xs font-extrabold tracking-tight">
+        TM
       </div>
       <span className="font-extrabold text-base uppercase tracking-[0.12em] text-[#1a1a1a]">TapMenu</span>
     </Link>
