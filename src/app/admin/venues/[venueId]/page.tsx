@@ -30,7 +30,13 @@ export default async function EditVenuePage({
 
   return (
     <div className="max-w-2xl space-y-6">
-      <VenueQR venueId={venue.id} slug={venue.slug} venueName={venue.name} />
+      <VenueQR
+        venueId={venue.id}
+        slug={venue.slug}
+        venueName={venue.name}
+        logoUrl={venue.logoUrl}
+        accentColor={venue.accentColor}
+      />
       <VenueForm venue={venue} userPlan={user?.plan || "BASIC"} />
     </div>
   );
