@@ -165,14 +165,14 @@ export function VenueQR({
         body { font-family: Arial, sans-serif; }
         .grid { display: flex; flex-wrap: wrap; gap: 0.4cm; justify-content: flex-start; }
         .card {
-          width: 8.5cm; height: 8.5cm;
+          width: 8.5cm; min-height: 8.5cm;
           border: 1px dashed #c4c4c4; border-radius: 6px;
           display: flex; flex-direction: column; align-items: center; justify-content: center;
           padding: 0.4cm; page-break-inside: avoid; text-align: center;
         }
-        .top { display: flex; align-items: center; gap: 6px; height: 1cm; }
-        .logo { height: 0.7cm; width: auto; object-fit: contain; }
-        .venue { font-size: 11pt; font-weight: 700; color: #1a1a1a; }
+        .top { display: flex; align-items: center; gap: 9px; min-height: 1.4cm; }
+        .logo { height: 1.2cm; width: auto; object-fit: contain; }
+        .venue { font-size: 16pt; font-weight: 800; color: #1a1a1a; }
         .num { font-size: 22pt; font-weight: 800; line-height: 1; color: ${accentColor}; margin: 0.05cm 0 0.15cm; }
         .qr { width: 4.8cm; height: 4.8cm; }
         .cta { font-size: 9.5pt; color: #353535; margin-top: 0.2cm; }
