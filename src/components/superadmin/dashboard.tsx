@@ -93,6 +93,20 @@ const PLAN_LABELS: Record<string, string> = {
   PRO: "Pro",
 };
 
+// Грейс-период после истечения (как в lib/plans.ts: GRACE_DAYS = 1)
+const GRACE_MS = 24 * 60 * 60 * 1000;
+
+// Реальный статус платной подписки с учётом истечения и грейса.
+// Возвращает null для BASIC / без даты — там показывать нечего особенного.
+function subStatus(plan: string, planExpiresAt: string | null): "active" | "grace" | "expired" | null {
+  if (plan === "BASIC" || !planExpiresAt) return null;
+  const exp = new Date(planExpiresAt).getTime();
+  const now = Date.now();
+  if (now <= exp) return "active";
+  if (now <= exp + GRACE_MS) return "grace";
+  return "expired";
+}
+
 function StatCard({ icon: Icon, label, value, sub }: { icon: typeof Users; label: string; value: string | number; sub?: string }) {
   return (
     <div className="rounded-2xl bg-gray-900 border border-gray-800 p-5">
@@ -273,11 +287,29 @@ export function SuperAdminDashboard({ stats }: { stats: Stats }) {
               <span className={`inline-flex rounded-lg px-3 py-1 text-sm font-bold ${PLAN_COLORS[u.plan]}`}>
                 {PLAN_LABELS[u.plan]}
               </span>
-              {u.planExpiresAt && (
-                <p className="text-xs text-gray-500 mt-1">
-                  до {formatDate(u.planExpiresAt)}
-                </p>
-              )}
+              {u.planExpiresAt && (() => {
+                const st = subStatus(u.plan, u.planExpiresAt);
+                if (st === "expired") {
+                  return (
+                    <>
+                      <p className="text-xs text-red-400 mt-1 font-bold">
+                        истекла {formatDate(u.planExpiresAt)}
+                      </p>
+                      <p className="text-[11px] text-gray-500">факт. тариф: Basic</p>
+                    </>
+                  );
+                }
+                if (st === "grace") {
+                  return (
+                    <p className="text-xs text-amber-400 mt-1 font-bold">
+                      грейс · до {formatDate(u.planExpiresAt)} (доступ ещё есть)
+                    </p>
+                  );
+                }
+                return (
+                  <p className="text-xs text-gray-500 mt-1">до {formatDate(u.planExpiresAt)}</p>
+                );
+              })()}
             </div>
           </div>
 
@@ -586,10 +618,16 @@ export function SuperAdminDashboard({ stats }: { stats: Stats }) {
                 </div>
                 <p className="text-xs text-gray-500 truncate">{u.email}</p>
               </div>
-              <div className="flex items-center">
+              <div className="flex items-center gap-1.5">
                 <span className={`inline-flex rounded-lg px-2.5 py-1 text-xs font-bold ${PLAN_COLORS[u.plan]}`}>
                   {PLAN_LABELS[u.plan]}
                 </span>
+                {subStatus(u.plan, u.planExpiresAt) === "expired" && (
+                  <span className="text-[10px] font-bold text-red-400">истёк</span>
+                )}
+                {subStatus(u.plan, u.planExpiresAt) === "grace" && (
+                  <span className="text-[10px] font-bold text-amber-400">грейс</span>
+                )}
               </div>
               <div className="flex items-center text-sm text-gray-400">
                 {u._count.venues}
