@@ -173,8 +173,8 @@ export function VenueQR({
         .top { display: flex; align-items: center; gap: 6px; height: 1cm; }
         .logo { height: 0.7cm; width: auto; object-fit: contain; }
         .venue { font-size: 11pt; font-weight: 700; color: #1a1a1a; }
-        .num { font-size: 46pt; font-weight: 800; line-height: 1; color: ${accentColor}; margin: 0.1cm 0; }
-        .qr { width: 4.3cm; height: 4.3cm; }
+        .num { font-size: 22pt; font-weight: 800; line-height: 1; color: ${accentColor}; margin: 0.05cm 0 0.15cm; }
+        .qr { width: 4.8cm; height: 4.8cm; }
         .cta { font-size: 9.5pt; color: #353535; margin-top: 0.2cm; }
         @media print { .card { border-color: #d9d9d9; } }
       </style></head>
