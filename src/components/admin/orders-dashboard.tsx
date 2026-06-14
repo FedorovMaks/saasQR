@@ -273,38 +273,6 @@ export function OrdersDashboard({
         </div>
       </div>
 
-      {/* Waiter calls */}
-      {waiterCalls.length > 0 && (
-        <div className="space-y-2">
-          {waiterCalls.map((call) => (
-            <div
-              key={call.tableNumber}
-              className="flex items-center justify-between border-2 border-[#d4a83a] bg-[#fef8ec] px-4 py-3 animate-in slide-in-from-top duration-300"
-            >
-              <div className="flex items-center gap-3">
-                <div className="h-9 w-9 rounded-sm bg-[#f5ebd0] flex items-center justify-center">
-                  <Bell className="h-4 w-4 text-[#9a7209] animate-bounce" />
-                </div>
-                <div>
-                  <p className="font-bold text-sm text-[#1a1a1a]">
-                    Столик {call.tableNumber} вызывает официанта
-                  </p>
-                  <p className="text-xs text-[#9a7209]">
-                    {new Date(call.timestamp).toLocaleTimeString("ru-RU", { hour: "2-digit", minute: "2-digit" })}
-                  </p>
-                </div>
-              </div>
-              <button
-                onClick={() => dismissWaiterCall(call.tableNumber)}
-                className="h-9 px-4 rounded-sm bg-[#d4a83a] text-white font-semibold text-xs uppercase tracking-[0.04em] hover:bg-[#b8922e] transition-colors active:opacity-85"
-              >
-                Ок
-              </button>
-            </div>
-          ))}
-        </div>
-      )}
-
       {/* Filter tabs — counts inline */}
       <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
         {FILTER_TABS.map((tab) => {
@@ -325,10 +293,69 @@ export function OrdersDashboard({
             </button>
           );
         })}
+        {(waiterCalls.length > 0 || statusFilter === "CALLS") && (
+          <button
+            onClick={() => setStatusFilter("CALLS")}
+            className={`shrink-0 h-9 px-4 text-xs font-semibold uppercase tracking-[0.04em] rounded-sm transition-all inline-flex items-center gap-1.5 ${
+              statusFilter === "CALLS"
+                ? "bg-[#d4a83a] text-white"
+                : "border border-[#d4a83a] text-[#9a7209] bg-[#fef8ec]"
+            } ${waiterCalls.length > 0 ? "animate-pulse" : ""}`}
+          >
+            <Bell className="h-3.5 w-3.5" />
+            Вызовы{waiterCalls.length > 0 ? ` ${waiterCalls.length}` : ""}
+          </button>
+        )}
       </div>
 
+      {/* Waiter calls view */}
+      {statusFilter === "CALLS" &&
+        (waiterCalls.length === 0 ? (
+          <div className="border-2 border-dashed border-[#d9d9d9] flex flex-col items-center justify-center py-16 text-center">
+            <div className="rounded-sm bg-[#fef8ec] p-5 mb-5">
+              <Bell className="h-10 w-10 text-[#9a7209]" />
+            </div>
+            <h3 className="text-sm font-bold uppercase tracking-[0.12em] text-[#1a1a1a]">
+              Нет активных вызовов
+            </h3>
+            <p className="text-sm text-[#7a7a7a] mt-1">
+              Когда гость нажмёт «Позвать официанта», вызов появится здесь
+            </p>
+          </div>
+        ) : (
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            {waiterCalls.map((call) => (
+              <div
+                key={call.tableNumber}
+                className="border-2 border-[#d4a83a] bg-[#fef8ec] p-4 flex items-center justify-between animate-in slide-in-from-top duration-300"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="h-10 w-10 rounded-sm bg-[#f5ebd0] flex items-center justify-center">
+                    <Bell className="h-5 w-5 text-[#9a7209] animate-bounce" />
+                  </div>
+                  <div>
+                    <p className="font-bold text-sm text-[#1a1a1a]">
+                      Столик {call.tableNumber}
+                    </p>
+                    <p className="text-xs text-[#9a7209]">
+                      {new Date(call.timestamp).toLocaleTimeString("ru-RU", { hour: "2-digit", minute: "2-digit" })}
+                    </p>
+                  </div>
+                </div>
+                <button
+                  onClick={() => dismissWaiterCall(call.tableNumber)}
+                  className="h-9 px-4 rounded-sm bg-[#d4a83a] text-white font-semibold text-xs uppercase tracking-[0.04em] hover:bg-[#b8922e] transition-colors active:opacity-85"
+                >
+                  Принято
+                </button>
+              </div>
+            ))}
+          </div>
+        ))}
+
       {/* Orders grid */}
-      {filtered.length === 0 ? (
+      {statusFilter !== "CALLS" &&
+        (filtered.length === 0 ? (
         <div className="border-2 border-dashed border-[#d9d9d9] flex flex-col items-center justify-center py-16 text-center">
           <div className="rounded-sm bg-[#eef6f6] p-5 mb-5">
             <ClipboardList className="h-10 w-10 text-[#3c6e71]" />
@@ -352,7 +379,7 @@ export function OrdersDashboard({
             />
           ))}
         </div>
-      )}
+      ))}
     </div>
   );
 }

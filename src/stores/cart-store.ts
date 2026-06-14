@@ -102,8 +102,9 @@ export const useCartStore = create<CartState>()(
           set({ venueId });
         }
       },
-      clearCart: () =>
-        set({ items: [], comment: "", tableNumber: "" }),
+      // Намеренно НЕ сбрасываем tableNumber: гость остаётся за тем же столиком
+      // после заказа (нужно для кнопки вызова официанта и следующего заказа).
+      clearCart: () => set({ items: [], comment: "" }),
 
       totalItems: () => get().items.reduce((sum, i) => sum + i.quantity, 0),
       totalPrice: () =>

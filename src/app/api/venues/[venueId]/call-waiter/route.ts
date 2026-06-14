@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { emitWaiterCall } from "@/lib/order-events";
+import { sendPushToVenueTeam } from "@/lib/push-notify";
 import { z } from "zod";
 
 const schema = z.object({
@@ -66,8 +67,21 @@ export async function POST(
       }
     }
 
-    // Emit SSE event to admin/waiter dashboard
+    // Emit SSE event to admin/waiter dashboard (live)
     emitWaiterCall(venueId, tableNumber);
+
+    // Push to owner + active staff phones (so it reaches a closed app too).
+    // Await — иначе на serverless функция замёрзнет до доставки в APNs/FCM.
+    try {
+      await sendPushToVenueTeam(venueId, {
+        title: "Вызов официанта",
+        body: `Столик ${tableNumber} зовёт официанта`,
+        tag: `waiter-${venueId}-${tableNumber}`,
+        url: `/admin/venues/${venueId}/orders`,
+      });
+    } catch {
+      // push не должен ломать сам вызов
+    }
 
     return NextResponse.json({ success: true });
   } catch {
