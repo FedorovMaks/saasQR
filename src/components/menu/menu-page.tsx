@@ -223,16 +223,21 @@ export function MenuPage({
   }
 
   async function handleCallWaiter() {
-    if (!tableNumber) {
-      alert("Укажите номер столика");
-      return;
+    let table = tableNumber;
+    if (!table) {
+      const entered = window.prompt(
+        "Укажите номер вашего столика, чтобы официант знал, куда подойти:"
+      );
+      if (!entered || !entered.trim()) return;
+      table = entered.trim();
+      setTableNumber(table);
     }
     setCallingWaiter(true);
     try {
       const res = await fetch(`/api/venues/${venue.id}/call-waiter`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ tableNumber }),
+        body: JSON.stringify({ tableNumber: table }),
       });
       const data = await res.json();
       if (!res.ok) {
@@ -287,29 +292,27 @@ export function MenuPage({
               </p>
             )}
           </div>
-          {tableNumber && (
-            <button
-              onClick={handleCallWaiter}
-              disabled={callingWaiter || waiterCalled}
-              className={cn(
-                "shrink-0 flex items-center gap-2 rounded-sm px-4 py-2.5 text-xs font-semibold uppercase tracking-[0.04em] transition-all active:opacity-85 disabled:opacity-70",
-                waiterCalled
-                  ? "bg-[#eef7f0] text-[#256841] border border-[#256841]"
-                  : "border border-[#d9d9d9] text-[#353535] hover:border-[#c4c4c4]"
-              )}
-            >
-              {callingWaiter ? (
-                <Loader2 className="h-4 w-4 animate-spin" />
-              ) : waiterCalled ? (
-                <Check className="h-4 w-4" />
-              ) : (
-                <Bell className="h-4 w-4" />
-              )}
-              <span className="hidden sm:inline">
-                {waiterCalled ? "Вызван" : "Официант"}
-              </span>
-            </button>
-          )}
+          <button
+            onClick={handleCallWaiter}
+            disabled={callingWaiter || waiterCalled}
+            className={cn(
+              "shrink-0 flex items-center gap-2 rounded-sm px-4 py-2.5 text-xs font-semibold uppercase tracking-[0.04em] transition-all active:opacity-85 disabled:opacity-70",
+              waiterCalled
+                ? "bg-[#eef7f0] text-[#256841] border border-[#256841]"
+                : "border border-[#d9d9d9] text-[#353535] hover:border-[#c4c4c4]"
+            )}
+          >
+            {callingWaiter ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : waiterCalled ? (
+              <Check className="h-4 w-4" />
+            ) : (
+              <Bell className="h-4 w-4" />
+            )}
+            <span className="hidden sm:inline">
+              {waiterCalled ? "Вызван" : "Официант"}
+            </span>
+          </button>
         </div>
 
         {/* Category tabs — underline style */}
