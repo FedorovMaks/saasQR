@@ -91,6 +91,8 @@ export function MenuPage({
   useEffect(() => { clearOldOrders(); }, [clearOldOrders]);
 
   const categoryRefs = useRef<Record<string, HTMLDivElement | null>>({});
+  const tabRefs = useRef<Record<string, HTMLButtonElement | null>>({});
+  const headerRef = useRef<HTMLElement | null>(null);
 
   useEffect(() => {
     setVenueId(venue.id);
@@ -99,11 +101,39 @@ export function MenuPage({
 
   function scrollToCategory(id: string) {
     setActiveCategoryId(id);
-    categoryRefs.current[id]?.scrollIntoView({
-      behavior: "smooth",
-      block: "start",
-    });
+    const el = categoryRefs.current[id];
+    if (!el) return;
+    const headerH = headerRef.current?.offsetHeight ?? 0;
+    const top = el.getBoundingClientRect().top + window.scrollY - headerH - 12;
+    window.scrollTo({ top: Math.max(0, top), behavior: "smooth" });
   }
+
+  // Scroll-spy: подсветка категории, чья секция сейчас под хедером
+  useEffect(() => {
+    function onScroll() {
+      const headerH = headerRef.current?.offsetHeight ?? 0;
+      const line = headerH + 20;
+      let current = venue.categories[0]?.id || "";
+      for (const cat of venue.categories) {
+        const el = categoryRefs.current[cat.id];
+        if (!el) continue;
+        if (el.getBoundingClientRect().top - line <= 0) current = cat.id;
+        else break;
+      }
+      setActiveCategoryId((prev) => (prev === current ? prev : current));
+    }
+    window.addEventListener("scroll", onScroll, { passive: true });
+    onScroll();
+    return () => window.removeEventListener("scroll", onScroll);
+  }, [venue.categories]);
+
+  // Активный таб подъезжает в видимую область горизонтального списка
+  useEffect(() => {
+    tabRefs.current[activeCategoryId]?.scrollIntoView({
+      block: "nearest",
+      inline: "center",
+    });
+  }, [activeCategoryId]);
 
   function handleAddItem(item: MenuItem, variant?: Variant) {
     if (item.isStopped) return;
@@ -231,7 +261,7 @@ export function MenuPage({
     >
 
       {/* ── Header ── */}
-      <header className="sticky top-0 z-20 bg-white border-b border-[#e8e8e8]">
+      <header ref={headerRef} className="sticky top-0 z-20 bg-white border-b border-[#e8e8e8]">
         <div className="max-w-2xl mx-auto px-5 py-4 flex items-center gap-4">
           {venue.logoUrl ? (
             <Image
@@ -288,6 +318,7 @@ export function MenuPage({
             {venue.categories.map((cat) => (
               <button
                 key={cat.id}
+                ref={(el: HTMLButtonElement | null) => { tabRefs.current[cat.id] = el; }}
                 onClick={() => scrollToCategory(cat.id)}
                 className={cn(
                   "shrink-0 pb-3 text-xs font-bold uppercase tracking-[0.08em] transition-all whitespace-nowrap border-b-2",
