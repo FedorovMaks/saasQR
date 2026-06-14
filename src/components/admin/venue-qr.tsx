@@ -149,8 +149,10 @@ export function VenueQR({
       .map(
         (t) => `
         <div class="card">
-          <div class="top">${logoHtml}<span class="venue">${escapeHtml(venueName)}</span></div>
-          <div class="num">${t.n}</div>
+          <span class="tag">Стол ${t.n}</span>
+          ${logoHtml}
+          <span class="venue">${escapeHtml(venueName)}</span>
+          <span class="divider"></span>
           <img class="qr" src="${t.url}" alt="Столик ${t.n}" />
           <div class="cta">${CTA}</div>
         </div>`
@@ -165,18 +167,19 @@ export function VenueQR({
         body { font-family: Arial, sans-serif; }
         .grid { display: flex; flex-wrap: wrap; gap: 0.4cm; justify-content: flex-start; }
         .card {
+          position: relative;
           width: 8.5cm; min-height: 8.5cm;
-          border: 1px dashed #c4c4c4; border-radius: 6px;
+          border: 1px solid #e8e8e8; border-radius: 10px;
           display: flex; flex-direction: column; align-items: center; justify-content: center;
-          padding: 0.4cm; page-break-inside: avoid; text-align: center;
+          padding: 0.55cm 0.45cm; page-break-inside: avoid; text-align: center;
         }
-        .top { display: flex; align-items: center; gap: 9px; min-height: 1.4cm; }
-        .logo { height: 1.2cm; width: auto; object-fit: contain; }
-        .venue { font-size: 16pt; font-weight: 800; color: #1a1a1a; }
-        .num { font-size: 22pt; font-weight: 800; line-height: 1; color: ${accentColor}; margin: 0.05cm 0 0.15cm; }
-        .qr { width: 4.8cm; height: 4.8cm; }
-        .cta { font-size: 9.5pt; color: #353535; margin-top: 0.2cm; }
-        @media print { .card { border-color: #d9d9d9; } }
+        .tag { position: absolute; top: 0.38cm; right: 0.45cm; font-size: 9pt; font-weight: 700; color: #a0a0a0; }
+        .logo { height: 1.4cm; width: auto; max-width: 5.5cm; object-fit: contain; margin-bottom: 0.2cm; }
+        .venue { font-size: 18pt; font-weight: 800; color: #1a1a1a; line-height: 1.1; }
+        .divider { width: 1.7cm; height: 3px; background: ${accentColor}; border-radius: 2px; margin: 0.3cm 0 0.36cm; }
+        .qr { width: 4.7cm; height: 4.7cm; }
+        .cta { font-size: 10pt; font-weight: 600; color: #353535; margin-top: 0.34cm; }
+        @media print { .card { border-color: #e0e0e0; } }
       </style></head>
       <body>
         <div class="grid">${cards}</div>
