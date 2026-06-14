@@ -143,18 +143,18 @@ export function VenueQR({
     const win = window.open("", "_blank");
     if (!win) return;
     const logoHtml = printableLogo
-      ? `<img class="logo" src="${printableLogo}" alt="" />`
+      ? `<span class="logoChip"><img class="logo" src="${printableLogo}" alt="" /></span>`
       : "";
     const cards = tableQrs
       .map(
         (t) => `
         <div class="card">
           <span class="tag">Стол ${t.n}</span>
-          ${logoHtml}
-          <span class="venue">${escapeHtml(venueName)}</span>
-          <span class="divider"></span>
-          <img class="qr" src="${t.url}" alt="Столик ${t.n}" />
-          <div class="cta">${CTA}</div>
+          <div class="band">${logoHtml}<span class="venue">${escapeHtml(venueName)}</span></div>
+          <div class="body">
+            <img class="qr" src="${t.url}" alt="Столик ${t.n}" />
+            <div class="cta">${CTA}</div>
+          </div>
         </div>`
       )
       .join("");
@@ -167,19 +167,28 @@ export function VenueQR({
         body { font-family: Arial, sans-serif; }
         .grid { display: flex; flex-wrap: wrap; gap: 0.4cm; justify-content: flex-start; }
         .card {
-          position: relative;
+          position: relative; overflow: hidden;
           width: 8.5cm; min-height: 8.5cm;
           border: 1px solid #e8e8e8; border-radius: 10px;
-          display: flex; flex-direction: column; align-items: center; justify-content: center;
-          padding: 0.55cm 0.45cm; page-break-inside: avoid; text-align: center;
+          display: flex; flex-direction: column;
+          page-break-inside: avoid; text-align: center;
         }
-        .tag { position: absolute; top: 0.38cm; right: 0.45cm; font-size: 9pt; font-weight: 700; color: #a0a0a0; }
-        .logo { height: 1.4cm; width: auto; max-width: 5.5cm; object-fit: contain; margin-bottom: 0.2cm; }
-        .venue { font-size: 18pt; font-weight: 800; color: #1a1a1a; line-height: 1.1; }
-        .divider { width: 1.7cm; height: 3px; background: ${accentColor}; border-radius: 2px; margin: 0.3cm 0 0.36cm; }
-        .qr { width: 4.7cm; height: 4.7cm; }
+        .band {
+          background: ${accentColor};
+          min-height: 1.7cm; padding: 0.3cm 0.45cm;
+          display: flex; align-items: center; justify-content: center; gap: 0.25cm;
+        }
+        .logoChip { background: #fff; border-radius: 6px; padding: 0.1cm 0.16cm; display: inline-flex; align-items: center; }
+        .logo { height: 0.95cm; width: auto; max-width: 3.4cm; object-fit: contain; display: block; }
+        .venue { font-size: 17pt; font-weight: 800; color: #ffffff; line-height: 1.1; }
+        .tag { position: absolute; top: 0.28cm; right: 0.4cm; font-size: 9pt; font-weight: 700; color: rgba(255,255,255,0.88); }
+        .body { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 0.5cm 0.4cm; }
+        .qr { width: 4.8cm; height: 4.8cm; }
         .cta { font-size: 10pt; font-weight: 600; color: #353535; margin-top: 0.34cm; }
-        @media print { .card { border-color: #e0e0e0; } }
+        @media print {
+          .card { border-color: #e0e0e0; }
+          .band { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+        }
       </style></head>
       <body>
         <div class="grid">${cards}</div>
