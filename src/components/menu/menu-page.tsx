@@ -240,7 +240,7 @@ export function MenuPage({
         return;
       }
       setWaiterCalled(true);
-      setTimeout(() => setWaiterCalled(false), 60_000);
+      setTimeout(() => setWaiterCalled(false), 30_000);
     } catch {
       alert("Ошибка соединения");
     } finally {

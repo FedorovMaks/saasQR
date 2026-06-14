@@ -7,8 +7,9 @@ const schema = z.object({
   tableNumber: z.string().min(1, "Укажите номер столика"),
 });
 
-// Simple in-memory rate limit: 1 call per table per 60 seconds
+// Simple in-memory rate limit: 1 call per table per 30 seconds
 const callTimestamps = new Map<string, number>();
+const CALL_COOLDOWN_MS = 30_000;
 
 export async function POST(
   req: Request,
@@ -47,8 +48,8 @@ export async function POST(
     const lastCall = callTimestamps.get(key);
     const now = Date.now();
 
-    if (lastCall && now - lastCall < 60_000) {
-      const secondsLeft = Math.ceil((60_000 - (now - lastCall)) / 1000);
+    if (lastCall && now - lastCall < CALL_COOLDOWN_MS) {
+      const secondsLeft = Math.ceil((CALL_COOLDOWN_MS - (now - lastCall)) / 1000);
       return NextResponse.json(
         { error: `Подождите ${secondsLeft} сек. перед повторным вызовом` },
         { status: 429 }
