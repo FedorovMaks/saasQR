@@ -87,6 +87,9 @@ const FILTER_TABS = [
   { key: "ACCEPTED", label: "Принятые" },
 ];
 
+// Вызов официанта сам исчезает из вкладки через это время после прихода
+const CALL_TTL_MS = 3 * 60 * 1000;
+
 function formatTime(dateString: string) {
   const d = new Date(dateString);
   return d.toLocaleTimeString("ru-RU", { hour: "2-digit", minute: "2-digit" });
@@ -181,7 +184,15 @@ export function OrdersDashboard({
 
   const [, setTick] = useState(0);
   useEffect(() => {
-    const interval = setInterval(() => setTick((t) => t + 1), 30000);
+    const interval = setInterval(() => {
+      setTick((t) => t + 1);
+      // Авто-очистка старых вызовов, чтобы вкладка не засорялась
+      setWaiterCalls((prev) =>
+        prev.filter(
+          (c) => Date.now() - new Date(c.timestamp).getTime() < CALL_TTL_MS
+        )
+      );
+    }, 15000);
     return () => clearInterval(interval);
   }, []);
 
@@ -293,19 +304,19 @@ export function OrdersDashboard({
             </button>
           );
         })}
-        {(waiterCalls.length > 0 || statusFilter === "CALLS") && (
-          <button
-            onClick={() => setStatusFilter("CALLS")}
-            className={`shrink-0 h-9 px-4 text-xs font-semibold uppercase tracking-[0.04em] rounded-sm transition-all inline-flex items-center gap-1.5 ${
-              statusFilter === "CALLS"
-                ? "bg-[#d4a83a] text-white"
-                : "border border-[#d4a83a] text-[#9a7209] bg-[#fef8ec]"
-            } ${waiterCalls.length > 0 ? "animate-pulse" : ""}`}
-          >
-            <Bell className="h-3.5 w-3.5" />
-            Вызовы{waiterCalls.length > 0 ? ` ${waiterCalls.length}` : ""}
-          </button>
-        )}
+        <button
+          onClick={() => setStatusFilter("CALLS")}
+          className={`shrink-0 h-9 px-4 text-xs font-semibold uppercase tracking-[0.04em] rounded-sm transition-all inline-flex items-center gap-1.5 ${
+            statusFilter === "CALLS"
+              ? "bg-[#d4a83a] text-white"
+              : waiterCalls.length > 0
+                ? "border border-[#d4a83a] text-[#9a7209] bg-[#fef8ec]"
+                : "border border-[#d9d9d9] text-[#353535] hover:border-[#c4c4c4]"
+          } ${waiterCalls.length > 0 ? "animate-pulse" : ""}`}
+        >
+          <Bell className="h-3.5 w-3.5" />
+          Вызовы{waiterCalls.length > 0 ? ` ${waiterCalls.length}` : ""}
+        </button>
       </div>
 
       {/* Waiter calls view */}
