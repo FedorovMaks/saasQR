@@ -2,7 +2,23 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { emitWaiterCall } from "@/lib/order-events";
 import { sendPushToVenueTeam } from "@/lib/push-notify";
+import { getApiUser, unauthorized, forbidden } from "@/lib/auth-guard";
 import { z } from "zod";
+
+// Проверка: владелец заведения или его активный сотрудник
+async function canManageVenue(venueId: string, userId: string) {
+  const venue = await prisma.venue.findUnique({
+    where: { id: venueId },
+    select: { ownerId: true },
+  });
+  if (!venue) return false;
+  if (venue.ownerId === userId) return true;
+  const staff = await prisma.staff.findUnique({
+    where: { venueId_userId: { venueId, userId } },
+    select: { isActive: true },
+  });
+  return !!staff?.isActive;
+}
 
 const schema = z.object({
   tableNumber: z.string().min(1, "Укажите номер столика"),
@@ -67,8 +83,29 @@ export async function POST(
       }
     }
 
+    // Persist call. Dedup: refresh an existing pending call for this table
+    // instead of piling up duplicates.
+    const existing = await prisma.waiterCall.findFirst({
+      where: { venueId, tableNumber, status: "PENDING" },
+      select: { id: true },
+    });
+    let callId: string;
+    if (existing) {
+      await prisma.waiterCall.update({
+        where: { id: existing.id },
+        data: { createdAt: new Date() },
+      });
+      callId = existing.id;
+    } else {
+      const created = await prisma.waiterCall.create({
+        data: { venueId, tableNumber },
+        select: { id: true },
+      });
+      callId = created.id;
+    }
+
     // Emit SSE event to admin/waiter dashboard (live)
-    emitWaiterCall(venueId, tableNumber);
+    emitWaiterCall(venueId, tableNumber, callId);
 
     // Push to owner + active staff phones (so it reaches a closed app too).
     // Await — иначе на serverless функция замёрзнет до доставки в APNs/FCM.
@@ -90,4 +127,35 @@ export async function POST(
       { status: 500 }
     );
   }
+}
+
+// «Принято» — официант/владелец закрывает вызов(ы) по столику
+export async function DELETE(
+  req: Request,
+  { params }: { params: Promise<{ venueId: string }> }
+) {
+  const user = await getApiUser();
+  if (!user) return unauthorized();
+
+  const { venueId } = await params;
+  if (!(await canManageVenue(venueId, user.id))) return forbidden();
+
+  let tableNumber: string | undefined;
+  try {
+    const body = await req.json();
+    tableNumber = typeof body.tableNumber === "string" ? body.tableNumber : undefined;
+  } catch {
+    // no body
+  }
+
+  await prisma.waiterCall.updateMany({
+    where: {
+      venueId,
+      status: "PENDING",
+      ...(tableNumber ? { tableNumber } : {}),
+    },
+    data: { status: "DONE", resolvedAt: new Date() },
+  });
+
+  return NextResponse.json({ success: true });
 }

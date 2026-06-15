@@ -26,6 +26,7 @@ export type WaiterCallEvent = {
   venueId: string;
   tableNumber: string;
   timestamp: string;
+  id?: string;
 };
 
 export type VenueEvent = OrderEvent | WaiterCallEvent;
@@ -39,12 +40,13 @@ export function emitOrderEvent(event: OrderEvent) {
   }
 }
 
-export function emitWaiterCall(venueId: string, tableNumber: string) {
+export function emitWaiterCall(venueId: string, tableNumber: string, id?: string) {
   const event: WaiterCallEvent = {
     type: "waiter_call",
     venueId,
     tableNumber,
     timestamp: new Date().toISOString(),
+    id,
   };
   orderEmitter.emit(`venue:${venueId}`, event);
 }

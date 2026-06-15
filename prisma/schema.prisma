@@ -116,9 +116,24 @@ model Venue {
   tables       Table[]
   staff        Staff[]
   staffInvites StaffInvite[]
+  waiterCalls  WaiterCall[]
 
   @@index([ownerId])
   @@map("venues")
+}
+
+model WaiterCall {
+  id          String    @id @default(cuid())
+  venueId     String
+  tableNumber String
+  status      String    @default("PENDING") // PENDING | DONE
+  createdAt   DateTime  @default(now())
+  resolvedAt  DateTime?
+
+  venue Venue @relation(fields: [venueId], references: [id], onDelete: Cascade)
+
+  @@index([venueId, status])
+  @@map("waiter_calls")
 }
 
 model Category {

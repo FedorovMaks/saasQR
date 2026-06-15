@@ -57,10 +57,25 @@ export default async function OrdersPage({
     updatedAt: order.updatedAt.toISOString(),
   }));
 
+  // Active waiter calls (pending, last 10 minutes) — so a call is still
+  // visible when staff open the app shortly after it was made.
+  const callWindow = new Date(Date.now() - 10 * 60 * 1000);
+  const calls = await prisma.waiterCall.findMany({
+    where: { venueId, status: "PENDING", createdAt: { gte: callWindow } },
+    orderBy: { createdAt: "desc" },
+    select: { id: true, tableNumber: true, createdAt: true },
+  });
+  const initialWaiterCalls = calls.map((c) => ({
+    id: c.id,
+    tableNumber: c.tableNumber,
+    timestamp: c.createdAt.toISOString(),
+  }));
+
   return (
     <OrdersDashboard
       venue={{ id: venue.id, name: venue.name, slug: venue.slug }}
       initialOrders={serializedOrders}
+      initialWaiterCalls={initialWaiterCalls}
     />
   );
 }

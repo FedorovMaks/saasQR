@@ -44,6 +44,8 @@ type Venue = {
   slug: string;
 };
 
+type WaiterCallItem = { id: string; tableNumber: string; timestamp: string };
+
 const STATUS_CONFIG: Record<
   string,
   { label: string; color: string; bgColor: string; icon: React.ReactNode }
@@ -88,7 +90,8 @@ const FILTER_TABS = [
 ];
 
 // Вызов официанта сам исчезает из вкладки через это время после прихода
-const CALL_TTL_MS = 3 * 60 * 1000;
+// (совпадает с окном загрузки активных вызовов на сервере).
+const CALL_TTL_MS = 10 * 60 * 1000;
 
 function formatTime(dateString: string) {
   const d = new Date(dateString);
@@ -108,9 +111,11 @@ function timeAgo(dateString: string) {
 export function OrdersDashboard({
   venue,
   initialOrders,
+  initialWaiterCalls = [],
 }: {
   venue: Venue;
   initialOrders: Order[];
+  initialWaiterCalls?: WaiterCallItem[];
 }) {
   const { data: session } = useSession();
   const isWaiter = session?.user?.role === "waiter";
@@ -120,11 +125,20 @@ export function OrdersDashboard({
   const [updatingOrder, setUpdatingOrder] = useState<string | null>(null);
   const [newOrderIds, setNewOrderIds] = useState<Set<string>>(new Set());
 
-  // Waiter calls state
-  const [waiterCalls, setWaiterCalls] = useState<{ tableNumber: string; timestamp: string }[]>([]);
+  // Waiter calls state — seeded from DB (active pending calls)
+  const [waiterCalls, setWaiterCalls] = useState<WaiterCallItem[]>(initialWaiterCalls);
 
-  function dismissWaiterCall(tableNumber: string) {
+  async function dismissWaiterCall(tableNumber: string) {
     setWaiterCalls((prev) => prev.filter((c) => c.tableNumber !== tableNumber));
+    try {
+      await fetch(`/api/venues/${venue.id}/call-waiter`, {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ tableNumber }),
+      });
+    } catch {
+      // UI уже убрал вызов; запись закроется при следующей загрузке
+    }
   }
 
   const handleOrderEvent = useCallback(
@@ -134,6 +148,7 @@ export function OrdersDashboard({
       order?: Record<string, unknown>;
       tableNumber?: string;
       timestamp?: string;
+      id?: string;
     }) => {
       if (event.type === "waiter_call") {
         playSound();
@@ -144,7 +159,10 @@ export function OrdersDashboard({
         });
         setWaiterCalls((prev) => {
           const filtered = prev.filter((c) => c.tableNumber !== tbl);
-          return [{ tableNumber: tbl, timestamp: event.timestamp || new Date().toISOString() }, ...filtered];
+          return [
+            { id: event.id || tbl, tableNumber: tbl, timestamp: event.timestamp || new Date().toISOString() },
+            ...filtered,
+          ];
         });
         return;
       }
