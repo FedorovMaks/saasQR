@@ -109,6 +109,8 @@ export async function PATCH(
     data.plan = TRIAL_CONFIG.plan;
     data.trialEndsAt = new Date(Date.now() + trialMs);
     data.planExpiresAt = new Date(Date.now() + trialMs);
+    // Триал израсходован — иначе его можно будет ещё раз купить за 1₽
+    data.trialUsed = true;
   }
 
   const updated = await prisma.user.update({

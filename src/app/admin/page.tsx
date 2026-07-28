@@ -3,7 +3,7 @@ export const dynamic = "force-dynamic";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { checkVenueLimit, checkFeatureAccess, hasActiveSubscription, TRIAL_CONFIG } from "@/lib/plans";
+import { checkVenueLimit, checkFeatureAccess, hasActiveSubscription, TRIAL_CONFIG, PLANS } from "@/lib/plans";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import {
@@ -52,9 +52,13 @@ export default async function AdminPage() {
     return (
       <div className="space-y-8">
         <div>
-          <h1 className="text-2xl font-extrabold uppercase tracking-[0.12em] text-[#1a1a1a]">Добро пожаловать</h1>
+          <h1 className="text-2xl font-extrabold uppercase tracking-[0.12em] text-[#1a1a1a]">
+            {trialUsed ? "Подписка неактивна" : "Добро пожаловать"}
+          </h1>
           <p className="text-sm text-[#7a7a7a] mt-1">
-            Начните с пробного периода — все функции бесплатно
+            {trialUsed
+              ? "Выберите тариф, чтобы вернуть доступ ко всем функциям"
+              : "Начните с пробного периода — все функции бесплатно"}
           </p>
         </div>
 
@@ -65,24 +69,21 @@ export default async function AdminPage() {
               <Sparkles className="h-6 w-6 text-[#3c6e71]" />
             </div>
             <div>
-              <h2 className="text-xl font-bold uppercase tracking-[0.12em] text-[#1a1a1a]">Попробуйте «Бизнес» за {TRIAL_CONFIG.price}₽</h2>
+              <h2 className="text-xl font-bold uppercase tracking-[0.12em] text-[#1a1a1a]">
+                {trialUsed
+                  ? `Тариф «${PLANS.BUSINESS.label}»`
+                  : `Попробуйте «${PLANS.BUSINESS.label}» за ${TRIAL_CONFIG.price}₽`}
+              </h2>
               <p className="text-sm text-[#7a7a7a]">
-                {TRIAL_CONFIG.durationDays} дней полного доступа ко всем функциям
+                {trialUsed
+                  ? `${PLANS.BUSINESS.monthlyPrice.toLocaleString("ru-RU")}₽ в месяц — полный доступ ко всем функциям`
+                  : `${TRIAL_CONFIG.durationDays} дней полного доступа ко всем функциям`}
               </p>
             </div>
           </div>
 
           <div className="grid sm:grid-cols-2 gap-3 mb-8">
-            {[
-              "До 5 заведений",
-              "Неограниченное меню",
-              "Онлайн-заказы с push-уведомлениями",
-              "Безлимитные столики",
-              "Аналитика и отчёты",
-              "Без watermark",
-              "Персонал и роли",
-              "QR-коды для столиков",
-            ].map((feature) => (
+            {PLANS[TRIAL_CONFIG.plan].features.map((feature) => (
               <div key={feature} className="flex items-center gap-2.5">
                 <div className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[#eef6f6]">
                   <Check className="h-3 w-3 text-[#3c6e71]" />
@@ -110,11 +111,14 @@ export default async function AdminPage() {
             </TrialButton>
           )}
           <p className="text-[#a0a0a0] text-xs mt-3">
-            Оплата через СБП · {TRIAL_CONFIG.durationDays} дней доступа
+            {trialUsed
+              ? "Оплата через СБП · подписка на месяц"
+              : `Оплата через СБП · ${TRIAL_CONFIG.durationDays} дней доступа`}
           </p>
         </div>
 
-        {/* What happens next */}
+        {/* What happens next — онбординг только для тех, кто ещё не пробовал */}
+        {!trialUsed && (
         <div className="border border-[#d9d9d9] bg-white p-6">
           <h3 className="text-sm font-bold uppercase tracking-[0.12em] text-[#1a1a1a] mb-4">Как это работает</h3>
           <div className="space-y-4">
@@ -133,6 +137,7 @@ export default async function AdminPage() {
             ))}
           </div>
         </div>
+        )}
 
         <div className="text-center">
           <Link
